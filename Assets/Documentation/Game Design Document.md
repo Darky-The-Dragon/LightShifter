@@ -2,13 +2,13 @@
 
 ## Document Changelog
 
-| Date       | Contributors  | Changelog                                                   |
-|------------|---------------|-------------------------------------------------------------|
-| 25-10-2024 | Zotea Dumitru | Created initial draft for Overview and Vision Statement.    |
-| 26-10-2024 | Zotea Dumitru | Expanded Vision Statement with additional gameplay details. |
-|            |               |                                                             |
-|            |               |                                                             |
-|            |               |                                                             |
+| Date       | Contributors  | Changelog                                                                                                                                   |
+|------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| 25-10-2024 | Zotea Dumitru | Created initial draft for the Game Design Document. <br>First draft of "Game Overview".                                                     |
+| 26-10-2024 | Zotea Dumitru | First draft of the following chapters: <br> "Objective", "Look and Feel", "Platforms", "Gameplay", "Story", "World", "Deadlines" and "Team" |
+|            |               |                                                                                                                                             |
+|            |               |                                                                                                                                             |
+|            |               |                                                                                                                                             |
 
 ---
 
@@ -99,6 +99,8 @@ and tension in the dark, drawing them into a unique, contrasting experience.
 - **System Requirements**: Designed to be accessible across a range of PC setups, from mid-range to high-end systems,
   while maintaining the same visual and gameplay quality.
 
+---
+
 ## Gameplay
 
 The gameplay of **LightShifter** revolves around exploration, puzzle-solving, and platforming, utilizing the unique
@@ -181,6 +183,8 @@ on the skills and strategies players have learned. By blending precise platformi
 immersive storytelling, **LightShifter** offers a unique experience that emphasizes patience, adaptability, and
 exploration.
 
+---
+
 ## Story
 
 ### Synopsis
@@ -245,6 +249,8 @@ and understand the consequences of a love that defied the world’s most fundame
 As Z advances through each level, environmental storytelling, such as remnants of the past world and symbols of light
 and dark, guide the player. Through these interactions, **LightShifter** offers a subtle, layered story that unfolds as
 players journey deeper into the interconnected worlds.
+
+---
 
 ## World
 
@@ -335,6 +341,8 @@ By journeying through both realms and ultimately restoring balance, Z can stabil
 coexistence. The rules of this world reinforce the core theme of **LightShifter**: understanding and harmonizing
 opposing forces without erasing their unique identities.
 
+---
+
 ## Deadlines
 
 The following deadlines outline the development phases for **LightShifter**. Each milestone represents a key point in
@@ -382,3 +390,4 @@ alignment.
 The project manager will coordinate these tests to gather feedback, identify potential improvements, and finalize
 gameplay.
 
+---
