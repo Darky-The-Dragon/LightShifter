@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
             // write here the code to handle the touch of an enemy to the player
             // Time.timescale = 0 pauses the game, put it back to 1 to resume it
             
-            //Time.timeScale = 0;
+            Time.timeScale = 0;
         }
     }
 
