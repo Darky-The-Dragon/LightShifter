@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
@@ -8,6 +9,7 @@ public class MovingPlatform : MonoBehaviour
 
     private int _direction = 1;
     [SerializeField] private float speed = 0.5f;
+
 
     private void OnDrawGizmos()
     {
@@ -37,6 +39,4 @@ public class MovingPlatform : MonoBehaviour
             _direction *= -1;
         }
     }
-    
-    
 }
