@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D _body;
-    [SerializeField] float speed;
-    [SerializeField] float jumpForce;
+    [SerializeField] float speed = 5f;
+    [SerializeField] float jumpForce = 5f;
     // Start is called before the first frame update
     
     private enum PlayerState
@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _body.velocity = new Vector2(Input.GetAxis("Horizontal") * speed, _body.velocity.y);
+        _body.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * speed, _body.velocity.y);
 
         if (Input.GetKeyDown(KeyCode.Space) && (_state == PlayerState.Grounded || (_state == PlayerState.InAir &&_jumpNumber < availableJumps)))
         {

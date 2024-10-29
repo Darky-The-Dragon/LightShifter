@@ -5,12 +5,14 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Enemy
+  - JumpTrigger
   - MovingPlatform
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - MovingPlatform
+  - 
   - Water
   - UI
   - 
