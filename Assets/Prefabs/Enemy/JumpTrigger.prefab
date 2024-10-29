@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1179226233283641590}
   - component: {fileID: 7702036412862787109}
   - component: {fileID: 597282454928850677}
+  - component: {fileID: 381587825303800231}
   m_Layer: 0
   m_Name: JumpTrigger
   m_TagString: JumpTrigger
@@ -130,3 +131,16 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &381587825303800231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3564164537635536705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c3b11218d2abdf49b35d92b5eec4f79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpPower: 10
