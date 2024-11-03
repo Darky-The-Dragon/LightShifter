@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using Unity.VisualScripting;
+using UnityEditor.Profiling.Memory.Experimental;
 using UnityEngine;
 
 public class EnemyChasePlayerMovement : MonoBehaviour
@@ -12,7 +14,7 @@ public class EnemyChasePlayerMovement : MonoBehaviour
     private bool _touchingPlayer;
     void Awake() {
         // Find the player object in the scene and get its transform
-        playerTransform = FindObjectOfType<Player>().transform;
+        playerTransform = FindObjectOfType<PlayerCollision>().transform;
         _rb = GetComponent<Rigidbody2D>();
     }
 
