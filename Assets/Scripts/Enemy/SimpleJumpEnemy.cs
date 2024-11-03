@@ -25,10 +25,16 @@ public class JumpEnemy : MonoBehaviour
         _rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
     }
 
+    void Jump(float jumpForce) {
+        _rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+    }
+
     void OnTriggerEnter2D(Collider2D other) {
         print(other.gameObject.name);
         if (other.gameObject.CompareTag("JumpTrigger")) {
-            Jump();
+            float jumpPower = other.gameObject.GetComponent<JumpTrigger>().jumpPower;
+            print("Jumping with power: " + jumpPower);
+            Jump(jumpPower);
         }
     }
 }
