@@ -4,10 +4,10 @@ namespace Interactable
 {
     public class LeverController : MonoBehaviour
     {
-        public GameObject platform; // Assign your platform here
-        public float moveDistance = 5f; // Distance the platform moves
-        public Transform player; // Reference to the player's Transform
-        public float activationRange = 2f; // Maximum distance to activate the lever
+        public GameObject platform; 
+        public float moveDistance = 5f; 
+        public Transform player; 
+        public float activationRange = 2f; 
 
         private bool _isLeverPulled;
         private Vector2 _initialPosition;

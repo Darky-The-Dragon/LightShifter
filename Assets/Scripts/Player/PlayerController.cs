@@ -83,7 +83,6 @@ namespace Player
 
             // Ground and Ceiling
             bool groundHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.down, stats.GrounderDistance, ~stats.PlayerLayer);
-        
             bool ceilingHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.up, stats.GrounderDistance, ~stats.PlayerLayer);
 
             // Hit a Ceiling
