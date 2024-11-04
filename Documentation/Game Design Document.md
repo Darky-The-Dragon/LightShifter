@@ -2,17 +2,17 @@
 
 ## Document Changelog
 
-| Date       | Contributors  | Changelog                                                                                                                                   |
-|------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| 25-10-2024 | Zotea Dumitru | Created initial draft for the Game Design Document. <br>First draft of "Game Overview".                                                     |
-| 26-10-2024 | Zotea Dumitru | First draft of the following chapters: <br> "Objective", "Look and Feel", "Platforms", "Gameplay", "Story", "World", "Deadlines" and "Team" |
-|            |               |                                                                                                                                             |
-|            |               |                                                                                                                                             |
-|            |               |                                                                                                                                             |
+| Date       | Contributors  | Changelog                                                                                                                                                                                                        |
+|------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 25-10-2024 | Zotea Dumitru | Created initial draft for the Game Design Document. <br>First draft of "Game Overview".                                                                                                                          |
+| 26-10-2024 | Zotea Dumitru | First draft of the following chapters: <br> "Objective", "Look and Feel", "Platforms", "Gameplay", "Story", "World", "Deadlines" and "Team"                                                                      |
+| 04-11-2024 | Zotea Dumitru | Change in chapter names. <br> GDD structure updated to match the suggested one. <br> Minor changes in the content of the chapters to clarify, simplify and avoid repetition within the contents of the chapters. |
+|            |               |                                                                                                                                                                                                                  |
+|            |               |                                                                                                                                                                                                                  |
 
 ---
 
-## Game Overview
+## Game Overview and Vision Statement
 
 **LightShifter** is an atmospheric 2D platformer set in a unique and interconnected world where two dimensions, light
 and dark, exist in parallel. The player steps into the role of a young character, born from both realms, who must
@@ -33,80 +33,19 @@ warmth and openness of the light with the mystery and tension of the dark.
 
 ---
 
-## Objective
-
-The primary objective in **LightShifter** is to guide the protagonist through a series of levels, mastering the
-light-shifting mechanic to solve challenges, overcome obstacles, and reveal elements that will help them to progress
-through the levels.
-
-As players progress, they will:
-
-- **Uncover Story Elements**: By navigating both dimensions, players reveal the protagonist’s origin, the forbidden
-  love that sparked his existence, and the ongoing conflict between the two realms.
-- **Solve Puzzles**: Use clues and toggle actions to reveal hidden passages, deactivate traps, and unlock new areas.
-- **Avoid Hazards**: Dodge enemies and environmental traps that react to the light-shifting mechanic, demanding precise
-  timing
-  and quick reflexes.
-- **Restore Balance**: The journey to restore balance between the worlds is both a personal quest and a mission to
-  prevent their collision, ensuring the survival of both civilizations.
-
-The combination of these goals emphasizes a journey of growth, discovery, and adaptability, encouraging players to
-embrace patience and strategy as they navigate a world on the brink of transformation.
-
----
-
-## Look and Feel
-
-**LightShifter** draws players into a visually and audibly distinctive world, where each dimension has its own
-atmosphere and emotional tone.
-
-### Visual Design
-
-- **Minimalist Aesthetic**: A clean, abstract art style enhances each world’s unique elements. The light world is
-  bright, warm, and inviting, while the dark world is shadowy, defined by cooler tones and subtle shapes.
-- **Contrast and Transformation**: Objects and environments adapt to the active dimension, with platforms, hazards, and
-  secrets appearing or disappearing based on the dimension, highlighting the impact of toggling.
-- **Interactive Cues**: Glowing outlines, gentle flickers, and shifting forms indicate interactable elements, providing
-  visual guidance while keeping the minimalist style.
-
-### Sound Design
-
-- **Dimension-Based Soundtrack**: A dynamic soundtrack shifts with each dimension. The light world’s melodies are lively
-  and bright, while the dark world’s sounds are eerie, atmospheric, and tense.
-- **Audio Cues**: Each world includes unique audio signals—chimes in the light world and low-pitched hums in the dark—to
-  help players locate interactive or hidden elements.
-- **Ambient Sounds**: Background sounds add depth to each world, creating an immersive atmosphere that contrasts the
-  openness of the light world with the isolation of the dark.
-
-### Player Experience
-
-Through carefully crafted visuals and sounds, **LightShifter** aims to immerse players in a dualistic world, emphasizing
-the emotional impact of each dimension. Players feel a sense of freedom and warmth in the light world, and introspection
-and tension in the dark, drawing them into a unique, contrasting experience.
-
----
-
-## Platforms
-
-**LightShifter** is developed exclusively for PC, offering optimized performance on Windows and macOS.
-
-- **Control Options**:
-    - **Keyboard and Mouse Controls**: Optimized for responsive and precise platforming, allowing players to seamlessly
-      toggle between dimensions, interact with objects, and execute complex movements.
-    - **Gamepad Support**: Full compatibility with popular controllers (e.g., Xbox, PlayStation controllers) for players
-      who
-      prefer a controller-based experience.
-- **System Requirements**: Designed to be accessible across a range of PC setups, from mid-range to high-end systems,
-  while maintaining the same visual and gameplay quality.
-
----
-
 ## Gameplay
+
+### Objectives
 
 The gameplay of **LightShifter** revolves around exploration, puzzle-solving, and platforming, utilizing the unique
 **light-shifting mechanic** to navigate two interconnected worlds: light and dark. Each dimension holds different
 pathways, obstacles, and secrets, making the shifting essential for progression. As players advance, they encounter more
 complex interactions and mechanics that require timing, precision, and strategic use of the shifting ability.
+
+As players progress, they will mainly:
+
+- **Solve Puzzles**: By using clues and toggle actions players will have to find a way out and unlock new areas.
+- **Avoid Hazards**: That can range from enemies to environmental traps that react to the game mechanics.
 
 ### Core Mechanics
 
@@ -150,6 +89,12 @@ ability:
 - **Multi-Step Puzzles**: Complex puzzles that require interacting with multiple objects across both dimensions, often
   involving timed sequences and toggling.
 
+### Other Optional Mechanics (TBD)
+
+- **Collecting Hidden Items**: Certain items are hidden in each level, encouraging exploration of both dimensions.
+- **Uncovering Story Fragments**: Each level contains fragments that reveal more about protagonist’s origin, the
+  forbidden love between his parents, and the backstory of the two worlds.
+
 ### Level Progression
 
 Levels are designed to gradually introduce new mechanics and increase in difficulty, starting with simple toggling-based
@@ -160,16 +105,6 @@ puzzles and leading to intricate multi-step challenges:
   mechanic.
 - **Advanced Levels**: Feature multi-step puzzles, complex toggle sequences, and dynamic hazards, testing the player’s
   reflexes and strategic thinking.
-
-### Objectives and Goals
-
-The primary objective is to restore balance between the light and dark worlds by progressing through each level and
-solving dimension-based puzzles. Secondary objectives include:
-
-- **Collecting Hidden Items**: Certain items are hidden in each level, encouraging exploration of both dimensions.
-- **Uncovering Story Fragments**: Each level contains fragments that reveal more about protagonist’s origin, the
-  forbidden love
-  between his parents, and the backstory of the two worlds.
 
 ### Controls
 
@@ -343,25 +278,70 @@ opposing forces without erasing their unique identities.
 
 ---
 
-## Deadlines
+## Media List (WIP)
 
-The following deadlines outline the development phases for **LightShifter**. Each milestone represents a key point in
-the project, ensuring consistent progress and alignment with the final goal.
+- **Visual References**: Art style guides, concept art, and mood boards for light and dark world aesthetics.
+- **Audio Sources**: Sample soundtracks, ambient audio references for dimension-specific sound design.
+- **Research and Inspirations**: Games, films, or books that inspired themes or mechanics within **LightShifter**.
 
-| Phase                  | Target Date | Description                                                                                       |
-|------------------------|-------------|---------------------------------------------------------------------------------------------------|
-| **Concept Approval**   | Placeholder | Approval of core concept, mechanics, and initial game design document.                            |
-| **Prototype Build**    | Placeholder | Development of a basic prototype demonstrating core mechanics, including dimension toggling.      |
-| **Art & Sound Design** | Placeholder | Completion of preliminary visual and audio assets, focusing on contrasting light and dark worlds. |
-| **Alpha Build**        | Placeholder | First playable version with functional mechanics and initial levels.                              |
-| **Playtesting Phase**  | Placeholder | Conduct playtesting to gather feedback on gameplay, mechanics, and difficulty progression.        |
-| **Beta Build**         | Placeholder | Nearly complete version with refined mechanics, final levels, and polished visual/audio design.   |
-| **Final Release**      | Placeholder | Delivery of the completed game, including all assets, mechanics, and story elements.              |
+---
 
-### Notes
+## Technical Specifications
 
-Each deadline phase will be expanded upon during further discussions to establish specific dates, key tasks, and
-responsible team members. Regular check-ins and progress updates will ensure alignment with each milestone.
+### Game Engine
+
+- **Engine**: Unity 2022.3.50f
+- **Language**: C# for scripting and gameplay mechanics
+- **Physics**: Unity’s built-in 2D physics system for platforming elements and interactions
+
+### Platform
+
+- **Target Platform**: PC (Windows, macOS)
+- **Control Support**: Keyboard and Mouse; Gamepad (Xbox, PlayStation controllers)
+
+### Visual Design
+
+- **Minimalist Aesthetic**: A clean, abstract art style enhances each world’s unique elements. The light world is
+  bright, warm, and inviting, while the dark world is shadowy, defined by cooler tones and subtle shapes.
+- **Contrast and Transformation**: Objects and environments adapt to the active dimension, with platforms, hazards, and
+  secrets appearing or disappearing based on the dimension, highlighting the impact of toggling.
+- **Interactive Cues**: Glowing outlines, gentle flickers, and shifting forms indicate interactable elements, providing
+  visual guidance while keeping the minimalist style.
+
+### Sound Design
+
+- **Dimension-Based Soundtrack**: A dynamic soundtrack shifts with each dimension. The light world’s melodies are lively
+  and bright, while the dark world’s sounds are eerie, atmospheric, and tense.
+- **Audio Cues**: Each world includes unique audio signals—chimes in the light world and low-pitched hums in the dark—to
+  help players locate interactive or hidden elements.
+- **Ambient Sounds**: Background sounds add depth to each world, creating an immersive atmosphere that contrasts the
+  openness of the light world with the isolation of the dark.
+
+### System Requirements
+
+- **Minimum Requirements (PLACEHOLDER)**:
+    - OS: Windows 7/8/10, macOS 10.12+
+    - Processor: Intel Core i3 or equivalent
+    - Memory: 4 GB RAM
+    - Graphics: Integrated graphics with OpenGL 3.2 support
+    - Storage: 500 MB available space
+
+- **Recommended Requirements (PLACEHOLDER)**:
+    - OS: Windows 10, macOS 10.15+
+    - Processor: Intel Core i5 or equivalent
+    - Memory: 8 GB RAM
+    - Graphics: Dedicated graphics card with OpenGL 4.0 support
+    - Storage: 1 GB available space
+
+### Development Tools
+
+- **IDE**: JetBrains Rider, Visual Studio, Visual Studio Code
+- **Designing Tools**: Adobe Suite, Aseprite, etc
+- **Version Control**: Git (GitHub repository), GitHub Desktop
+- **Project Management**: Discord for task tracking and milestone management
+- **Collaboration Tools**: Discord for team communication; shared cloud storage for assets and documents
+
+---
 
 ## Team
 
@@ -389,5 +369,27 @@ alignment.
 **QA Testing** will be conducted at key milestones to ensure gameplay, mechanics, and visuals meet quality standards.
 The project manager will coordinate these tests to gather feedback, identify potential improvements, and finalize
 gameplay.
+
+---
+
+## Deadlines
+
+The following deadlines outline the development phases for **LightShifter**. Each milestone represents a key point in
+the project, ensuring consistent progress and alignment with the final goal.
+
+| Phase                  | Target Date | Description                                                                                       |
+|------------------------|-------------|---------------------------------------------------------------------------------------------------|
+| **Concept Approval**   | Placeholder | Approval of core concept, mechanics, and initial game design document.                            |
+| **Prototype Build**    | Placeholder | Development of a basic prototype demonstrating core mechanics, including dimension toggling.      |
+| **Art & Sound Design** | Placeholder | Completion of preliminary visual and audio assets, focusing on contrasting light and dark worlds. |
+| **Alpha Build**        | Placeholder | First playable version with functional mechanics and initial levels.                              |
+| **Playtesting Phase**  | Placeholder | Conduct playtesting to gather feedback on gameplay, mechanics, and difficulty progression.        |
+| **Beta Build**         | Placeholder | Nearly complete version with refined mechanics, final levels, and polished visual/audio design.   |
+| **Final Release**      | Placeholder | Delivery of the completed game, including all assets, mechanics, and story elements.              |
+
+### Notes
+
+Each deadline phase will be expanded upon during further discussions to establish specific dates, key tasks, and
+responsible team members. Regular check-ins and progress updates will ensure alignment with each milestone.
 
 ---
