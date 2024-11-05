@@ -1,11 +1,10 @@
 using UnityEngine;
-
 namespace LightShift
 {
 
     public class LightShift : MonoBehaviour
     {
-        [SerializeField] private Camera mainCamera;       
+        [SerializeField] private UnityEngine.Camera mainCamera;
         [SerializeField] private GameObject platform;     
         [SerializeField] private Color newBackgroundColor; 
 

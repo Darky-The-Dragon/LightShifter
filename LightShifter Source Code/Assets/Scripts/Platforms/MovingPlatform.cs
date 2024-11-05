@@ -43,7 +43,18 @@ namespace Platforms
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            collision.transform.SetParent(platform);
+            if (collision.gameObject.CompareTag("MovingPlatform"))
+            {
+                transform.parent = collision.transform;
+            }
+        }
+        
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("MovingPlatform"))
+            {
+                transform.parent = null;
+            }
         }
     }
 }
