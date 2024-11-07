@@ -24,11 +24,18 @@ namespace Player
 
         private float _time;
 
+        private bool _grounded;
+        private bool _walled;
+        /*
+            defines the orientation of the player, 1 is right, -1 is left
+        */
+        private float _orientation;
+
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
             _col = GetComponent<BoxCollider2D>();
-            
+
             _jumps = 0;
 
             _cachedQueryStartInColliders = Physics2D.queriesStartInColliders;
@@ -52,6 +59,7 @@ namespace Player
             if (stats.SnapInput)
             {
                 _frameInput.Move.x = Mathf.Abs(_frameInput.Move.x) < stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.x);
+                _orientation = _frameInput.Move.x != 0 ? Mathf.Sign(_frameInput.Move.x) : _orientation;
                 _frameInput.Move.y = Mathf.Abs(_frameInput.Move.y) < stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.y);
             }
 
@@ -69,24 +77,34 @@ namespace Player
             HandleJump();
             HandleDirection();
             HandleGravity();
-            
+
             ApplyMovement();
         }
 
         #region Collisions
-        
-        private bool _grounded;
+
 
         private void CheckCollisions()
         {
             Physics2D.queriesStartInColliders = false;
 
-            // Ground and Ceiling
+            // Ground, Ceiling and Wall checks
             bool groundHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.down, stats.GrounderDistance, ~stats.PlayerLayer);
             bool ceilingHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.up, stats.GrounderDistance, ~stats.PlayerLayer);
-
+            bool wallHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.right * _orientation, stats.WallDistance, ~stats.PlayerLayer);
             // Hit a Ceiling
             if (ceilingHit) _frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
+
+            if (!_walled && wallHit)
+            {
+                _jumps = stats.AvailableJumps - stats.AvailableJumpsFromWall;
+                _walled = true;
+            }
+            else if (_walled && !wallHit)
+            {
+                _walled = false;
+            }
+
 
             // Landed on the Ground
             if (!_grounded && groundHit)
@@ -126,7 +144,7 @@ namespace Player
 
             if (!_jumpToConsume && !HasBufferedJump) return;
 
-            if (_grounded || _jumps < 2) ExecuteJump();
+            if (_grounded || _jumps < stats.AvailableJumps) ExecuteJump();
 
             _jumpToConsume = false;
         }
@@ -168,6 +186,10 @@ namespace Player
             {
                 _frameVelocity.y = stats.GroundingForce;
             }
+            else if (_walled && _frameInput.Move.x != 0 && (_orientation - Mathf.Sign(_frameInput.Move.x)) == 0)
+            {
+                _frameVelocity.y = 0;
+            }
             else
             {
                 var inAirGravity = stats.FallAcceleration;
@@ -202,5 +224,5 @@ namespace Player
         public event Action Jumped;
         public Vector2 FrameInput { get; }
     }
-    
+
 }
