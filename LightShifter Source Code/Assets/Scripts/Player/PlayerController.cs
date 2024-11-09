@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using System.Collections;
 
 namespace Player
 {
@@ -29,7 +30,9 @@ namespace Player
         /*
             defines the orientation of the player, 1 is right, -1 is left
         */
-        private float _orientation;
+
+
+
 
         private void Awake()
         {
@@ -82,8 +85,6 @@ namespace Player
         }
 
         #region Collisions
-
-
         private void CheckCollisions()
         {
             Physics2D.queriesStartInColliders = false;
@@ -91,7 +92,7 @@ namespace Player
             // Ground, Ceiling and Wall checks
             bool groundHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.down, stats.GrounderDistance, ~stats.PlayerLayer);
             bool ceilingHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.up, stats.GrounderDistance, ~stats.PlayerLayer);
-            bool wallHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.right * _orientation, stats.WallDistance, ~stats.PlayerLayer);
+            bool wallHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.right * _frameInput.Move.x, stats.WallDistance, ~stats.PlayerLayer);
             // Hit a Ceiling
             if (ceilingHit) _frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
 
@@ -99,10 +100,12 @@ namespace Player
             {
                 _jumps = stats.AvailableJumps - stats.AvailableJumpsFromWall;
                 _walled = true;
+                _disableGravity = true;
             }
             else if (_walled && !wallHit)
             {
                 _walled = false;
+                _disableGravity = false;
             }
 
 
@@ -144,7 +147,8 @@ namespace Player
 
             if (!_jumpToConsume && !HasBufferedJump) return;
 
-            if (_grounded || _jumps < stats.AvailableJumps) ExecuteJump();
+            if (_walled) ExecuteWallJump();
+            else if (_grounded || _jumps < stats.AvailableJumps) ExecuteJump();
 
             _jumpToConsume = false;
         }
@@ -157,50 +161,92 @@ namespace Player
             _frameVelocity.y = stats.JumpPower;
             Jumped?.Invoke();
             _jumps++;
+            // print("input: " + _frameInput.Move.x);
+            // print("velocity: " + _frameVelocity.x);
+        }
+
+
+
+        private void ExecuteWallJump()
+        {
+            _endedJumpEarly = false;
+            _timeJumpWasPressed = 0;
+            _bufferedJumpUsable = false;
+            _disableGravity = false;
+            StartCoroutine(DisableMovementForFixedTime(stats.WallJumpMovementDisableTime));
+            _frameVelocity.x = -_orientation * stats.WallJumpPower_X;
+            _frameVelocity.y = stats.WallJumpPower_Y;
+            Jumped?.Invoke();
         }
 
         #endregion
 
         #region Horizontal
 
+        private float _orientation;
+        private bool _disableMovement = false;
+
         private void HandleDirection()
         {
-            if (_frameInput.Move.x == 0)
+            if (!_disableMovement)
             {
-                var deceleration = _grounded ? stats.GroundDeceleration : stats.AirDeceleration;
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
+                if (_frameInput.Move.x == 0)
+                {
+                    var deceleration = _grounded ? stats.GroundDeceleration : stats.AirDeceleration;
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, 0, deceleration * Time.fixedDeltaTime);
+                }
+                else
+                {
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _frameInput.Move.x * stats.MaxSpeed, stats.Acceleration * Time.fixedDeltaTime);
+                }
             }
             else
             {
-                _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _frameInput.Move.x * stats.MaxSpeed, stats.Acceleration * Time.fixedDeltaTime);
+                _frameInput.Move.x = 0;
             }
+
         }
 
         #endregion
 
         #region Gravity
+        private bool _disableGravity;
 
         private void HandleGravity()
         {
-            if (_grounded && _frameVelocity.y <= 0f)
+            _disableGravity = stats.NoGravity || _disableGravity;
+            if (!_disableGravity)
             {
-                _frameVelocity.y = stats.GroundingForce;
-            }
-            else if (_walled && _frameInput.Move.x != 0 && (_orientation - Mathf.Sign(_frameInput.Move.x)) == 0)
-            {
-                _frameVelocity.y = 0;
+                if (_grounded && _frameVelocity.y <= 0f)
+                {
+                    _frameVelocity.y = stats.GroundingForce;
+                }
+                else
+                {
+                    var inAirGravity = stats.FallAcceleration;
+                    if (_endedJumpEarly && _frameVelocity.y > 0) inAirGravity *= stats.JumpEndEarlyGravityModifier;
+                    _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
+                }
             }
             else
             {
-                var inAirGravity = stats.FallAcceleration;
-                if (_endedJumpEarly && _frameVelocity.y > 0) inAirGravity *= stats.JumpEndEarlyGravityModifier;
-                _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
+                _frameVelocity.y = 0;
             }
+
         }
 
         #endregion
 
         private void ApplyMovement() => _rb.velocity = _frameVelocity;
+
+        private IEnumerator DisableMovementForFixedTime(float time)
+        {
+            _disableMovement = true;
+            yield return new WaitForSeconds(time);
+            _disableMovement = false;
+            yield return null;
+        }
+
 
 #if UNITY_EDITOR
         private void OnValidate()

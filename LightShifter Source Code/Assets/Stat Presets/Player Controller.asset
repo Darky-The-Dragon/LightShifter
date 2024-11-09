@@ -15,6 +15,9 @@ MonoBehaviour:
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 0
+  WallLayer:
+    serializedVersion: 2
+    m_Bits: 128
   SnapInput: 1
   VerticalDeadZoneThreshold: 0.3
   HorizontalDeadZoneThreshold: 0.1
@@ -24,7 +27,7 @@ MonoBehaviour:
   AirDeceleration: 30
   GroundingForce: -1.5
   GrounderDistance: 0.05
-  WallDistance: 0.1
+  WallDistance: 0.01
   JumpPower: 36
   MaxFallSpeed: 40
   FallAcceleration: 110
@@ -32,4 +35,8 @@ MonoBehaviour:
   CoyoteTime: 0.15
   JumpBuffer: 0.2
   AvailableJumps: 2
-  AvailableJumpsFromWall: 2
+  AvailableJumpsFromWall: 1
+  WallJumpPower_X: 10
+  WallJumpPower_Y: 20
+  WallJumpMovementDisableTime: 0.3
+  NoGravity: 0

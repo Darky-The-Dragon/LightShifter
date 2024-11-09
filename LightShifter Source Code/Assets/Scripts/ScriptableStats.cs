@@ -58,9 +58,23 @@ public class ScriptableStats : ScriptableObject
     [Tooltip("The amount of time we buffer a jump. This allows jump input before actually hitting the ground")]
     public float JumpBuffer = .2f;
 
-    [Tooltip("The amount of time we buffer a jump. This allows jump input before actually hitting the ground")]
+    [Tooltip("Amount of available jumps from the ground")]
     public int AvailableJumps = 2;
 
-    [Tooltip("The amount of time we buffer a jump. This allows jump input before actually hitting the ground")]
+    [Tooltip("Amount of available jumps")]
     public int AvailableJumpsFromWall = 1;
+
+    [Header("WALL JUMP")]
+    [Tooltip("The horizontal velocity applied when wall jumping")]
+    public float WallJumpPower_X = 20;
+
+    [Tooltip("The vertical velocity applied when wall jumping")]
+    public float WallJumpPower_Y = 20;
+
+    [Tooltip("The time in which the player cannot move after wall jumping")]
+    public float WallJumpMovementDisableTime = 0.5f;
+
+    [Header("Gravity")]
+    [Tooltip("Deactivate gravity")]
+    public bool NoGravity = false;
 }
