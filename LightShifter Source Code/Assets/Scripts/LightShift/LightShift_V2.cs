@@ -8,9 +8,6 @@ namespace LightShift
     {
 
         [SerializeField] private bool isLight = true;
-
-        [SerializeField] private GameObject shiftingPlatform;
-
         private PlatformManager _lightPlatformManager;
         private PlatformManager _darkPlatformManager;
 
@@ -23,7 +20,6 @@ namespace LightShift
             _lightBackground = Resources.Load<Sprite>("TestImages/lightBackground");
             _darkBackground = Resources.Load<Sprite>("TestImages/darkBackground");
             _backgroundRenderer = FindObjectOfType<Background>().GetComponent<SpriteRenderer>();
-            shiftingPlatform = FindObjectOfType<Platform>().gameObject;
 
             List<PlatformManager> tempPlatforms = new List<PlatformManager>(FindObjectsOfType<PlatformManager>());
             _lightPlatformManager = tempPlatforms.Find(x => x.getSide() == PlatformSide.LIGHT);
