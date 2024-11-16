@@ -15,9 +15,6 @@ MonoBehaviour:
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 0
-  WallLayer:
-    serializedVersion: 2
-    m_Bits: 128
   SnapInput: 1
   VerticalDeadZoneThreshold: 0.3
   HorizontalDeadZoneThreshold: 0.1
@@ -36,7 +33,7 @@ MonoBehaviour:
   JumpBuffer: 0.2
   AvailableJumps: 2
   AvailableJumpsFromWall: 1
-  WallJumpPower_X: 10
-  WallJumpPower_Y: 20
-  WallJumpMovementDisableTime: 0.3
+  WallJumpPower_X: 15
+  WallJumpPower_Y: 30
+  WallJumpMovementDisableTime: 0.4
   NoGravity: 0
