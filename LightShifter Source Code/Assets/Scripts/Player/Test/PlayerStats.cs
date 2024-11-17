@@ -81,7 +81,7 @@ namespace TarodevController
 
         private void OnValidate()
         {
-            var potentialPlayer = FindObjectsOfType<PlayerController>();
+            var potentialPlayer = FindObjectsOfType<PlayerControllerTest>();
             foreach (var player in potentialPlayer)
             {
                 player.OnValidate();
