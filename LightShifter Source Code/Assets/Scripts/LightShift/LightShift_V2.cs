@@ -21,21 +21,34 @@ namespace LightShift
             _darkBackground = Resources.Load<Sprite>("TestImages/darkBackground");
             _backgroundRenderer = FindObjectOfType<Background>().GetComponent<SpriteRenderer>();
 
-            List<PlatformManager> tempPlatforms = new List<PlatformManager>(FindObjectsOfType<PlatformManager>());
-            _lightPlatformManager = tempPlatforms.Find(x => x.getSide() == PlatformSide.LIGHT);
-            _darkPlatformManager = tempPlatforms.Find(x => x.getSide() == PlatformSide.DARK);
-
-
-            if (_backgroundRenderer == null || _lightBackground == null || _darkBackground == null || _lightPlatformManager == null || _darkPlatformManager == null)
+            if (_backgroundRenderer == null || _lightBackground == null || _darkBackground == null)
             {
                 Debug.LogError("Component not found");
             }
 
             _backgroundRenderer.sprite = isLight ? _lightBackground : _darkBackground;
 
-            SetLightState(isLight);
         }
 
+
+        /*
+            As the script needs to interact with other game objects, we must use Start to ensure they have been initialized
+            and loaded in the scene before we try to access them. 
+            Start is run after Awake, but with the scene fully loaded and only if the game object is active!
+        */
+        void Start()
+        {
+            List<PlatformManager> tempPlatforms = new List<PlatformManager>(FindObjectsOfType<PlatformManager>());
+            _lightPlatformManager = tempPlatforms.Find(x => x.GetSide() == PlatformSide.LIGHT);
+            _darkPlatformManager = tempPlatforms.Find(x => x.GetSide() == PlatformSide.DARK);
+
+            if (_lightPlatformManager == null || _darkPlatformManager == null)
+            {
+                Debug.LogError("Component not found");
+            }
+
+            SetLightState(isLight);
+        }
 
         void Update()
         {
@@ -51,6 +64,10 @@ namespace LightShift
             print("Setting light state to " + newState);
             isLight = newState;
             _backgroundRenderer.sprite = isLight ? _lightBackground : _darkBackground;
+            // if (_lightPlatformManager == null || _darkPlatformManager == null)
+            // {
+            //     Debug.LogError("PlatformManager not found");
+            // }
             _lightPlatformManager.SetPlatformsState(isLight);
             _darkPlatformManager.SetPlatformsState(!isLight);
         }

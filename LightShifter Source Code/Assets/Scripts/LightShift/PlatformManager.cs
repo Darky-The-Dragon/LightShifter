@@ -18,13 +18,27 @@ public class PlatformManager : MonoBehaviour
 
     public void SetPlatformsState(bool newState)
     {
-        foreach (Platform platform in platforms)
+        // foreach (Platform platform in platforms)
+        // {
+        //     if (platform == null)
+        //     {
+        //         Debug.LogError("Platform not found");
+        //     }
+        //     platform.gameObject.SetActive(newState);
+        // }
+        for (int i = 0; i < platforms.Count; i++)
         {
+            Platform platform = platforms[i];
+            if (platform == null)
+            {
+                Debug.LogError("Platform not found");
+            }
             platform.gameObject.SetActive(newState);
         }
+
     }
 
-    public PlatformSide getSide()
+    public PlatformSide GetSide()
     {
         return side;
     }
