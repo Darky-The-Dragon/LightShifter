@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Interactable
 {
-    public class LeverController : MonoBehaviour
+    public class LeverControllerBlocks : MonoBehaviour
     {
         public GameObject platform; 
         public float moveDistance = 5f; 
