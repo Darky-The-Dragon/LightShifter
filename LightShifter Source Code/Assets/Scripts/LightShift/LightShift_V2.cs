@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,15 @@ namespace LightShift
         private Sprite _lightBackground, _darkBackground;
 
         private SpriteRenderer _backgroundRenderer;
+        private bool _shiftAvailable = true;
+        public float shiftCooldownTime = 0.3f;
+
+        private IEnumerator ShiftCooldown()
+        {
+            _shiftAvailable = false;
+            yield return new WaitForSeconds(shiftCooldownTime);
+            _shiftAvailable = true;
+        }
 
         void Awake()
         {
@@ -53,9 +63,10 @@ namespace LightShift
         void Update()
         {
             // Check for 'Left Shift' key press once per frame
-            if (Input.GetKeyDown(KeyCode.LeftShift))
+            if (Input.GetKeyDown(KeyCode.Q) && _shiftAvailable)
             {
                 SetLightState(!isLight);
+                StartCoroutine(ShiftCooldown());
             }
         }
 
