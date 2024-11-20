@@ -30,7 +30,7 @@ namespace LevelController
 
         private void Update()
         {
-            Respawn();
+            Respawnevelopers();
         }
 
         public void NextLevel()
@@ -46,12 +46,16 @@ namespace LevelController
             transitionAnim.SetTrigger("Start");
         }
 
-        private void Respawn()
+        private void Respawnevelopers()
         {
             if (Input.GetKeyDown(KeyCode.R))
             {
                 player.transform.position = _startPosition;
             }
+        }
+        public void Respawn()
+        {
+            player.transform.position = _startPosition;
         }
     }
 }
