@@ -7,6 +7,8 @@ namespace LevelController
     public class SceneController : MonoBehaviour
     {
         public static SceneController Instance;
+        [SerializeField] GameObject player;
+        private Vector2 _startPosition;
         [SerializeField] Animator transitionAnim;
 
         private void Awake()
@@ -14,12 +16,21 @@ namespace LevelController
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
             }
             else
             {
                 Destroy(gameObject);
             }
+        }
+        
+        private void Start()
+        {
+            _startPosition = player.transform.position;
+        }
+
+        private void Update()
+        {
+            Respawn();
         }
 
         public void NextLevel()
@@ -33,6 +44,14 @@ namespace LevelController
             yield return new WaitForSeconds(1f);
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
             transitionAnim.SetTrigger("Start");
+        }
+
+        private void Respawn()
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                player.transform.position = _startPosition;
+            }
         }
     }
 }
