@@ -454,7 +454,7 @@ namespace TarodevController
         #region Animation Keys
 
         private static readonly int GroundedKey = Animator.StringToHash("Grounded");
-        private static readonly int IdleSpeedKey = Animator.StringToHash("IdleSpeed");
+        private static readonly int IdleSpeedKey = Animator.StringToHash("xVelocity");
         private static readonly int JumpKey = Animator.StringToHash("Jump");
 
         #endregion
