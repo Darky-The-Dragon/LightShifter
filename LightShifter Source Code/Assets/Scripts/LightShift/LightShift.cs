@@ -9,6 +9,7 @@ namespace LightShift
         
         [SerializeField] private GameObject gridLight;
         [SerializeField] private GameObject gridDark;
+        [SerializeField] private GameObject grid;
         [SerializeField] private GameObject environment;
         
         private Color _originalBackgroundColor;           
@@ -52,13 +53,16 @@ namespace LightShift
         {
             foreach (Transform child in environment.transform)
             {
-                if (child.gameObject == gridLight)
+                if (child.gameObject != grid)
                 {
-                    child.gameObject.SetActive(true);
-                }
-                else
-                {
-                    child.gameObject.SetActive(false);
+                    if (child.gameObject == gridLight)
+                    {
+                        child.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        child.gameObject.SetActive(false);
+                    }
                 }
             }
         }
@@ -66,13 +70,16 @@ namespace LightShift
         {
             foreach (Transform child in environment.transform)
             {
-                if (child.gameObject == gridDark)
+                if (child.gameObject != grid)
                 {
-                    child.gameObject.SetActive(true);
-                }
-                else
-                {
-                    child.gameObject.SetActive(false);
+                    if (child.gameObject == gridDark)
+                    {
+                        child.gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        child.gameObject.SetActive(false);
+                    }
                 }
             }
         }
