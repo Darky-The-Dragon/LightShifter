@@ -1,40 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class JumpEnemy : MonoBehaviour
 {
-
-    private Rigidbody2D _rb;
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float speed = 3f;
 
-    void Awake() {
+    private Rigidbody2D _rb;
+
+    private void Awake()
+    {
         _rb = GetComponent<Rigidbody2D>();
     }
 
-    void FixedUpdate() {
+    private void FixedUpdate()
+    {
         ConstantMovement();
     }
 
-    void ConstantMovement() {
-        transform.position += Vector3.right * speed * Time.deltaTime;
-    }
-
-    void Jump() {
-        _rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
-    }
-
-    void Jump(float jumpForce) {
-        _rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
-    }
-
-    void OnTriggerEnter2D(Collider2D other) {
+    private void OnTriggerEnter2D(Collider2D other)
+    {
         print(other.gameObject.name);
-        if (other.gameObject.CompareTag("JumpTrigger")) {
-            float jumpPower = other.gameObject.GetComponent<JumpTrigger>().jumpPower;
+        if (other.gameObject.CompareTag("JumpTrigger"))
+        {
+            var jumpPower = other.gameObject.GetComponent<JumpTrigger>().jumpPower;
             print("Jumping with power: " + jumpPower);
             Jump(jumpPower);
         }
+    }
+
+    private void ConstantMovement()
+    {
+        transform.position += Vector3.right * speed * Time.deltaTime;
+    }
+
+    private void Jump()
+    {
+        _rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+    }
+
+    private void Jump(float jumpForce)
+    {
+        _rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
     }
 }

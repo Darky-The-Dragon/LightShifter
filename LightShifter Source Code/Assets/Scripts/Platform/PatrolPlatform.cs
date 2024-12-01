@@ -6,19 +6,19 @@ namespace TarodevController.Demo
 {
     public class PatrolPlatform : PlatformBase
     {
+        private const int DEBUG_RESOLUTION = 100;
         [SerializeField] private Vector2[] _patrolPoints;
-        [SerializeField, Range(0, 100)] private float _duration = 2;
-        [SerializeField, Range(0, 20)] private float _endPauseDuration = 0.2f;
+        [SerializeField] [Range(0, 100)] private float _duration = 2;
+        [SerializeField] [Range(0, 20)] private float _endPauseDuration = 0.2f;
         [SerializeField] private bool _loop;
         [SerializeField] private AnimationCurve _curve = AnimationCurve.Linear(0, 0, 1, 1);
         [SerializeField] private bool _smoothPath;
+        private bool _ascending = true;
+        private IPatrolPath _patrolPath;
         [HideInInspector] private Vector2[] _runtimePoints;
+        private Vector2 _startPosition;
 
         private float _time, _currentPauseTime;
-        private bool _ascending = true;
-        private Vector2 _startPosition;
-        private IPatrolPath _patrolPath;
-        private const int DEBUG_RESOLUTION = 100;
 
         protected override void Awake()
         {
@@ -26,6 +26,23 @@ namespace TarodevController.Demo
 
             _startPosition = Rb.position;
             CreateRuntimePoints();
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (_patrolPath == null) return;
+            Gizmos.color = Color.magenta;
+
+            for (var i = 0; i < DEBUG_RESOLUTION; i++)
+            {
+                var t1 = i / (float)DEBUG_RESOLUTION;
+                var t2 = (i + 1) / (float)DEBUG_RESOLUTION;
+
+                var point1 = _patrolPath.GetPoint(t1);
+                var point2 = _patrolPath.GetPoint(t2);
+
+                Gizmos.DrawLine(point1, point2);
+            }
         }
 
         public override void OnValidate()
@@ -61,7 +78,7 @@ namespace TarodevController.Demo
 
             return _patrolPath?.GetPointAtDistance(curveTime) ?? Vector2.zero;
         }
-        
+
         private void CreateRuntimePoints()
         {
             if (_patrolPoints == null || _patrolPoints.Length < 2)
@@ -74,29 +91,9 @@ namespace TarodevController.Demo
 
             _runtimePoints = new Vector2[_patrolPoints.Length];
 
-            for (var i = 0; i < _patrolPoints.Length; i++)
-            {
-                _runtimePoints[i] = _patrolPoints[i] + _startPosition;
-            }
+            for (var i = 0; i < _patrolPoints.Length; i++) _runtimePoints[i] = _patrolPoints[i] + _startPosition;
 
             _patrolPath = _smoothPath ? new SmoothPatrol(_runtimePoints) : new LinearPatrol(_runtimePoints);
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            if (_patrolPath == null) return;
-            Gizmos.color = Color.magenta;
-
-            for (var i = 0; i < DEBUG_RESOLUTION; i++)
-            {
-                var t1 = i / (float)DEBUG_RESOLUTION;
-                var t2 = (i + 1) / (float)DEBUG_RESOLUTION;
-
-                var point1 = _patrolPath.GetPoint(t1);
-                var point2 = _patrolPath.GetPoint(t2);
-
-                Gizmos.DrawLine(point1, point2);
-            }
         }
     }
 
@@ -167,9 +164,9 @@ namespace TarodevController.Demo
 
     public class SmoothPatrol : IPatrolPath
     {
+        private readonly List<float> _arcLengths;
         private readonly Vector2[] _points;
         private readonly Vector2[] _tempPoints;
-        private readonly List<float> _arcLengths;
         private readonly float _totalArcLength;
 
         public SmoothPatrol(Vector2[] points, int resolution = 1000)
@@ -212,12 +209,8 @@ namespace TarodevController.Demo
             Array.Copy(_points, _tempPoints, _points.Length);
 
             for (var r = 1; r <= n; r++)
-            {
-                for (var i = 0; i <= n - r; i++)
-                {
-                    _tempPoints[i] = Vector2.Lerp(_tempPoints[i], _tempPoints[i + 1], t);
-                }
-            }
+            for (var i = 0; i <= n - r; i++)
+                _tempPoints[i] = Vector2.Lerp(_tempPoints[i], _tempPoints[i + 1], t);
 
             return _tempPoints[0];
         }

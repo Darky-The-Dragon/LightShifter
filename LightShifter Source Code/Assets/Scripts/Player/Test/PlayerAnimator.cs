@@ -14,7 +14,7 @@ namespace TarodevController
         [SerializeField] private Transform _trailRenderer;
         [SerializeField] private SpriteRenderer _sprite;
         [SerializeField] private TrailRenderer _trail;
-        
+
 
         [Header("Particles")] [SerializeField] private ParticleSystem _jumpParticles;
         [SerializeField] private ParticleSystem _launchParticles;
@@ -33,12 +33,14 @@ namespace TarodevController
         [SerializeField] private AudioClip[] _splats;
         [SerializeField] private AudioClip[] _slideClips;
         [SerializeField] private AudioClip _wallGrabClip;
-        
+        private GeneratedCharacterSize _character;
+        private Vector2 _defaultSpriteSize;
+
+        private float _originalTrailTime;
+        private IPlayerController _player;
+
 
         private AudioSource _source;
-        private IPlayerController _player;
-        private Vector2 _defaultSpriteSize;
-        private GeneratedCharacterSize _character;
         private Vector3 _trailOffset;
         private Vector2 _trailVel;
 
@@ -52,30 +54,6 @@ namespace TarodevController
             _trailOffset = _trailRenderer.localPosition;
             _trailRenderer.SetParent(null);
             _originalTrailTime = _trail.time;
-        }
-
-        private void OnEnable()
-        {
-            _player.Jumped += OnJumped;
-            _player.GroundedChanged += OnGroundedChanged;
-            _player.DashChanged += OnDashChanged;
-            _player.WallGrabChanged += OnWallGrabChanged;
-            _player.Repositioned += PlayerOnRepositioned;
-            _player.ToggledPlayer += PlayerOnToggledPlayer;
-
-            _moveParticles.Play();
-        }
-        
-        private void OnDisable()
-        {
-            _player.Jumped -= OnJumped;
-            _player.GroundedChanged -= OnGroundedChanged;
-            _player.DashChanged -= OnDashChanged;
-            _player.WallGrabChanged -= OnWallGrabChanged;
-            _player.Repositioned -= PlayerOnRepositioned;
-            _player.ToggledPlayer -= PlayerOnToggledPlayer;
-
-            _moveParticles.Stop();
         }
 
         private void Update()
@@ -99,7 +77,49 @@ namespace TarodevController
 
         private void LateUpdate()
         {
-            _trailRenderer.position = Vector2.SmoothDamp(_trailRenderer.position, transform.position + _trailOffset, ref _trailVel, 0.02f);
+            _trailRenderer.position = Vector2.SmoothDamp(_trailRenderer.position, transform.position + _trailOffset,
+                ref _trailVel, 0.02f);
+        }
+
+        private void OnEnable()
+        {
+            _player.Jumped += OnJumped;
+            _player.GroundedChanged += OnGroundedChanged;
+            _player.DashChanged += OnDashChanged;
+            _player.WallGrabChanged += OnWallGrabChanged;
+            _player.Repositioned += PlayerOnRepositioned;
+            _player.ToggledPlayer += PlayerOnToggledPlayer;
+
+            _moveParticles.Play();
+        }
+
+        private void OnDisable()
+        {
+            _player.Jumped -= OnJumped;
+            _player.GroundedChanged -= OnGroundedChanged;
+            _player.DashChanged -= OnDashChanged;
+            _player.WallGrabChanged -= OnWallGrabChanged;
+            _player.Repositioned -= PlayerOnRepositioned;
+            _player.ToggledPlayer -= PlayerOnToggledPlayer;
+
+            _moveParticles.Stop();
+        }
+
+        private void PlayerOnRepositioned(Vector2 newPosition)
+        {
+            StartCoroutine(ResetTrail());
+
+            IEnumerator ResetTrail()
+            {
+                _trail.time = 0;
+                yield return new WaitForSeconds(0.1f);
+                _trail.time = _originalTrailTime;
+            }
+        }
+
+        private void PlayerOnToggledPlayer(bool on)
+        {
+            _effectsParent.SetActive(on);
         }
 
         #region Squish
@@ -128,8 +148,10 @@ namespace TarodevController
                 elapsedTime += Time.deltaTime;
                 var t = elapsedTime / duration;
 
-                var squishFactorY = Mathf.Lerp(_squishMinMaxY.curveMax.Evaluate(t), _squishMinMaxY.curveMin.Evaluate(t), point);
-                var squishFactorX = Mathf.Lerp(_squishMinMaxX.curveMax.Evaluate(t), _squishMinMaxX.curveMin.Evaluate(t), point);
+                var squishFactorY = Mathf.Lerp(_squishMinMaxY.curveMax.Evaluate(t), _squishMinMaxY.curveMin.Evaluate(t),
+                    point);
+                var squishFactorX = Mathf.Lerp(_squishMinMaxX.curveMax.Evaluate(t), _squishMinMaxX.curveMin.Evaluate(t),
+                    point);
                 _sprite.size = new Vector3(_defaultSpriteSize.x * squishFactorX, _defaultSpriteSize.y * squishFactorY);
 
                 yield return null;
@@ -164,13 +186,13 @@ namespace TarodevController
         private float _slideAudioVel;
         private bool _ascendingLadder;
         private float _lastClimbSoundY;
-        private int _wallClimbAudioIndex = 0;
+        private int _wallClimbAudioIndex;
         private int _ladderClimbAudioIndex;
 
         private void OnWallGrabChanged(bool onWall)
         {
             _isOnWall = onWall;
-            if(_isOnWall) PlaySound(_wallGrabClip, 0.5f);
+            if (_isOnWall) PlaySound(_wallGrabClip, 0.5f);
         }
 
         private void HandleWallSlideEffects()
@@ -189,11 +211,13 @@ namespace TarodevController
             }
 
             SetParticleColor(new Vector2(_player.WallDirection, 0), _wallSlideParticles);
-            _wallSlideParticles.transform.localPosition = new Vector3(_wallSlideParticleOffset * _player.WallDirection, 0, 0);
+            _wallSlideParticles.transform.localPosition =
+                new Vector3(_wallSlideParticleOffset * _player.WallDirection, 0, 0);
 
-            var requiredAudio = _isSliding || _player.ClimbingLadder && _player.Velocity.y < 0;
+            var requiredAudio = _isSliding || (_player.ClimbingLadder && _player.Velocity.y < 0);
             var point = requiredAudio ? Mathf.InverseLerp(0, -_player.Stats.LadderSlideSpeed, _player.Velocity.y) : 0;
-            _wallSlideSource.volume = Mathf.SmoothDamp(_wallSlideSource.volume, Mathf.Lerp(0, _maxWallSlideVolume, point), ref _slideAudioVel, 0.2f);
+            _wallSlideSource.volume = Mathf.SmoothDamp(_wallSlideSource.volume,
+                Mathf.Lerp(0, _maxWallSlideVolume, point), ref _slideAudioVel, 0.2f);
 
             if ((_player.ClimbingLadder || _isOnWall) && _player.Velocity.y > 0)
             {
@@ -238,7 +262,7 @@ namespace TarodevController
 
         #region Animation
 
-        [Header("Idle")] [SerializeField, Range(1f, 3f)]
+        [Header("Idle")] [SerializeField] [Range(1f, 3f)]
         private float _maxIdleSpeed = 2;
 
         // Speed up idle while running
@@ -268,15 +292,16 @@ namespace TarodevController
         private void HandleCharacterTilt(float xInput)
         {
             var runningTilt = _grounded ? Quaternion.Euler(0, 0, _runningTilt * xInput) : Quaternion.identity;
-            var targetRot = _grounded && _player.GroundNormal != _player.Up ? runningTilt * _player.GroundNormal : runningTilt * _player.Up;
+            var targetRot = _grounded && _player.GroundNormal != _player.Up
+                ? runningTilt * _player.GroundNormal
+                : runningTilt * _player.Up;
 
             // Calculate the smooth damp effect
-            var smoothRot = Vector3.SmoothDamp(_anim.transform.up, targetRot, ref _currentTiltVelocity, _tiltSmoothTime);
+            var smoothRot =
+                Vector3.SmoothDamp(_anim.transform.up, targetRot, ref _currentTiltVelocity, _tiltSmoothTime);
 
             if (Vector3.Angle(_player.Up, smoothRot) > _maxTilt)
-            {
                 smoothRot = Vector3.RotateTowards(_player.Up, smoothRot, Mathf.Deg2Rad * _maxTilt, 0f);
-            }
 
             // Rotate towards the smoothed target
             _anim.transform.up = smoothRot;
@@ -293,7 +318,8 @@ namespace TarodevController
         {
             if (!_crouching && _player.Crouching)
             {
-                _source.PlayOneShot(_slideClips[Random.Range(0, _slideClips.Length)], Mathf.InverseLerp(0, 5, Mathf.Abs(_player.Velocity.x)));
+                _source.PlayOneShot(_slideClips[Random.Range(0, _slideClips.Length)],
+                    Mathf.InverseLerp(0, 5, Mathf.Abs(_player.Velocity.x)));
                 _crouching = true;
                 CancelSquish();
             }
@@ -305,7 +331,9 @@ namespace TarodevController
             if (!_isSquishing)
             {
                 var percentage = _character.CrouchingHeight / _character.Height;
-                _sprite.size = Vector2.SmoothDamp(_sprite.size, new Vector2(1, _crouching ? _character.Height * percentage : _character.Height), ref _currentCrouchSizeVelocity, 0.03f);
+                _sprite.size = Vector2.SmoothDamp(_sprite.size,
+                    new Vector2(1, _crouching ? _character.Height * percentage : _character.Height),
+                    ref _currentCrouchSizeVelocity, 0.03f);
             }
         }
 
@@ -348,7 +376,7 @@ namespace TarodevController
                 _anim.SetBool(GroundedKey, true);
                 CancelSquish();
                 _squishRoutine = StartCoroutine(SquishPlayer(Mathf.Abs(impact)));
-                _source.PlayOneShot(_splats[Random.Range(0, _splats.Length)],0.5f);
+                _source.PlayOneShot(_splats[Random.Range(0, _splats.Length)], 0.5f);
                 _moveParticles.Play();
 
                 _landParticles.transform.localScale = Vector3.one * Mathf.InverseLerp(0, 40, impact);
@@ -370,7 +398,7 @@ namespace TarodevController
                 _dashParticles.Play();
                 _dashRingTransform.up = dir;
                 _dashRingParticles.Play();
-                _source.PlayOneShot(_dashClip,0.5f);
+                _source.PlayOneShot(_dashClip, 0.5f);
             }
             else
             {
@@ -379,24 +407,6 @@ namespace TarodevController
         }
 
         #endregion
-
-        private float _originalTrailTime;
-        private void PlayerOnRepositioned(Vector2 newPosition)
-        {
-            StartCoroutine(ResetTrail());
-            
-            IEnumerator ResetTrail()
-            {
-                _trail.time = 0;
-                yield return new WaitForSeconds(0.1f);
-                _trail.time = _originalTrailTime;
-            }
-        }
-        
-        private void PlayerOnToggledPlayer(bool on)
-        {
-            _effectsParent.SetActive(on);
-        }
 
         #region Helpers
 

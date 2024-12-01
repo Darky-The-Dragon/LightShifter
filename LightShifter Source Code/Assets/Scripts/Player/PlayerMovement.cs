@@ -2,36 +2,28 @@ using UnityEngine;
 
 namespace Player
 {
-
-
     public class PlayerMovement : MonoBehaviour
     {
+        [SerializeField] private float speed = 5f;
+        [SerializeField] private float jumpForce = 5f;
+        [SerializeField] private int availableJumps = 2;
         private Rigidbody2D _body;
-        [SerializeField] float speed = 5f;
-        [SerializeField] float jumpForce = 5f;
-
-        private enum PlayerState
-        {
-            Grounded,
-            InAir
-        }
+        private int _jumpNumber;
 
         private PlayerState _state;
-        private int _jumpNumber;
-        [SerializeField] private int availableJumps = 2;
-
-        void Start()
-        {
-            _body = GetComponent<Rigidbody2D>();
-        }
 
         private void Awake()
         {
             _state = PlayerState.Grounded;
         }
 
+        private void Start()
+        {
+            _body = GetComponent<Rigidbody2D>();
+        }
+
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
             _body.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * speed, _body.velocity.y);
 
@@ -41,18 +33,9 @@ namespace Player
                 _jumpNumber++;
                 _body.velocity = new Vector2(_body.velocity.x, jumpForce);
             }
-
         }
 
-        void OnCollisionExit2D(Collision2D collision)
-        {
-            if (collision.gameObject.CompareTag("Ground"))
-            {
-                _state = PlayerState.InAir;
-            }
-        }
-
-        void OnCollisionEnter2D(Collision2D collision)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
             if (collision.gameObject.CompareTag("Ground"))
             {
@@ -61,7 +44,15 @@ namespace Player
             }
         }
 
+        private void OnCollisionExit2D(Collision2D collision)
+        {
+            if (collision.gameObject.CompareTag("Ground")) _state = PlayerState.InAir;
+        }
 
+        private enum PlayerState
+        {
+            Grounded,
+            InAir
+        }
     }
-
 }

@@ -185,7 +185,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4860521
 Transform:
   m_ObjectHideFlags: 0
@@ -10216,7 +10216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &284531043
 Transform:
   m_ObjectHideFlags: 0
@@ -10226,7 +10226,7 @@ Transform:
   m_GameObject: {fileID: 284531042}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10274,7 +10274,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 1
+  m_Time: 0.3
   m_PreviewTimeScale: 1
   m_Parameters:
     serializedVersion: 3
@@ -10284,7 +10284,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.09543261
+        value: 0.2
         inSlope: -0.10980224
         outSlope: -0.10980224
         tangentMode: 0
@@ -10292,7 +10292,7 @@ TrailRenderer:
         inWeight: 0.33333334
         outWeight: 0.2027972
       - serializedVersion: 3
-        time: 1
+        time: 0.65
         value: 0
         inSlope: -0.18601623
         outSlope: -0.18601623
@@ -10305,9 +10305,9 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 0}
-      key2: {r: 0, g: 0, b: 0, a: 0}
+      key0: {r: 0.08627451, g: 0.07450981, b: 0.13725491, a: 1}
+      key1: {r: 0.08627451, g: 0.07450981, b: 0.13725491, a: 0.6666667}
+      key2: {r: 0, g: 0, b: 0, a: 0.53333336}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
@@ -10321,16 +10321,16 @@ TrailRenderer:
       ctime5: 0
       ctime6: 0
       ctime7: 0
-      atime0: 0
+      atime0: 26214
       atime1: 65535
-      atime2: 0
-      atime3: 0
+      atime2: 65535
+      atime3: 65535
       atime4: 0
       atime5: 0
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_ColorSpace: -1
+      m_ColorSpace: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
@@ -10492,7 +10492,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &651400812
 Transform:
   m_ObjectHideFlags: 0
@@ -15515,7 +15515,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &824009604
 Transform:
   m_ObjectHideFlags: 0
@@ -15549,7 +15549,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &855909826
 Transform:
   m_ObjectHideFlags: 0
@@ -20590,7 +20590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c89b8855ab650ac489f1f1b5f2a94751, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Stats>k__BackingField: {fileID: 11400000, guid: a92b306ff86cb48ba8234e5a68633142, type: 2}
+  <Stats>k__BackingField: {fileID: 11400000, guid: 7b3fd7166ca4f8c42a81ed916e9fec0b, type: 2}
   _drawGizmos: 1
 --- !u!1 &949430128
 GameObject:
@@ -25497,7 +25497,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1021533082
 Transform:
   m_ObjectHideFlags: 0
@@ -30325,7 +30325,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1177706427
 Transform:
   m_ObjectHideFlags: 0
@@ -41074,15 +41074,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2003493556}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb20fa59fd6c41a29659b046da9cef48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   anim: {fileID: 143621229}
   effectsParent: {fileID: 2146781308}
+  trailRenderer: {fileID: 284531043}
   sprite: {fileID: 143621230}
-  maxIdleSpeed: 2
+  trail: {fileID: 284531044}
+  _jumpParticles: {fileID: 38637258}
+  _moveParticles: {fileID: 1767852380}
+  maxAnimationSpeed: 1
 --- !u!1 &2110199293
 GameObject:
   m_ObjectHideFlags: 0

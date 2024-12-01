@@ -6,7 +6,7 @@ namespace Platforms
 {
     public class RespawnPlatform : MonoBehaviour
     {
-        [SerializeField] Transform respawnPlatform;
+        [SerializeField] private Transform respawnPlatform;
 
         private void OnTriggerEnter2D(Collider2D collision)
         {

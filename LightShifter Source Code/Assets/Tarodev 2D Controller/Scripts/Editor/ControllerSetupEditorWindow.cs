@@ -7,8 +7,6 @@ using UnityEngine.UIElements;
 
 public class ControllerSetupEditorWindow : EditorWindow
 {
-    private static string GenerateKey => Application.productName + "_setup_shown";
-
     private static readonly Dictionary<int, string> LayerDict = new()
     {
         { 7, "Player" },
@@ -16,13 +14,7 @@ public class ControllerSetupEditorWindow : EditorWindow
         { 9, "Ladders" }
     };
 
-    [InitializeOnLoadMethod]
-    private static void OnInitialize()
-    {
-     //   if (HasOpenInstances<ControllerSetupEditorWindow>()) return;
-        if (EditorPrefs.GetBool(GenerateKey, false) || HasOpenInstances<ControllerSetupEditorWindow>()) return;
-        ShowWindow();
-    }
+    private static string GenerateKey => Application.productName + "_setup_shown";
 
     public void CreateGUI()
     {
@@ -49,8 +41,19 @@ public class ControllerSetupEditorWindow : EditorWindow
         rootVisualElement.style.paddingBottom = 10;
     }
 
+    [InitializeOnLoadMethod]
+    private static void OnInitialize()
+    {
+        //   if (HasOpenInstances<ControllerSetupEditorWindow>()) return;
+        if (EditorPrefs.GetBool(GenerateKey, false) || HasOpenInstances<ControllerSetupEditorWindow>()) return;
+        ShowWindow();
+    }
+
     [MenuItem("Tarodev Controller/Setup Window")]
-    public static void ShowMyEditor() => ShowWindow();
+    public static void ShowMyEditor()
+    {
+        ShowWindow();
+    }
 
     private static void ShowWindow()
     {
@@ -60,7 +63,7 @@ public class ControllerSetupEditorWindow : EditorWindow
         var size = new Vector2(500, 625);
         wnd.maxSize = size;
         wnd.minSize = size;
-        
+
         EditorPrefs.SetBool(GenerateKey, true);
     }
 
@@ -68,11 +71,14 @@ public class ControllerSetupEditorWindow : EditorWindow
     {
         var (_, layersProp) = GetLayerConfiguration();
 
-        var conflicts = LayerDict.Select(l => layersProp.GetArrayElementAtIndex(l.Key)).Any(layerProp => !string.IsNullOrEmpty(layerProp.stringValue));
+        var conflicts = LayerDict.Select(l => layersProp.GetArrayElementAtIndex(l.Key))
+            .Any(layerProp => !string.IsNullOrEmpty(layerProp.stringValue));
 
         if (conflicts)
         {
-            if (EditorUtility.DisplayDialogComplex("Layer Conflict", "One or more layers are already defined. Would you like to overwrite them?", "Yes", "No", "Cancel") == 0) AddLayers();
+            if (EditorUtility.DisplayDialogComplex("Layer Conflict",
+                    "One or more layers are already defined. Would you like to overwrite them?", "Yes", "No",
+                    "Cancel") == 0) AddLayers();
         }
         else
         {
@@ -90,7 +96,7 @@ public class ControllerSetupEditorWindow : EditorWindow
             layerProp.stringValue = l.Value;
             tagManager.ApplyModifiedProperties();
         }
-        
+
         Debug.Log("Layers have been set");
     }
 

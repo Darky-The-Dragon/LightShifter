@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace TarodevController.Demo
@@ -15,17 +16,17 @@ namespace TarodevController.Demo
             _startPosition = Rb.position;
         }
 
-        protected override Vector2 Evaluate(float delta)
-        {
-            return _startPosition + new Vector2(Mathf.Cos(Time * _speed), Mathf.Sin(Time * _speed)) * _radius;
-        }
-
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
             var center = Application.isPlaying ? _startPosition : (Vector2)transform.position;
-            UnityEditor.Handles.DrawWireDisc(center, Vector3.back, _radius);
+            Handles.DrawWireDisc(center, Vector3.back, _radius);
         }
 #endif
+
+        protected override Vector2 Evaluate(float delta)
+        {
+            return _startPosition + new Vector2(Mathf.Cos(Time * _speed), Mathf.Sin(Time * _speed)) * _radius;
+        }
     }
 }

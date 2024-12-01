@@ -3,16 +3,13 @@ using UnityEngine;
 
 public class FallingPlatform : MonoBehaviour
 {
-    private float _fallDelay = 1f;
-    private float _destroyDelay = 2f;
     [SerializeField] private Rigidbody2D platformBody;
+    private readonly float _destroyDelay = 2f;
+    private readonly float _fallDelay = 1f;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.CompareTag("Player"))
-        {
-            StartCoroutine(Fall());
-        }
+        if (collision.gameObject.CompareTag("Player")) StartCoroutine(Fall());
     }
 
     private IEnumerator Fall()
