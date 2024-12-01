@@ -1,8 +1,8 @@
 using System;
+using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using UnityEngine;
 
 namespace TarodevController
 {
@@ -13,16 +13,18 @@ namespace TarodevController
         [Header("Setup")] public LayerMask PlayerLayer;
         public LayerMask CollisionLayers;
         public CharacterSize CharacterSize;
-      
+
 
         // Controller Setup
-        [Header("Controller Setup"), Space] public float VerticalDeadZoneThreshold = 0.3f;
+        [Header("Controller Setup")] [Space] public float VerticalDeadZoneThreshold = 0.3f;
         public double HorizontalDeadZoneThreshold = 0.1f;
-        [Tooltip("Velocity = smoother, but can be occasionally unreliable on jagged terrain. Immediate = Occasionally jittery, but stable")] 
+
+        [Tooltip(
+            "Velocity = smoother, but can be occasionally unreliable on jagged terrain. Immediate = Occasionally jittery, but stable")]
         public PositionCorrectionMode PositionCorrectionMode = PositionCorrectionMode.Velocity;
 
         // Movement
-        [Header("Movement"), Space] public float BaseSpeed = 9;
+        [Header("Movement")] [Space] public float BaseSpeed = 9;
         public float Acceleration = 50;
         public float Friction = 30;
         public float AirFrictionMultiplier = 0.5f;
@@ -30,7 +32,7 @@ namespace TarodevController
         public float MaxWalkableSlope = 50;
 
         // Jump
-        [Header("Jump"), Space] public float ExtraConstantGravity = 40;
+        [Header("Jump")] [Space] public float ExtraConstantGravity = 40;
         public float BufferedJumpTime = 0.15f;
         public float CoyoteTime = 0.15f;
         public float JumpPower = 20;
@@ -38,19 +40,19 @@ namespace TarodevController
         public int MaxAirJumps = 1;
 
         // Dash
-        [Header("Dash"), Space] public bool AllowDash = true;
+        [Header("Dash")] [Space] public bool AllowDash = true;
         public float DashVelocity = 50;
         public float DashDuration = 0.2f;
         public float DashCooldown = 1.5f;
         public float DashEndHorizontalMultiplier = 0.5f;
 
         // Dash
-        [Header("Crouch"), Space] public bool AllowCrouching;
+        [Header("Crouch")] [Space] public bool AllowCrouching;
         public float CrouchSlowDownTime = 0.5f;
         public float CrouchSpeedModifier = 0.5f;
 
         // Walls
-        [Header("Walls"), Space] public bool AllowWalls;
+        [Header("Walls")] [Space] public bool AllowWalls;
         public LayerMask ClimbableLayer;
         public float WallJumpTotalInputLossTime = 0.2f;
         public float WallJumpInputLossReturnTime = 0.5f;
@@ -64,7 +66,7 @@ namespace TarodevController
         public float WallDetectorRange = 0.1f;
 
         // Ladders
-        [Header("Ladders"), Space] public bool AllowLadders;
+        [Header("Ladders")] [Space] public bool AllowLadders;
         public double LadderCooldownTime = 0.15f;
         public bool AutoAttachToLadders = true;
         public bool SnapToLadders = true;
@@ -76,19 +78,15 @@ namespace TarodevController
         public float LadderShimmySpeedMultiplier = 0.5f;
 
         // Moving Platforms
-        [Header("Moving Platforms"), Space] public float NegativeYVelocityNegation = 0.2f;
+        [Header("Moving Platforms")] [Space] public float NegativeYVelocityNegation = 0.2f;
         public float ExternalVelocityDecayRate = 0.1f;
 
         private void OnValidate()
         {
             var potentialPlayer = FindObjectsOfType<PlayerControllerTest>();
-            foreach (var player in potentialPlayer)
-            {
-                player.OnValidate();
-            }
+            foreach (var player in potentialPlayer) player.OnValidate();
         }
     }
-
 
 
     [Serializable]
@@ -96,26 +94,33 @@ namespace TarodevController
     {
         public const float STEP_BUFFER = 0.05f;
         public const float COLLIDER_EDGE_RADIUS = 0.05f;
+        private const double TIME_BETWEEN_LOGS = 1f;
 
-        [Range(0.1f, 10), Tooltip("How tall you are. This includes a collider and your step height.")]
+        private static double _lastDebugLogTime;
+
+        [Range(0.1f, 10)] [Tooltip("How tall you are. This includes a collider and your step height.")]
         public float Height = 1.8f;
 
-        [Range(0.1f, 10), Tooltip("The width of your collider")]
+        [Range(0.1f, 10)] [Tooltip("The width of your collider")]
         public float Width = 0.6f;
 
-        [Range(STEP_BUFFER, 15), Tooltip("Step height allows you to step over rough terrain like steps and rocks.")]
+        [Range(STEP_BUFFER, 15)] [Tooltip("Step height allows you to step over rough terrain like steps and rocks.")]
         public float StepHeight = 0.5f;
 
-        [Range(0.1f, 10), Tooltip("A percentage of your height stat which determines your height while crouching. A smaller crouch requires more step height sacrifice")]
+        [Range(0.1f, 10)]
+        [Tooltip(
+            "A percentage of your height stat which determines your height while crouching. A smaller crouch requires more step height sacrifice")]
         public float CrouchHeight = 0.6f;
-        
-        [Range(0.01f, 0.2f), Tooltip("The outer buffer distance of the grounder rays. Reducing this too much can cause problems on slopes, too big and you can get stuck on the sides of drops.")]
+
+        [Range(0.01f, 0.2f)]
+        [Tooltip(
+            "The outer buffer distance of the grounder rays. Reducing this too much can cause problems on slopes, too big and you can get stuck on the sides of drops.")]
         public float RayInset = 0.1f;
 
         public GeneratedCharacterSize GenerateCharacterSize()
         {
             ValidateHeights();
-            
+
             var s = new GeneratedCharacterSize
             {
                 Height = Height,
@@ -124,19 +129,18 @@ namespace TarodevController
                 RayInset = RayInset
             };
 
-            s.StandingColliderSize = new Vector2(s.Width - COLLIDER_EDGE_RADIUS * 2, s.Height - s.StepHeight - COLLIDER_EDGE_RADIUS * 2);
+            s.StandingColliderSize = new Vector2(s.Width - COLLIDER_EDGE_RADIUS * 2,
+                s.Height - s.StepHeight - COLLIDER_EDGE_RADIUS * 2);
             s.StandingColliderCenter = new Vector2(0, s.Height - s.StandingColliderSize.y / 2 - COLLIDER_EDGE_RADIUS);
-            
+
             s.CrouchingHeight = CrouchHeight;
             s.CrouchColliderSize = new Vector2(s.Width - COLLIDER_EDGE_RADIUS * 2, s.CrouchingHeight - s.StepHeight);
-            s.CrouchingColliderCenter = new Vector2(0, s.CrouchingHeight - s.CrouchColliderSize.y / 2 - COLLIDER_EDGE_RADIUS);
+            s.CrouchingColliderCenter =
+                new Vector2(0, s.CrouchingHeight - s.CrouchColliderSize.y / 2 - COLLIDER_EDGE_RADIUS);
 
             return s;
         }
 
-        private static double _lastDebugLogTime;
-        private const double TIME_BETWEEN_LOGS = 1f;
-        
         private void ValidateHeights()
         {
 #if UNITY_EDITOR
@@ -181,7 +185,7 @@ namespace TarodevController
         public float CrouchingHeight;
         public Vector2 CrouchingColliderCenter;
     }
-    
+
     [Serializable]
     public enum PositionCorrectionMode
     {

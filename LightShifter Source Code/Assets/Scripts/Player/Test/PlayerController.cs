@@ -4,10 +4,55 @@ using UnityEngine;
 
 namespace TarodevController
 {
-    
     [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(CapsuleCollider2D))]
     public class PlayerControllerTest : MonoBehaviour, IPlayerController, IPhysicsObject
     {
+        [SerializeField] private bool _drawGizmos = true;
+
+        #region Gizmos
+
+        private void OnDrawGizmos()
+        {
+            if (!_drawGizmos) return;
+
+            var pos = (Vector2)transform.position;
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(pos + Vector2.up * _character.Height / 2,
+                new Vector3(_character.Width, _character.Height));
+            Gizmos.color = Color.magenta;
+
+            var rayStart = pos + Vector2.up * _character.StepHeight;
+            var rayDir = Vector3.down * _character.StepHeight;
+            Gizmos.DrawRay(rayStart, rayDir);
+            foreach (var offset in GenerateRayOffsets())
+            {
+                Gizmos.DrawRay(rayStart + Vector2.right * offset, rayDir);
+                Gizmos.DrawRay(rayStart + Vector2.left * offset, rayDir);
+            }
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(pos + (Vector2)_wallDetectionBounds.center, _wallDetectionBounds.size);
+
+
+            Gizmos.color = Color.black;
+            Gizmos.DrawRay(RayPoint, Vector3.right);
+        }
+
+        #endregion
+
+
+        private void SaveCharacterState()
+        {
+            State = new ControllerState
+            {
+                Position = _framePosition,
+                Rotation = _rb.rotation,
+                Velocity = Velocity,
+                Grounded = _grounded
+            };
+        }
+
         #region References
 
         private BoxCollider2D _collider;
@@ -71,8 +116,6 @@ namespace TarodevController
 
         #endregion
 
-        [SerializeField] private bool _drawGizmos = true;
-
         #region Loop
 
         private float _delta, _time;
@@ -87,9 +130,15 @@ namespace TarodevController
             PhysicsSimulator.Instance.AddPlayer(this);
         }
 
-        private void OnDestroy() => PhysicsSimulator.Instance.RemovePlayer(this);
+        private void OnDestroy()
+        {
+            PhysicsSimulator.Instance.RemovePlayer(this);
+        }
 
-        public void OnValidate() => SetupCharacter();
+        public void OnValidate()
+        {
+            SetupCharacter();
+        }
 
         public void TickUpdate(float delta, float time)
         {
@@ -144,7 +193,9 @@ namespace TarodevController
 
             _wallDetectionBounds = new Bounds(
                 new Vector3(0, _character.Height / 2),
-                new Vector3(_character.StandingColliderSize.x + CharacterSize.COLLIDER_EDGE_RADIUS * 2 + Stats.WallDetectorRange, _character.Height - 0.1f));
+                new Vector3(
+                    _character.StandingColliderSize.x + CharacterSize.COLLIDER_EDGE_RADIUS * 2 +
+                    Stats.WallDetectorRange, _character.Height - 0.1f));
 
             _rb = GetComponent<Rigidbody2D>();
             //_rb.hideFlags = HideFlags.NotEditable;
@@ -155,7 +206,7 @@ namespace TarodevController
             //_collider.hideFlags = HideFlags.NotEditable;
             _collider.sharedMaterial = _rb.sharedMaterial;
             _collider.enabled = true;
-            
+
             // Airborne collider
             _airborneCollider = GetComponent<CapsuleCollider2D>();
             //_airborneCollider.hideFlags = HideFlags.NotEditable;
@@ -183,10 +234,7 @@ namespace TarodevController
                 _timeJumpWasPressed = _time;
             }
 
-            if (_frameInput.DashDown)
-            {
-                _dashToConsume = true;
-            }
+            if (_frameInput.DashDown) _dashToConsume = true;
         }
 
         #endregion
@@ -265,13 +313,12 @@ namespace TarodevController
 
             // If not, zigzag rays from the center outward until we find a hit
             if (!isGroundedThisFrame)
-            {
                 foreach (var offset in GenerateRayOffsets())
                 {
-                    isGroundedThisFrame = PerformRay(RayPoint + Right * offset) || PerformRay(RayPoint - Right * offset);
+                    isGroundedThisFrame =
+                        PerformRay(RayPoint + Right * offset) || PerformRay(RayPoint - Right * offset);
                     if (isGroundedThisFrame) break;
                 }
-            }
 
             if (isGroundedThisFrame && !_grounded) ToggleGrounded(true);
             else if (!isGroundedThisFrame && _grounded) ToggleGrounded(false);
@@ -280,13 +327,11 @@ namespace TarodevController
 
             bool PerformRay(Vector2 point)
             {
-                _groundHit = Physics2D.Raycast(point, -Up, GrounderLength + _currentStepDownLength, Stats.CollisionLayers);
+                _groundHit = Physics2D.Raycast(point, -Up, GrounderLength + _currentStepDownLength,
+                    Stats.CollisionLayers);
                 if (!_groundHit) return false;
 
-                if (Vector2.Angle(_groundHit.normal, Up) > Stats.MaxWalkableSlope)
-                {
-                    return false;
-                }
+                if (Vector2.Angle(_groundHit.normal, Up) > Stats.MaxWalkableSlope) return false;
 
                 return true;
             }
@@ -296,10 +341,7 @@ namespace TarodevController
         {
             var extent = _character.StandingColliderSize.x / 2 - _character.RayInset;
             var offsetAmount = extent / RAY_SIDE_COUNT;
-            for (var i = 1; i < RAY_SIDE_COUNT + 1; i++)
-            {
-                yield return offsetAmount * i;
-            }
+            for (var i = 1; i < RAY_SIDE_COUNT + 1; i++) yield return offsetAmount * i;
         }
 
         private void ToggleGrounded(bool grounded)
@@ -367,7 +409,8 @@ namespace TarodevController
             {
                 GroundNormal = _groundHit.normal;
                 var angle = Vector2.Angle(GroundNormal, Up);
-                if (angle < Stats.MaxWalkableSlope) _frameDirection.y = _frameDirection.x * -GroundNormal.x / GroundNormal.y;
+                if (angle < Stats.MaxWalkableSlope)
+                    _frameDirection.y = _frameDirection.x * -GroundNormal.x / GroundNormal.y;
             }
 
             _frameDirection = _frameDirection.normalized;
@@ -388,7 +431,9 @@ namespace TarodevController
         private int _wallDirThisFrame;
 
         private bool HorizontalInputPressed => Mathf.Abs(_frameInput.Move.x) > Stats.HorizontalDeadZoneThreshold;
-        private bool IsPushingAgainstWall => HorizontalInputPressed && (int)Mathf.Sign(_frameDirection.x) == _wallDirThisFrame;
+
+        private bool IsPushingAgainstWall =>
+            HorizontalInputPressed && (int)Mathf.Sign(_frameDirection.x) == _wallDirThisFrame;
 
         private void CalculateWalls()
         {
@@ -414,13 +459,15 @@ namespace TarodevController
                 if (_wallDirThisFrame == 0 || _grounded) return false;
 
                 if (HorizontalInputPressed && !IsPushingAgainstWall) return false; // If pushing away
-                return !Stats.RequireInputPush || (IsPushingAgainstWall);
+                return !Stats.RequireInputPush || IsPushingAgainstWall;
             }
         }
 
         private bool DetectWallCast(float dir)
         {
-            return Physics2D.BoxCast(_framePosition + (Vector2)_wallDetectionBounds.center, new Vector2(_character.StandingColliderSize.x - SKIN_WIDTH, _wallDetectionBounds.size.y), 0, new Vector2(dir, 0), Stats.WallDetectorRange,
+            return Physics2D.BoxCast(_framePosition + (Vector2)_wallDetectionBounds.center,
+                new Vector2(_character.StandingColliderSize.x - SKIN_WIDTH, _wallDetectionBounds.size.y), 0,
+                new Vector2(dir, 0), Stats.WallDetectorRange,
                 Stats.ClimbableLayer);
         }
 
@@ -441,10 +488,7 @@ namespace TarodevController
                 _canGrabWallAfter = _time + WALL_REATTACH_COOLDOWN;
                 _rb.gravityScale = GRAVITY_SCALE;
                 WallDirection = 0;
-                if (Velocity.y > 0)
-                {
-                    AddFrameForce(new Vector2(0, Stats.WallPopForce), true);
-                }
+                if (Velocity.y > 0) AddFrameForce(new Vector2(0, Stats.WallPopForce), true);
 
                 ResetAirJumps(); // so that we can air jump even if we didn't leave via a wall jump
             }
@@ -457,8 +501,13 @@ namespace TarodevController
         #region Ladders
 
         private bool CanEnterLadder => _ladderHit && _time > _timeLeftLadder + Stats.LadderCooldownTime;
-        private bool ShouldMountLadder => Stats.AutoAttachToLadders || _frameInput.Move.y > Stats.VerticalDeadZoneThreshold || (!_grounded && _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold);
-        private bool ShouldDismountLadder => !Stats.AutoAttachToLadders && _grounded && _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold;
+
+        private bool ShouldMountLadder => Stats.AutoAttachToLadders ||
+                                          _frameInput.Move.y > Stats.VerticalDeadZoneThreshold || (!_grounded &&
+                                              _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold);
+
+        private bool ShouldDismountLadder => !Stats.AutoAttachToLadders && _grounded &&
+                                             _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold;
 
         private float _timeLeftLadder;
         private Collider2D _ladderHit;
@@ -469,7 +518,8 @@ namespace TarodevController
             if (!Stats.AllowLadders) return;
 
             Physics2D.queriesHitTriggers = true; // Ladders are set to Trigger
-            _ladderHit = Physics2D.OverlapBox(_framePosition + (Vector2)_wallDetectionBounds.center, _wallDetectionBounds.size, 0, Stats.LadderLayer);
+            _ladderHit = Physics2D.OverlapBox(_framePosition + (Vector2)_wallDetectionBounds.center,
+                _wallDetectionBounds.size, 0, Stats.LadderLayer);
 
             Physics2D.queriesHitTriggers = _cachedQueryTriggers;
 
@@ -489,10 +539,7 @@ namespace TarodevController
             else
             {
                 if (_ladderHit) _timeLeftLadder = _time; // to prevent immediately re-mounting ladder
-                if (_frameInput.Move.y > 0)
-                {
-                    AddFrameForce(new Vector2(0, Stats.LadderPopForce));
-                }
+                if (_frameInput.Move.y > 0) AddFrameForce(new Vector2(0, Stats.LadderPopForce));
 
                 _rb.gravityScale = GRAVITY_SCALE;
             }
@@ -520,10 +567,14 @@ namespace TarodevController
         private float _timeLeftGrounded;
         private float _returnWallInputLossAfter;
 
-        private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + Stats.BufferedJumpTime && !IsWithinJumpClearance;
+        private bool HasBufferedJump => _bufferedJumpUsable && _time < _timeJumpWasPressed + Stats.BufferedJumpTime &&
+                                        !IsWithinJumpClearance;
+
         private bool CanUseCoyote => _coyoteUsable && !_grounded && _time < _timeLeftGrounded + Stats.CoyoteTime;
         private bool CanAirJump => !_grounded && _airJumpsRemaining > 0;
-        private bool CanWallJump => !_grounded && (_isOnWall || _wallDirThisFrame != 0) || (_wallJumpCoyoteUsable && _time < _timeLeftWall + Stats.WallCoyoteTime);
+
+        private bool CanWallJump => (!_grounded && (_isOnWall || _wallDirThisFrame != 0)) ||
+                                    (_wallJumpCoyoteUsable && _time < _timeLeftWall + Stats.WallCoyoteTime);
 
         private void CalculateJump()
         {
@@ -535,10 +586,13 @@ namespace TarodevController
                 else if (CanAirJump) ExecuteJump(JumpType.AirJump);
             }
 
-            if ((!_endedJumpEarly && !_grounded && !_frameInput.JumpHeld && Velocity.y > 0) || Velocity.y < 0) _endedJumpEarly = true; // Early end detection
+            if ((!_endedJumpEarly && !_grounded && !_frameInput.JumpHeld && Velocity.y > 0) || Velocity.y < 0)
+                _endedJumpEarly = true; // Early end detection
 
 
-            if (_time > _returnWallInputLossAfter) _wallJumpInputNerfPoint = Mathf.MoveTowards(_wallJumpInputNerfPoint, 1, _delta / Stats.WallJumpInputLossReturnTime);
+            if (_time > _returnWallInputLossAfter)
+                _wallJumpInputNerfPoint =
+                    Mathf.MoveTowards(_wallJumpInputNerfPoint, 1, _delta / Stats.WallJumpInputLossReturnTime);
         }
 
         private void ExecuteJump(JumpType jumpType)
@@ -569,19 +623,18 @@ namespace TarodevController
                 _returnWallInputLossAfter = _time + Stats.WallJumpTotalInputLossTime;
                 _wallDirectionForJump = _wallDirThisFrame;
                 if (_isOnWall || IsPushingAgainstWall)
-                {
                     AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallJumpPower);
-                }
                 else
-                {
                     AddFrameForce(new Vector2(-_wallDirThisFrame, 1) * Stats.WallPushPower);
-                }
             }
 
             Jumped?.Invoke(jumpType);
         }
 
-        private void ResetAirJumps() => _airJumpsRemaining = Stats.MaxAirJumps;
+        private void ResetAirJumps()
+        {
+            _airJumpsRemaining = Stats.MaxAirJumps;
+        }
 
         #endregion
 
@@ -612,7 +665,6 @@ namespace TarodevController
             }
 
             if (_dashing)
-            {
                 if (_time > _startedDashing + Stats.DashDuration)
                 {
                     _dashing = false;
@@ -621,7 +673,6 @@ namespace TarodevController
                     SetVelocity(new Vector2(Velocity.x * Stats.DashEndHorizontalMultiplier, Velocity.y));
                     if (_grounded) _canDash = true;
                 }
-            }
         }
 
         #endregion
@@ -632,7 +683,11 @@ namespace TarodevController
         private bool CrouchPressed => _frameInput.Move.y < -Stats.VerticalDeadZoneThreshold;
 
         private bool CanStand => IsStandingPosClear(_rb.position + _character.StandingColliderCenter);
-        private bool IsStandingPosClear(Vector2 pos) => CheckPos(pos, _character.StandingColliderSize - SKIN_WIDTH * Vector2.one);
+
+        private bool IsStandingPosClear(Vector2 pos)
+        {
+            return CheckPos(pos, _character.StandingColliderSize - SKIN_WIDTH * Vector2.one);
+        }
 
         // We handle crouch AFTER frame movements are done to avoid transient velocity issues
         private void CalculateCrouch()
@@ -694,14 +749,12 @@ namespace TarodevController
                     var requiredMove = Vector2.zero;
                     requiredMove.y += distanceFromGround;
 
-                    if (Stats.PositionCorrectionMode is PositionCorrectionMode.Velocity) _frameTransientVelocity = requiredMove / _delta;
+                    if (Stats.PositionCorrectionMode is PositionCorrectionMode.Velocity)
+                        _frameTransientVelocity = requiredMove / _delta;
                     else _immediateMove = requiredMove;
                 }
 
-                if (_groundHit.transform.TryGetComponent(out currentPlatform))
-                {
-                    _activatedMovers.Add(currentPlatform);
-                }
+                if (_groundHit.transform.TryGetComponent(out currentPlatform)) _activatedMovers.Add(currentPlatform);
             }
 
             if (_lastPlatform != currentPlatform)
@@ -758,7 +811,9 @@ namespace TarodevController
 
                 float wallVelocity;
                 if (_frameInput.Move.y != 0) wallVelocity = _frameInput.Move.y * Stats.WallClimbSpeed;
-                else wallVelocity = Mathf.MoveTowards(Mathf.Min(Velocity.y, 0), -Stats.WallClimbSpeed, Stats.WallFallAcceleration * _delta);
+                else
+                    wallVelocity = Mathf.MoveTowards(Mathf.Min(Velocity.y, 0), -Stats.WallClimbSpeed,
+                        Stats.WallFallAcceleration * _delta);
 
                 SetVelocity(new Vector2(_rb.velocity.x, wallVelocity));
                 return;
@@ -770,7 +825,8 @@ namespace TarodevController
                 _rb.gravityScale = 0;
 
                 var goalVelocity = Vector2.zero;
-                goalVelocity.y = _frameInput.Move.y * (_frameInput.Move.y > 0 ? Stats.LadderClimbSpeed : Stats.LadderSlideSpeed);
+                goalVelocity.y = _frameInput.Move.y *
+                                 (_frameInput.Move.y > 0 ? Stats.LadderClimbSpeed : Stats.LadderSlideSpeed);
 
                 // Horizontal
                 float goalX;
@@ -781,7 +837,8 @@ namespace TarodevController
                 }
                 else
                 {
-                    goalX = Mathf.MoveTowards(_framePosition.x, _framePosition.x + _frameInput.Move.x, Stats.Acceleration * Stats.LadderShimmySpeedMultiplier * _delta);
+                    goalX = Mathf.MoveTowards(_framePosition.x, _framePosition.x + _frameInput.Move.x,
+                        Stats.Acceleration * Stats.LadderShimmySpeedMultiplier * _delta);
                 }
 
                 goalVelocity.x = (goalX - _framePosition.x) / _delta;
@@ -791,7 +848,11 @@ namespace TarodevController
                 return;
             }
 
-            var extraForce = new Vector2(0, _grounded ? 0 : -Stats.ExtraConstantGravity * (_endedJumpEarly && Velocity.y > 0 ? Stats.EndJumpEarlyExtraForceMultiplier : 1));
+            var extraForce = new Vector2(0,
+                _grounded
+                    ? 0
+                    : -Stats.ExtraConstantGravity *
+                      (_endedJumpEarly && Velocity.y > 0 ? Stats.EndJumpEarlyExtraForceMultiplier : 1));
             _constantForce.force = extraForce * _rb.mass;
 
             var targetSpeed = _hasInputThisFrame ? Stats.BaseSpeed : 0;
@@ -804,7 +865,7 @@ namespace TarodevController
 
             var step = _hasInputThisFrame ? Stats.Acceleration : Stats.Friction;
 
-            var xDir = (_hasInputThisFrame ? _frameDirection : Velocity.normalized);
+            var xDir = _hasInputThisFrame ? _frameDirection : Velocity.normalized;
 
             // Quicker direction change
             if (Vector3.Dot(_trimmedFrameVelocity, _frameDirection) < 0) step *= Stats.DirectionCorrectionMultiplier;
@@ -824,7 +885,8 @@ namespace TarodevController
                 // TODO: Lets actually trace the ground direction automatically instead of direct
                 var smoothed = Vector2.MoveTowards(Velocity, targetVelocity, step); // Smooth but potentially inaccurate
                 var direct = targetVelocity.normalized * newSpeed; // Accurate but abrupt
-                var slopePoint = Mathf.InverseLerp(0, SLOPE_ANGLE_FOR_EXACT_MOVEMENT, Mathf.Abs(_frameDirection.y)); // Blend factor
+                var slopePoint =
+                    Mathf.InverseLerp(0, SLOPE_ANGLE_FOR_EXACT_MOVEMENT, Mathf.Abs(_frameDirection.y)); // Blend factor
 
                 // Calculate the blended velocity
                 newVelocity = Vector2.Lerp(smoothed, direct, slopePoint);
@@ -847,10 +909,7 @@ namespace TarodevController
 
             Vector2 AdditionalFrameVelocities()
             {
-                if (_immediateMove.sqrMagnitude > SKIN_WIDTH)
-                {
-                    _rb.MovePosition(_framePosition + _immediateMove);
-                }
+                if (_immediateMove.sqrMagnitude > SKIN_WIDTH) _rb.MovePosition(_framePosition + _immediateMove);
 
                 _totalTransientVelocityAppliedLastFrame = _frameTransientVelocity + _decayingTransientVelocity;
                 return _totalTransientVelocityAppliedLastFrame;
@@ -865,18 +924,6 @@ namespace TarodevController
 
         #endregion
 
-
-        private void SaveCharacterState()
-        {
-            State = new ControllerState
-            {
-                Position = _framePosition,
-                Rotation = _rb.rotation,
-                Velocity = Velocity,
-                Grounded = _grounded
-            };
-        }
-
         #region External Triggers
 
         private const int MAX_ACTIVE_MOVERS = 5;
@@ -887,7 +934,8 @@ namespace TarodevController
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.TryGetComponent(out ISpeedModifier modifier)) _modifiers.Add(modifier);
-            else if (other.TryGetComponent(out IPhysicsMover mover) && !mover.RequireGrounding) _activatedMovers.Add(mover);
+            else if (other.TryGetComponent(out IPhysicsMover mover) && !mover.RequireGrounding)
+                _activatedMovers.Add(mover);
         }
 
         private void OnTriggerExit2D(Collider2D other)
@@ -900,43 +948,11 @@ namespace TarodevController
         {
             _frameSpeedModifier = Vector2.one;
             foreach (var modifier in _modifiers)
-            {
                 if ((modifier.OnGround && _grounded) || (modifier.InAir && !_grounded))
                     _frameSpeedModifier += modifier.Modifier;
-            }
 
-            _currentFrameSpeedModifier = Vector2.SmoothDamp(_currentFrameSpeedModifier, _frameSpeedModifier, ref _frameSpeedModifierVelocity, 0.1f);
-        }
-
-        #endregion
-
-        #region Gizmos
-
-        private void OnDrawGizmos()
-        {
-            if (!_drawGizmos) return;
-
-            var pos = (Vector2)transform.position;
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(pos + Vector2.up * _character.Height / 2, new Vector3(_character.Width, _character.Height));
-            Gizmos.color = Color.magenta;
-
-            var rayStart = pos + Vector2.up * _character.StepHeight;
-            var rayDir = Vector3.down * _character.StepHeight;
-            Gizmos.DrawRay(rayStart, rayDir);
-            foreach (var offset in GenerateRayOffsets())
-            {
-                Gizmos.DrawRay(rayStart + Vector2.right * offset, rayDir);
-                Gizmos.DrawRay(rayStart + Vector2.left * offset, rayDir);
-            }
-
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(pos + (Vector2)_wallDetectionBounds.center, _wallDetectionBounds.size);
-
-
-            Gizmos.color = Color.black;
-            Gizmos.DrawRay(RayPoint, Vector3.right);
+            _currentFrameSpeedModifier = Vector2.SmoothDamp(_currentFrameSpeedModifier, _frameSpeedModifier,
+                ref _frameSpeedModifierVelocity, 0.1f);
         }
 
         #endregion
@@ -954,12 +970,6 @@ namespace TarodevController
     {
         public PlayerStats Stats { get; }
         public ControllerState State { get; }
-        public event Action<JumpType> Jumped;
-        public event Action<bool, float> GroundedChanged;
-        public event Action<bool, Vector2> DashChanged;
-        public event Action<bool> WallGrabChanged;
-        public event Action<Vector2> Repositioned;
-        public event Action<bool> ToggledPlayer;
 
         public bool Active { get; }
         public Vector2 Up { get; }
@@ -969,6 +979,12 @@ namespace TarodevController
         public Vector2 Velocity { get; }
         public int WallDirection { get; }
         public bool ClimbingLadder { get; }
+        public event Action<JumpType> Jumped;
+        public event Action<bool, float> GroundedChanged;
+        public event Action<bool, Vector2> DashChanged;
+        public event Action<bool> WallGrabChanged;
+        public event Action<Vector2> Repositioned;
+        public event Action<bool> ToggledPlayer;
 
         // External force
         public void AddFrameForce(Vector2 force, bool resetVelocity = false);

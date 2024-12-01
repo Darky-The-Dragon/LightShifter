@@ -9,6 +9,5 @@ namespace MainMenu
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
-
     }
 }

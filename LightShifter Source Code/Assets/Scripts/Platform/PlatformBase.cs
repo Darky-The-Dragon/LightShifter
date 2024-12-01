@@ -1,28 +1,16 @@
-using System;
 using UnityEngine;
 
 namespace TarodevController.Demo
 {
     public abstract class PlatformBase : MonoBehaviour, IPhysicsObject, IPhysicsMover
     {
-        public bool UsesBounding => _boundingEffector != null;
-        public bool RequireGrounding => _requireGrounding;
-        public Vector2 FramePositionDelta { get; private set; }
-        public Vector2 FramePosition => Rb.position;
-        public Vector2 Velocity => Rb.velocity;
-        public Vector2 TakeOffVelocity => _useTakeOffVelocity ? Velocity : Vector2.zero;
-
-        [HideInInspector] protected Rigidbody2D Rb;
         [SerializeField] private bool _requireGrounding;
         [SerializeField] private BoxCollider2D _boundingEffector;
         [SerializeField] private bool _useTakeOffVelocity;
 
-        protected float Time;
+        [HideInInspector] protected Rigidbody2D Rb;
 
-        public virtual void OnValidate()
-        {
-            if (_boundingEffector) _boundingEffector.isTrigger = true;
-        }
+        protected float Time;
 
         protected virtual void Awake()
         {
@@ -36,6 +24,18 @@ namespace TarodevController.Demo
         {
             PhysicsSimulator.Instance.RemovePlatform(this);
         }
+
+        public virtual void OnValidate()
+        {
+            if (_boundingEffector) _boundingEffector.isTrigger = true;
+        }
+
+        public bool UsesBounding => _boundingEffector != null;
+        public bool RequireGrounding => _requireGrounding;
+        public Vector2 FramePositionDelta { get; private set; }
+        public Vector2 FramePosition => Rb.position;
+        public Vector2 Velocity => Rb.velocity;
+        public Vector2 TakeOffVelocity => _useTakeOffVelocity ? Velocity : Vector2.zero;
 
         public void TickFixedUpdate(float delta)
         {

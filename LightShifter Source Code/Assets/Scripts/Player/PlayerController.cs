@@ -1,6 +1,6 @@
 using System;
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 namespace Player
 {
@@ -8,30 +8,21 @@ namespace Player
     public class PlayerController : MonoBehaviour, IPlayerController
     {
         [SerializeField] private ScriptableStats stats;
-        private Rigidbody2D _rb;
+        private bool _cachedQueryStartInColliders;
         private BoxCollider2D _col;
         private FrameInput _frameInput;
         private Vector2 _frameVelocity;
-        private bool _cachedQueryStartInColliders;
+
+        private bool _grounded;
         private int _jumps;
-
-        #region Interface
-
-        public Vector2 FrameInput => _frameInput.Move;
-        public event Action<bool, float> GroundedChanged;
-        public event Action Jumped;
-
-        #endregion
+        private Rigidbody2D _rb;
 
         private float _time;
 
-        private bool _grounded;
         private bool _walled;
         /*
             defines the orientation of the player, 1 is right, -1 is left
         */
-
-
 
 
         private void Awake()
@@ -50,29 +41,6 @@ namespace Player
             GatherInput();
         }
 
-        private void GatherInput()
-        {
-            _frameInput = new FrameInput
-            {
-                JumpDown = Input.GetButtonDown("Jump"),
-                JumpHeld = Input.GetButton("Jump"),
-                Move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"))
-            };
-
-            if (stats.SnapInput)
-            {
-                _frameInput.Move.x = Mathf.Abs(_frameInput.Move.x) < stats.HorizontalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.x);
-                _orientation = _frameInput.Move.x != 0 ? Mathf.Sign(_frameInput.Move.x) : _orientation;
-                _frameInput.Move.y = Mathf.Abs(_frameInput.Move.y) < stats.VerticalDeadZoneThreshold ? 0 : Mathf.Sign(_frameInput.Move.y);
-            }
-
-            if (_frameInput.JumpDown)
-            {
-                _jumpToConsume = true;
-                _timeJumpWasPressed = _time;
-            }
-        }
-
         private void FixedUpdate()
         {
             CheckCollisions();
@@ -84,15 +52,55 @@ namespace Player
             ApplyMovement();
         }
 
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (stats == null)
+                Debug.LogWarning("Please assign a ScriptableStats asset to the Player Controller's Stats slot", this);
+        }
+#endif
+
+        private void GatherInput()
+        {
+            _frameInput = new FrameInput
+            {
+                JumpDown = Input.GetButtonDown("Jump"),
+                JumpHeld = Input.GetButton("Jump"),
+                Move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"))
+            };
+
+            if (stats.SnapInput)
+            {
+                _frameInput.Move.x = Mathf.Abs(_frameInput.Move.x) < stats.HorizontalDeadZoneThreshold
+                    ? 0
+                    : Mathf.Sign(_frameInput.Move.x);
+                _orientation = _frameInput.Move.x != 0 ? Mathf.Sign(_frameInput.Move.x) : _orientation;
+                _frameInput.Move.y = Mathf.Abs(_frameInput.Move.y) < stats.VerticalDeadZoneThreshold
+                    ? 0
+                    : Mathf.Sign(_frameInput.Move.y);
+            }
+
+            if (_frameInput.JumpDown)
+            {
+                _jumpToConsume = true;
+                _timeJumpWasPressed = _time;
+            }
+        }
+
         #region Collisions
+
         private void CheckCollisions()
         {
             Physics2D.queriesStartInColliders = false;
 
             // Ground, Ceiling and Wall checks
-            bool groundHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.down, stats.GrounderDistance, ~stats.PlayerLayer);
-            bool ceilingHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.up, stats.GrounderDistance, ~stats.PlayerLayer);
-            bool wallHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.right * _frameInput.Move.x, stats.WallDistance, ~stats.PlayerLayer);
+            bool groundHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.down,
+                stats.GrounderDistance, ~stats.PlayerLayer);
+            bool ceilingHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0, Vector2.up,
+                stats.GrounderDistance, ~stats.PlayerLayer);
+            bool wallHit = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0,
+                Vector2.right * _frameInput.Move.x, stats.WallDistance, ~stats.PlayerLayer);
             // Hit a Ceiling
             if (ceilingHit) _frameVelocity.y = Mathf.Min(0, _frameVelocity.y);
 
@@ -126,6 +134,27 @@ namespace Player
 
             Physics2D.queriesStartInColliders = _cachedQueryStartInColliders;
         }
+
+        #endregion
+
+        private void ApplyMovement()
+        {
+            _rb.velocity = _frameVelocity;
+        }
+
+        private IEnumerator DisableMovementForFixedTime(float time)
+        {
+            _disableMovement = true;
+            yield return new WaitForSeconds(time);
+            _disableMovement = false;
+            yield return null;
+        }
+
+        #region Interface
+
+        public Vector2 FrameInput => _frameInput.Move;
+        public event Action<bool, float> GroundedChanged;
+        public event Action Jumped;
 
         #endregion
 
@@ -166,7 +195,6 @@ namespace Player
         }
 
 
-
         private void ExecuteWallJump()
         {
             _endedJumpEarly = false;
@@ -184,7 +212,7 @@ namespace Player
         #region Horizontal
 
         private float _orientation;
-        private bool _disableMovement = false;
+        private bool _disableMovement;
 
         private void HandleDirection()
         {
@@ -197,19 +225,20 @@ namespace Player
                 }
                 else
                 {
-                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _frameInput.Move.x * stats.MaxSpeed, stats.Acceleration * Time.fixedDeltaTime);
+                    _frameVelocity.x = Mathf.MoveTowards(_frameVelocity.x, _frameInput.Move.x * stats.MaxSpeed,
+                        stats.Acceleration * Time.fixedDeltaTime);
                 }
             }
             else
             {
                 _frameInput.Move.x = 0;
             }
-
         }
 
         #endregion
 
         #region Gravity
+
         private bool _disableGravity;
 
         private void HandleGravity()
@@ -225,35 +254,17 @@ namespace Player
                 {
                     var inAirGravity = stats.FallAcceleration;
                     if (_endedJumpEarly && _frameVelocity.y > 0) inAirGravity *= stats.JumpEndEarlyGravityModifier;
-                    _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -stats.MaxFallSpeed, inAirGravity * Time.fixedDeltaTime);
+                    _frameVelocity.y = Mathf.MoveTowards(_frameVelocity.y, -stats.MaxFallSpeed,
+                        inAirGravity * Time.fixedDeltaTime);
                 }
             }
             else
             {
                 _frameVelocity.y = 0;
             }
-
         }
 
         #endregion
-
-        private void ApplyMovement() => _rb.velocity = _frameVelocity;
-
-        private IEnumerator DisableMovementForFixedTime(float time)
-        {
-            _disableMovement = true;
-            yield return new WaitForSeconds(time);
-            _disableMovement = false;
-            yield return null;
-        }
-
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (stats == null) Debug.LogWarning("Please assign a ScriptableStats asset to the Player Controller's Stats slot", this);
-        }
-#endif
     }
 
     public struct FrameInput
@@ -265,10 +276,9 @@ namespace Player
 
     public interface IPlayerController
     {
+        public Vector2 FrameInput { get; }
         public event Action<bool, float> GroundedChanged;
 
         public event Action Jumped;
-        public Vector2 FrameInput { get; }
     }
-
 }

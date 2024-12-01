@@ -5,14 +5,14 @@ namespace Interactable
 {
     public class LeverController : MonoBehaviour
     {
-        public Transform player; 
+        public Transform player;
         public float activationRange = 2f;
+        [SerializeField] private Transform platform;
         private bool _activated = true;
-        [SerializeField] Transform platform;
 
         private bool _isLeverPulled;
-        
-        void Update()
+
+        private void Update()
         {
             if (Input.GetKeyDown(KeyCode.E) && IsPlayerInRange())
             {
@@ -21,7 +21,7 @@ namespace Interactable
             }
         }
 
-        bool IsPlayerInRange()
+        private bool IsPlayerInRange()
         {
             return Vector2.Distance(transform.position, player.position) <= activationRange;
         }

@@ -1,5 +1,4 @@
 using UnityEngine;
-
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -20,9 +19,15 @@ namespace TarodevController
             _dash = _actions.Player.Dash;
         }
 
-        private void OnEnable() => _actions.Enable();
+        private void OnEnable()
+        {
+            _actions.Enable();
+        }
 
-        private void OnDisable() => _actions.Disable();
+        private void OnDisable()
+        {
+            _actions.Disable();
+        }
 
         public FrameInput Gather()
         {
