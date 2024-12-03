@@ -44,12 +44,18 @@ namespace LevelController
 
         private void Respawnevelopers()
         {
+            
             if (Input.GetKeyDown(KeyCode.R)) player.transform.position = _startPosition;
         }
 
-        public void Respawn()
+        public void Respawn(GameObject checkPoint)
         {
-            player.transform.position = _startPosition;
+            if (checkPoint == null)
+                player.transform.position = _startPosition;
+            else
+            {
+                player.transform.position = checkPoint.transform.position;
+            }
         }
     }
 }
