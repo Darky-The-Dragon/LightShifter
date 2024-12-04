@@ -44,7 +44,7 @@ namespace LevelController
 
         private void Respawnevelopers()
         {
-            
+
             if (Input.GetKeyDown(KeyCode.R)) player.transform.position = _startPosition;
         }
 
@@ -54,7 +54,9 @@ namespace LevelController
                 player.transform.position = _startPosition;
             else
             {
-                player.transform.position = checkPoint.transform.position;
+                Vector3 respawnPosition = new Vector3(checkPoint.transform.position.x, checkPoint.transform.position.y, player.transform.position.z);
+                // player.transform.position = checkPoint.transform.position;
+                player.transform.position = respawnPosition;
             }
         }
     }
