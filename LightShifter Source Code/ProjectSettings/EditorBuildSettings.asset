@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/Chapters/SelectChapter.unity
     guid: 4af6a3018ccc443969603a4339a76cde
   - enabled: 1
-    path: Assets/Scenes/Levels/Chapters/Chapter1.unity
+    path: Assets/Scenes/Levels/Chapters/Chapter1_WithParallax.unity
     guid: 72abd05a14e2e402da3e9ed57b2cdae0
   m_configObjects: {}

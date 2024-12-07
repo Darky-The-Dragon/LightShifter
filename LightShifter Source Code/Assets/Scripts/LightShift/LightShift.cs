@@ -1,4 +1,9 @@
+using System;
+using Unity.Mathematics;
+using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace LightShift
 {
@@ -14,7 +19,15 @@ namespace LightShift
         private bool _isChanged;
         [SerializeField] GameObject lightBackground, darkBackground;
 
+        public static bool CanChange;
+        
+        [SerializeField] private GameObject center;
         private Color _originalBackgroundColor;
+        
+        private Vector3Int _playerTilePosition;
+
+        private int _playerX;
+        private int _playerY;
 
         private void Start()
         {
@@ -22,16 +35,25 @@ namespace LightShift
             if (mainCamera != null)
                 _originalBackgroundColor = mainCamera.backgroundColor;
             ShowLight();
+            CanChange = true;
         }
 
         private void Update()
         {
             // Check for 'E' key press once per frame
-            if (Input.GetKeyDown(KeyCode.LeftShift)) ToggleEnvironment();
+            if (Input.GetKeyDown(KeyCode.LeftShift) && CanChange)
+            {
+                ToggleEnvironment();
+            }
         }
 
         private void ToggleEnvironment()
         {
+            _playerX = Mathf.RoundToInt(center.transform.position.x);
+            _playerY = Mathf.RoundToInt(center.transform.position.y);
+            Vector3Int playerTilePosition = new Vector3Int(_playerX, _playerY, 0);
+            if(CheckCollisions(playerTilePosition))
+                return;
             if (mainCamera != null && useColoredBackground)
                 // Toggle between original and new background colors only if colored background is enabled
                 mainCamera.backgroundColor = _isChanged ? _originalBackgroundColor : newBackgroundColor;
@@ -79,5 +101,22 @@ namespace LightShift
                         child.gameObject.SetActive(false);
                 }
         }
+        
+        // CheckCollision to solve LightShift bug
+        [SerializeField] GameObject player;
+        
+        
+        [SerializeField] private Tilemap lightTilemap;
+        [SerializeField] private Tilemap darkTilemap;
+
+        private bool CheckCollisions(Vector3Int playerTilePosition)
+        {
+            Tilemap lightTileMap = gridLight.GetComponentInChildren<Tilemap>(true);
+            
+            if(lightTileMap.HasTile(playerTilePosition))
+                return true;
+            return false;
+        }
     }
+   
 }
