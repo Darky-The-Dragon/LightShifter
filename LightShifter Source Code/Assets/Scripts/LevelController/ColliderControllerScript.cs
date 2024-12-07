@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace LevelController
@@ -10,13 +9,13 @@ namespace LevelController
         private void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.gameObject.CompareTag("Player"))
-                LightShift.LightShift.CanChange = false;
+                LightShift.LightShift.Instance.CanChange(false);
         }
 
         private void OnTriggerExit2D(Collider2D collision)
         {
             if (collision.gameObject.CompareTag("Player"))
-                LightShift.LightShift.CanChange = true;
+                LightShift.LightShift.Instance.CanChange(true);
         }
     }
 }

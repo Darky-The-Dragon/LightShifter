@@ -1,7 +1,3 @@
-using System;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -19,7 +15,7 @@ namespace LightShift
         private bool _isChanged;
         [SerializeField] GameObject lightBackground, darkBackground;
 
-        public static bool CanChange;
+        private bool _canChange;
         
         [SerializeField] private GameObject center;
         private Color _originalBackgroundColor;
@@ -28,6 +24,21 @@ namespace LightShift
 
         private int _playerX;
         private int _playerY;
+        
+        public static LightShift Instance;
+
+        private void Awake()
+        {
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(gameObject);
+        }
+
+        public void CanChange(bool canChange)
+        {
+            this._canChange = canChange;
+        }
 
         private void Start()
         {
@@ -35,13 +46,13 @@ namespace LightShift
             if (mainCamera != null)
                 _originalBackgroundColor = mainCamera.backgroundColor;
             ShowLight();
-            CanChange = true;
+            _canChange = true;
         }
 
         private void Update()
         {
             // Check for 'E' key press once per frame
-            if (Input.GetKeyDown(KeyCode.LeftShift) && CanChange)
+            if (Input.GetKeyDown(KeyCode.LeftShift) && _canChange)
             {
                 ToggleEnvironment();
             }
