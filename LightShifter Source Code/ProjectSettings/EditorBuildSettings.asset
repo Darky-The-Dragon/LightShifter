@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Levels/Chapters/Chapter1_WithParallax.unity
     guid: 72abd05a14e2e402da3e9ed57b2cdae0
+  - enabled: 1
+    path: Assets/Scenes/Levels/Chapters/EndGameScene.unity
+    guid: 189ed7ae16d0c450ca81296213896d39
   m_configObjects: {}
