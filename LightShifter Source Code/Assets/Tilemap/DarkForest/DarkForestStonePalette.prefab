@@ -165,7 +165,7 @@ GameObject:
   - component: {fileID: 8912371378526688361}
   - component: {fileID: 4704379139722182437}
   m_Layer: 0
-  m_Name: DarkForestGrassStonePalette
+  m_Name: DarkForestStonePalette
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
