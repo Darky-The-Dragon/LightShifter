@@ -135,7 +135,7 @@ namespace TarodevController
         //[SerializeField] private AudioSource _wallSlideSource;
         //[SerializeField] private AudioClip[] _wallClimbClips;
         //[SerializeField] private AudioClip[] _ladderClimbClips;
-        [SerializeField] private float _maxWallSlideVolume = 0.2f;
+        //[SerializeField] private float _maxWallSlideVolume = 0.2f;
         [SerializeField] private float _wallSlideParticleOffset = 0.3f;
         [SerializeField] private float _distancePerClimbSound = 0.2f;
 
@@ -144,7 +144,7 @@ namespace TarodevController
         private float _slideAudioVel;
         private bool _ascendingLadder;
         private float _lastClimbSoundY;
-        private int _wallClimbAudioIndex = 0;
+        //private int _wallClimbAudioIndex = 0;
         private int _ladderClimbAudioIndex;
 
         private void OnWallGrabChanged(bool onWall)
