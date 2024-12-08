@@ -11,6 +11,7 @@ namespace LevelController
         [SerializeField] private Animator transitionAnim;
         private Vector2 _startPosition;
         private List<ResetObject> _resetObjects = new List<ResetObject>();
+        [SerializeField] private bool respawnDeveloper = false;
         private void Awake()
         {
             if (Instance == null)
@@ -47,7 +48,7 @@ namespace LevelController
         private void RespawnDevelopers()
         {
 
-            if (Input.GetKeyDown(KeyCode.R)) player.transform.position = _startPosition;
+            if (Input.GetKeyDown(KeyCode.R) && respawnDeveloper) player.transform.position = _startPosition;
         }
 
         private void Reset()
