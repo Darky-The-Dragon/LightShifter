@@ -1,7 +1,7 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
 namespace LevelController
 {
     public class SceneController : MonoBehaviour
@@ -10,13 +10,15 @@ namespace LevelController
         [SerializeField] private GameObject player;
         [SerializeField] private Animator transitionAnim;
         private Vector2 _startPosition;
-
+        private List<ResetObject> _resetObjects = new List<ResetObject>();
         private void Awake()
         {
             if (Instance == null)
                 Instance = this;
             else
                 Destroy(gameObject);
+
+            _resetObjects.AddRange(FindObjectsOfType<ResetObject>());
         }
 
         private void Start()
@@ -26,7 +28,7 @@ namespace LevelController
 
         private void Update()
         {
-            Respawnevelopers();
+            RespawnDevelopers();
         }
 
         public void NextLevel()
@@ -42,14 +44,24 @@ namespace LevelController
             transitionAnim.SetTrigger("Start");
         }
 
-        private void Respawnevelopers()
+        private void RespawnDevelopers()
         {
 
             if (Input.GetKeyDown(KeyCode.R)) player.transform.position = _startPosition;
         }
 
+        private void Reset()
+        {
+            foreach (ResetObject resetObject in _resetObjects)
+            {
+                resetObject.Reset();
+            }
+        }
+
+
         public void Respawn(GameObject checkPoint)
         {
+            Reset();
             if (checkPoint == null)
                 player.transform.position = _startPosition;
             else
