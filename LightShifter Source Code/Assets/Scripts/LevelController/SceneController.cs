@@ -61,12 +61,16 @@ namespace LevelController
 
         public void Respawn(GameObject checkPoint)
         {
-            Reset();
+
+            // Reset();
             if (checkPoint == null)
+            {
                 player.transform.position = _startPosition;
+            }
             else
             {
                 Vector3 respawnPosition = new Vector3(checkPoint.transform.position.x, checkPoint.transform.position.y, player.transform.position.z);
+                Debug.Log(respawnPosition);
                 // player.transform.position = checkPoint.transform.position;
                 player.transform.position = respawnPosition;
             }
