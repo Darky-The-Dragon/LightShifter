@@ -24,4 +24,12 @@ public class SwitchPlatformBehavior : ResetObject
         Debug.Log("Resetting switch of " + patrolPlatform.name);
         patrolPlatform.Reset();
     }
+
+    void OnValidate()
+    {
+        if (patrolPlatform == null)
+        {
+            Debug.LogError("Patrol platform is not set for " + this.name);
+        }
+    }
 }

@@ -11,6 +11,7 @@ namespace LevelController
         [SerializeField] private Animator transitionAnim;
         private Vector2 _startPosition;
         private List<ResetObject> _resetObjects = new List<ResetObject>();
+        [SerializeField] private bool respawnDeveloper = false;
         private void Awake()
         {
             if (Instance == null)
@@ -47,7 +48,7 @@ namespace LevelController
         private void RespawnDevelopers()
         {
 
-            if (Input.GetKeyDown(KeyCode.R)) player.transform.position = _startPosition;
+            if (Input.GetKeyDown(KeyCode.R) && respawnDeveloper) player.transform.position = _startPosition;
         }
 
         private void Reset()
@@ -61,12 +62,16 @@ namespace LevelController
 
         public void Respawn(GameObject checkPoint)
         {
-            Reset();
+
+            // Reset();
             if (checkPoint == null)
+            {
                 player.transform.position = _startPosition;
+            }
             else
             {
                 Vector3 respawnPosition = new Vector3(checkPoint.transform.position.x, checkPoint.transform.position.y, player.transform.position.z);
+                Debug.Log(respawnPosition);
                 // player.transform.position = checkPoint.transform.position;
                 player.transform.position = respawnPosition;
             }

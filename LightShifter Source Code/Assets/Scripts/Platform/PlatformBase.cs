@@ -78,7 +78,7 @@ namespace TarodevController.Demo
                 {
                     FramePositionDelta = positionDifference;
                     Rb.velocity = FramePositionDelta / delta;
-                    Debug.Log("Velocity: " + this.gameObject.name + " " + Rb.velocity);
+                    //Debug.Log("Velocity: " + this.gameObject.name + " " + Rb.velocity);
                 }
                 else
                 {
