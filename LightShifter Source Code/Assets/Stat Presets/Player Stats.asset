@@ -19,32 +19,32 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 833
   CharacterSize:
-    Height: 1.35
-    Width: 0.9
-    StepHeight: 0.6
-    CrouchHeight: 0.8
-    RayInset: 0.1
+    Height: 1
+    Width: 0.61
+    StepHeight: 0.2
+    CrouchHeight: 1
+    RayInset: 0.01
   VerticalDeadZoneThreshold: 0.3
   HorizontalDeadZoneThreshold: 0.1
   PositionCorrectionMode: 0
-  BaseSpeed: 15
-  Acceleration: 100
+  BaseSpeed: 5
+  Acceleration: 50
   Friction: 70
   AirFrictionMultiplier: 0.5
   DirectionCorrectionMultiplier: 3
   MaxWalkableSlope: 46
-  ExtraConstantGravity: 40
+  ExtraConstantGravity: 20
   BufferedJumpTime: 0.15
   CoyoteTime: 0.15
-  JumpPower: 20
+  JumpPower: 12
   EndJumpEarlyExtraForceMultiplier: 3
   MaxAirJumps: 1
-  AllowDash: 1
+  AllowDash: 0
   DashVelocity: 30
   DashDuration: 0.1
   DashCooldown: 0.5
   DashEndHorizontalMultiplier: 0.5
-  AllowCrouching: 1
+  AllowCrouching: 0
   CrouchSlowDownTime: 1
   CrouchSpeedModifier: 0.3
   AllowWalls: 1
@@ -54,10 +54,10 @@ MonoBehaviour:
   WallJumpTotalInputLossTime: 0.2
   WallJumpInputLossReturnTime: 0.5
   RequireInputPush: 0
-  WallJumpPower: {x: 20, y: 18}
-  WallPushPower: {x: 20, y: 18}
-  WallClimbSpeed: 5
-  WallFallAcceleration: 5
+  WallJumpPower: {x: 10, y: 9}
+  WallPushPower: {x: 20, y: 9}
+  WallClimbSpeed: 10
+  WallFallAcceleration: 10
   WallPopForce: 10
   WallCoyoteTime: 0.3
   WallDetectorRange: 0.15
