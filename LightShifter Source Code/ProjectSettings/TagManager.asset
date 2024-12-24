@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - JumpTrigger
   - MovingPlatform
+  - BlockShift
   layers:
   - Default
   - TransparentFX
@@ -50,4 +51,7 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 2053447083
+    locked: 0
+  - name: Player
+    uniqueID: 3730332987
     locked: 0
