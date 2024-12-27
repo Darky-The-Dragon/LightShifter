@@ -2,41 +2,45 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 
 namespace LightShift
 {
     public class LightShift_BugTest : MonoBehaviour
     {
         [SerializeField] private GameObject gridLight, gridDark;
-        private SortingGroup _darkSortingGroup;
-        private CompositeCollider2D _lightTilemapsCollider, _darkTilemapsCollider;
+        private SortingGroup _lightSortingGroup, _darkSortingGroup;
         private Collider2D[] _lightColliders, _darkColliders;
-        private bool _isChanged;
-        public bool _canChange;
+        [SerializeField] private bool startWithLight = true;
+        private bool _isLight;
+        public bool _canChange = true;
         [SerializeField] private KeyCode lightShiftKey = KeyCode.LeftShift;
         [SerializeField] private float shiftCooldown = 0.5f;
 
         private void Awake()
         {
-            // _lightTilemapsCollider = gridLight.GetComponentInChildren<ColliderGroup>().gameObject.GetComponent<CompositeCollider2D>();
+            _lightSortingGroup = gridLight.GetComponent<SortingGroup>();
             _lightColliders = gridLight.GetComponentsInChildren<Collider2D>();
-            _darkSortingGroup = gridDark.GetComponent<SortingGroup>();
-            // _darkTilemapsCollider = gridDark.GetComponentInChildren<ColliderGroup>().gameObject.GetComponent<CompositeCollider2D>();
-            _darkColliders = gridDark.GetComponentsInChildren<Collider2D>();
 
+            _darkSortingGroup = gridDark.GetComponent<SortingGroup>();
+            _darkColliders = gridDark.GetComponentsInChildren<Collider2D>();
         }
 
 
         private void Start()
         {
-            ShowLight();
+            if (startWithLight)
+            {
+                _isLight = true;
+                ShowLight();
+            }
+            else
+            {
+                _isLight = false;
+                ShowDark();
+            }
             _canChange = true;
         }
-        public void CanChange(bool canChange)
-        {
-            this._canChange = canChange;
-        }
-
         public void BlockShift()
         {
             this._canChange = false;
@@ -64,34 +68,34 @@ namespace LightShift
 
         private void ToggleEnvironment()
         {
-            if (_isChanged)
-                ShowLight();
-            else
+            if (_isLight)
                 ShowDark();
+            else
+                ShowLight();
             // Flip the toggle state
-            _isChanged = !_isChanged;
+            _isLight = !_isLight;
         }
 
         private void ShowLight()
         {
-            // _lightTilemapsCollider.isTrigger = false;
-            // _darkTilemapsCollider.isTrigger = true;
+            Debug.Log("Showing Light");
             SetColliderTrigger(_lightColliders, false);
             SetColliderTrigger(_darkColliders, true);
 
-            _darkSortingGroup.sortingOrder = 0;
+            // move the dark world beneath the light world
+            _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder - 1;
         }
 
         private void ShowDark()
         {
-            // _darkTilemapsCollider.isTrigger = false;
-            // _lightTilemapsCollider.isTrigger = true;
+            Debug.Log("Showing Dark");
+
             SetColliderTrigger(_darkColliders, false);
             SetColliderTrigger(_lightColliders, true);
 
-            // 2 is to ensure that the dark grid is always on top of the light grid
-            // THE LIGHT GRID HAS A DEFAULT SORTING LAYER OF 1
-            _darkSortingGroup.sortingOrder = 2;
+            // move the dark world on top of the light world
+            _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder + 1;
+
         }
 
         private void SetColliderTrigger(Collider2D[] colliders, bool isTrigger)
