@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class EnemyChasePlayerMovement : MonoBehaviour
 {
-    [Tooltip("Transform of the player to chase")] [SerializeField]
-    private Transform playerTransform;
+    [Tooltip("Transform of the player to chase")]
+    [SerializeField] private Transform playerTransform;
 
     [SerializeField] private float speed = 4f;
     private Rigidbody2D _rb;
@@ -13,7 +13,6 @@ public class EnemyChasePlayerMovement : MonoBehaviour
     private void Awake()
     {
         // Find the player object in the scene and get its transform
-        playerTransform = FindObjectOfType<PlayerCollision>().transform;
         _rb = GetComponent<Rigidbody2D>();
     }
 

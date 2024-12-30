@@ -1,7 +1,7 @@
 using LightShift;
 using UnityEngine;
 
-namespace LightShift
+namespace Player
 {
     public class BlockShiftDetection : MonoBehaviour
     {
