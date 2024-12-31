@@ -164,14 +164,14 @@ namespace TarodevController
             CalculateWalls();
             CalculateLadders();
             CalculateJump();
-            CalculateDash();
+            //CalculateDash();
 
             CalculateExternalModifiers();
 
             TraceGround();
             Move();
 
-            CalculateCrouch();
+            //CalculateCrouch();
 
             CleanFrameData();
 
@@ -226,15 +226,15 @@ namespace TarodevController
         private void GatherInput()
         {
             _frameInput = _playerInput.Gather();
-
-
+            
+            
             if (_frameInput.JumpDown)
             {
                 _jumpToConsume = true;
                 _timeJumpWasPressed = _time;
             }
 
-            if (_frameInput.DashDown) _dashToConsume = true;
+            //if (_frameInput.DashDown) _dashToConsume = true;
         }
 
         #endregion
@@ -286,7 +286,7 @@ namespace TarodevController
         private void CleanFrameData()
         {
             _jumpToConsume = false;
-            _dashToConsume = false;
+            //_dashToConsume = false;
             _forceToApplyThisFrame = Vector2.zero;
             _lastFrameY = Velocity.y;
         }
@@ -354,7 +354,7 @@ namespace TarodevController
                 SetVelocity(_trimmedFrameVelocity);
                 _constantForce.force = Vector2.zero;
                 _currentStepDownLength = _character.StepHeight;
-                _canDash = true;
+                //_canDash = true;
                 _coyoteUsable = true;
                 _bufferedJumpUsable = true;
                 ResetAirJumps();
@@ -444,8 +444,8 @@ namespace TarodevController
 
             _wallDirThisFrame = hasHitWall ? (int)rayDir : 0;
 
-            if (!_isOnWall && ShouldStickToWall() && _time > _canGrabWallAfter && Velocity.y < 0) ToggleOnWall(true);
-            else if (_isOnWall && !ShouldStickToWall()) ToggleOnWall(false);
+            //if (!_isOnWall && ShouldStickToWall() && _time > _canGrabWallAfter && Velocity.y < 0) ToggleOnWall(true);
+            //else if (_isOnWall && !ShouldStickToWall()) ToggleOnWall(false);
 
             // If we're not grabbing a wall, let's check if we're against one for wall-jumping purposes
             if (!_isOnWall)
@@ -490,7 +490,7 @@ namespace TarodevController
                 WallDirection = 0;
                 if (Velocity.y > 0) AddFrameForce(new Vector2(0, Stats.WallPopForce), true);
 
-                ResetAirJumps(); // so that we can air jump even if we didn't leave via a wall jump
+                //ResetAirJumps(); // so that we can air jump even if we didn't leave via a wall jump
             }
 
             WallGrabChanged?.Invoke(on);
@@ -578,7 +578,7 @@ namespace TarodevController
 
         private void CalculateJump()
         {
-            if ((_jumpToConsume || HasBufferedJump) && CanStand)
+            if ((_jumpToConsume || HasBufferedJump) /*&& CanStand*/)
             {
                 if (CanWallJump) ExecuteJump(JumpType.WallJump);
                 else if (_grounded || ClimbingLadder) ExecuteJump(JumpType.Jump);
@@ -638,6 +638,7 @@ namespace TarodevController
 
         #endregion
 
+        /*
         #region Dash
 
         private bool _dashToConsume;
@@ -676,7 +677,9 @@ namespace TarodevController
         }
 
         #endregion
+        */
 
+        /*
         #region Crouching
 
         private float _timeStartedCrouching;
@@ -724,6 +727,7 @@ namespace TarodevController
         }
 
         #endregion
+        */
 
         #region Move
 
@@ -799,11 +803,13 @@ namespace TarodevController
                 return;
             }
 
+            /*
             if (_dashing)
             {
                 SetVelocity(_dashVel);
                 return;
             }
+            */
 
             if (_isOnWall)
             {
@@ -857,11 +863,13 @@ namespace TarodevController
 
             var targetSpeed = _hasInputThisFrame ? Stats.BaseSpeed : 0;
 
+            /*
             if (Crouching)
             {
                 var crouchPoint = Mathf.InverseLerp(0, Stats.CrouchSlowDownTime, _time - _timeStartedCrouching);
                 targetSpeed *= Mathf.Lerp(1, Stats.CrouchSpeedModifier, crouchPoint);
             }
+            */
 
             var step = _hasInputThisFrame ? Stats.Acceleration : Stats.Friction;
 
