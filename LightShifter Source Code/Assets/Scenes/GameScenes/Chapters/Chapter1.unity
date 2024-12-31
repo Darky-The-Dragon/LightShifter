@@ -46839,7 +46839,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.625
+  orthographic size: 7.125
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -46864,7 +46864,7 @@ Transform:
   m_GameObject: {fileID: 769483066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.169737, y: 5.268653, z: -9.98165}
+  m_LocalPosition: {x: 8.836403, y: 6.7686524, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -52811,6 +52811,7 @@ GameObject:
   - component: {fileID: 902318274}
   - component: {fileID: 902318273}
   - component: {fileID: 902318272}
+  - component: {fileID: 902318278}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -52956,6 +52957,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _drawGizmos: 1
   <Stats>k__BackingField: {fileID: 11400000, guid: 7b3fd7166ca4f8c42a81ed916e9fec0b, type: 2}
+--- !u!114 &902318278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 902318270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: ffae2caff01604bb692824cec3c9ca97, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &912616591
 GameObject:
   m_ObjectHideFlags: 0
