@@ -1,133 +1,122 @@
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 
 namespace LightShift
 {
     public class LightShift : MonoBehaviour
     {
-        [SerializeField] private UnityEngine.Camera mainCamera;
-        [SerializeField] private Color newBackgroundColor;
-        [SerializeField] private bool useColoredBackground;
-        [SerializeField] private GameObject gridLight;
-        [SerializeField] private GameObject gridDark;
-        [SerializeField] private GameObject grid;
-        [SerializeField] private GameObject environment;
-        private bool _isChanged;
-        [SerializeField] GameObject lightBackground, darkBackground;
-
-        public bool _canChange;
-
-        [SerializeField] private GameObject center;
-        private Color _originalBackgroundColor;
-
-        private Vector3Int _playerTilePosition;
-
-        private int _playerX;
-        private int _playerY;
-
+        [SerializeField] private GameObject gridLight, gridDark;
+        private SortingGroup _lightSortingGroup, _darkSortingGroup;
+        private Collider2D[] _lightColliders, _darkColliders;
+        [SerializeField] private bool startWithLight = true;
+        private bool _isLight;
+        [SerializeField] private bool _canChange = true, _isShiftLoaded = true;
+        [SerializeField] private KeyCode lightShiftKey = KeyCode.LeftShift;
+        [SerializeField] private float shiftCooldown = 0.5f;
         public static LightShift Instance;
 
         private void Awake()
         {
-            if (Instance == null)
+            if(Instance == null) {
                 Instance = this;
+
+                _lightSortingGroup = gridLight.GetComponent<SortingGroup>();
+                _lightColliders = gridLight.GetComponentsInChildren<Collider2D>();
+
+                _darkSortingGroup = gridDark.GetComponent<SortingGroup>();
+                _darkColliders = gridDark.GetComponentsInChildren<Collider2D>();
+            }
             else
                 Destroy(gameObject);
+            
         }
 
-        public void CanChange(bool canChange)
-        {
-            this._canChange = canChange;
-        }
 
         private void Start()
         {
-            // Cache the original background color and hide the platform initially
-            if (mainCamera != null)
-                _originalBackgroundColor = mainCamera.backgroundColor;
-            ShowLight();
+            if (startWithLight)
+            {
+                _isLight = true;
+                ShowLight();
+            }
+            else
+            {
+                _isLight = false;
+                ShowDark();
+            }
             _canChange = true;
+            _isShiftLoaded = true;
+        }
+        public void BlockShift()
+        {
+            this._canChange = false;
+        }
+        public void EnableShift()
+        {
+            this._canChange = true;
+        }
+
+        private IEnumerator ShiftCooldown()
+        {
+            _isShiftLoaded = false;
+            yield return new WaitForSeconds(shiftCooldown);
+            _isShiftLoaded = true;
         }
 
         private void Update()
         {
-            // Check for 'E' key press once per frame
-            if (Input.GetKeyDown(KeyCode.LeftShift) && _canChange)
+            if (Input.GetKeyDown(lightShiftKey) && _canChange && _isShiftLoaded)
             {
                 ToggleEnvironment();
+                StartCoroutine(ShiftCooldown());
             }
         }
 
         private void ToggleEnvironment()
         {
-            // _playerX = Mathf.RoundToInt(center.transform.position.x);
-            // _playerY = Mathf.RoundToInt(center.transform.position.y);
-            // Vector3Int playerTilePosition = new Vector3Int(_playerX, _playerY, 0);
-            // if (CheckCollisions(playerTilePosition))
-            //     return;
-            if (mainCamera != null && useColoredBackground)
-                // Toggle between original and new background colors only if colored background is enabled
-                mainCamera.backgroundColor = _isChanged ? _originalBackgroundColor : newBackgroundColor;
-            if (_isChanged)
-                ShowLight();
-            else
+            if (_isLight)
                 ShowDark();
+            else
+                ShowLight();
             // Flip the toggle state
-            _isChanged = !_isChanged;
+            _isLight = !_isLight;
         }
 
         private void ShowLight()
         {
-            // toggle the backgrounds only if we're using the game objects and not camera colors
-            if (!useColoredBackground)
-            {
-                darkBackground.SetActive(false);
-                lightBackground.SetActive(true);
-            }
+            // Debug.Log("Showing Light");
+            SetColliderTrigger(_lightColliders, false);
+            SetColliderTrigger(_darkColliders, true);
 
-            foreach (Transform child in environment.transform)
-                if (child.gameObject != grid)
-                {
-                    if (child.gameObject == gridLight)
-                        child.gameObject.SetActive(true);
-                    else
-                        child.gameObject.SetActive(false);
-                }
+            // move the dark world beneath the light world
+            _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder - 1;
         }
 
         private void ShowDark()
         {
-            if (!useColoredBackground)
-            {
-                lightBackground.SetActive(false);
-                darkBackground.SetActive(true);
-            }
+            // Debug.Log("Showing Dark");
 
-            foreach (Transform child in environment.transform)
-                if (child.gameObject != grid)
-                {
-                    if (child.gameObject == gridDark)
-                        child.gameObject.SetActive(true);
-                    else
-                        child.gameObject.SetActive(false);
-                }
+            SetColliderTrigger(_darkColliders, false);
+            SetColliderTrigger(_lightColliders, true);
+
+            // move the dark world on top of the light world
+            _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder + 1;
+
         }
 
-        // CheckCollision to solve LightShift bug
-        [SerializeField] GameObject player;
-
-
-        [SerializeField] private Tilemap lightTilemap;
-        [SerializeField] private Tilemap darkTilemap;
-
-        private bool CheckCollisions(Vector3Int playerTilePosition)
+        private void SetColliderTrigger(Collider2D[] colliders, bool isTrigger)
         {
-            Tilemap lightTileMap = gridLight.GetComponentInChildren<Tilemap>(true);
-
-            if (lightTileMap.HasTile(playerTilePosition))
-                return true;
-            return false;
+            foreach (Collider2D collider in colliders)
+            {
+                collider.isTrigger = isTrigger;
+            }
         }
+
+
     }
 
 }
