@@ -5,6 +5,7 @@ public class DoorBehaviour : MonoBehaviour
     public bool _isDoorOpen;
     private Vector3 _doorClosedPos;
     private Vector3 _doorOpenPos;
+    [SerializeField] private int deltaDoorMovement;
 
     private readonly float _doorSpeed = 10f;
 
@@ -12,7 +13,7 @@ public class DoorBehaviour : MonoBehaviour
     private void Start()
     {
         _doorClosedPos = transform.position;
-        _doorOpenPos = new Vector3(transform.position.x, transform.position.y + 5f, transform.position.z);
+        _doorOpenPos = new Vector3(transform.position.x, transform.position.y + deltaDoorMovement, transform.position.z);
     }
 
     // Update is called once per frame
