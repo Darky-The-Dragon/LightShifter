@@ -1,78 +1,133 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace LightShift
 {
-    public class LightShift_V2 : MonoBehaviour
+    public class LightShift_OLD : MonoBehaviour
     {
-        [SerializeField] private bool isLight = true;
-        public float shiftCooldownTime = 0.3f;
+        [SerializeField] private UnityEngine.Camera mainCamera;
+        [SerializeField] private Color newBackgroundColor;
+        [SerializeField] private bool useColoredBackground;
+        [SerializeField] private GameObject gridLight;
+        [SerializeField] private GameObject gridDark;
+        [SerializeField] private GameObject grid;
+        [SerializeField] private GameObject environment;
+        private bool _isChanged;
+        [SerializeField] GameObject lightBackground, darkBackground;
 
-        private SpriteRenderer _backgroundRenderer;
-        private PlatformManager _darkPlatformManager;
+        public bool _canChange;
 
-        private Sprite _lightBackground, _darkBackground;
-        private PlatformManager _lightPlatformManager;
-        private bool _shiftAvailable = true;
+        [SerializeField] private GameObject center;
+        private Color _originalBackgroundColor;
+
+        private Vector3Int _playerTilePosition;
+
+        private int _playerX;
+        private int _playerY;
+
+        public static LightShift_OLD Instance;
 
         private void Awake()
         {
-            _lightBackground = Resources.Load<Sprite>("TestImages/lightBackground");
-            _darkBackground = Resources.Load<Sprite>("TestImages/darkBackground");
-            _backgroundRenderer = FindObjectOfType<Background>().GetComponent<SpriteRenderer>();
-
-            if (_backgroundRenderer == null || _lightBackground == null || _darkBackground == null)
-                Debug.LogError("Component not found");
-
-            _backgroundRenderer.sprite = isLight ? _lightBackground : _darkBackground;
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(gameObject);
         }
 
+        public void CanChange(bool canChange)
+        {
+            this._canChange = canChange;
+        }
 
-        /*
-            As the script needs to interact with other game objects, we must use Start to ensure they have been initialized
-            and loaded in the scene before we try to access them.
-            Start is run after Awake, but with the scene fully loaded and only if the game object is active!
-        */
         private void Start()
         {
-            var tempPlatforms = new List<PlatformManager>(FindObjectsOfType<PlatformManager>());
-            _lightPlatformManager = tempPlatforms.Find(x => x.GetSide() == PlatformSide.LIGHT);
-            _darkPlatformManager = tempPlatforms.Find(x => x.GetSide() == PlatformSide.DARK);
-
-            if (_lightPlatformManager == null || _darkPlatformManager == null) Debug.LogError("Component not found");
-
-            SetLightState(isLight);
+            // Cache the original background color and hide the platform initially
+            if (mainCamera != null)
+                _originalBackgroundColor = mainCamera.backgroundColor;
+            ShowLight();
+            _canChange = true;
         }
 
         private void Update()
         {
-            // Check for 'Left Shift' key press once per frame
-            if (Input.GetKeyDown(KeyCode.Q) && _shiftAvailable)
+            // Check for 'E' key press once per frame
+            if (Input.GetKeyDown(KeyCode.LeftShift) && _canChange)
             {
-                SetLightState(!isLight);
-                StartCoroutine(ShiftCooldown());
+                ToggleEnvironment();
             }
         }
 
-        private IEnumerator ShiftCooldown()
+        private void ToggleEnvironment()
         {
-            _shiftAvailable = false;
-            yield return new WaitForSeconds(shiftCooldownTime);
-            _shiftAvailable = true;
+            // _playerX = Mathf.RoundToInt(center.transform.position.x);
+            // _playerY = Mathf.RoundToInt(center.transform.position.y);
+            // Vector3Int playerTilePosition = new Vector3Int(_playerX, _playerY, 0);
+            // if (CheckCollisions(playerTilePosition))
+            //     return;
+            if (mainCamera != null && useColoredBackground)
+                // Toggle between original and new background colors only if colored background is enabled
+                mainCamera.backgroundColor = _isChanged ? _originalBackgroundColor : newBackgroundColor;
+            if (_isChanged)
+                ShowLight();
+            else
+                ShowDark();
+            // Flip the toggle state
+            _isChanged = !_isChanged;
         }
 
-        private void SetLightState(bool newState)
+        private void ShowLight()
         {
-            print("Setting light state to " + newState);
-            isLight = newState;
-            _backgroundRenderer.sprite = isLight ? _lightBackground : _darkBackground;
-            // if (_lightPlatformManager == null || _darkPlatformManager == null)
-            // {
-            //     Debug.LogError("PlatformManager not found");
-            // }
-            _lightPlatformManager.SetPlatformsState(isLight);
-            _darkPlatformManager.SetPlatformsState(!isLight);
+            // toggle the backgrounds only if we're using the game objects and not camera colors
+            if (!useColoredBackground)
+            {
+                darkBackground.SetActive(false);
+                lightBackground.SetActive(true);
+            }
+
+            foreach (Transform child in environment.transform)
+                if (child.gameObject != grid)
+                {
+                    if (child.gameObject == gridLight)
+                        child.gameObject.SetActive(true);
+                    else
+                        child.gameObject.SetActive(false);
+                }
+        }
+
+        private void ShowDark()
+        {
+            if (!useColoredBackground)
+            {
+                lightBackground.SetActive(false);
+                darkBackground.SetActive(true);
+            }
+
+            foreach (Transform child in environment.transform)
+                if (child.gameObject != grid)
+                {
+                    if (child.gameObject == gridDark)
+                        child.gameObject.SetActive(true);
+                    else
+                        child.gameObject.SetActive(false);
+                }
+        }
+
+        // CheckCollision to solve LightShift bug
+        [SerializeField] GameObject player;
+
+
+        [SerializeField] private Tilemap lightTilemap;
+        [SerializeField] private Tilemap darkTilemap;
+
+        private bool CheckCollisions(Vector3Int playerTilePosition)
+        {
+            Tilemap lightTileMap = gridLight.GetComponentInChildren<Tilemap>(true);
+
+            if (lightTileMap.HasTile(playerTilePosition))
+                return true;
+            return false;
         }
     }
+
 }
