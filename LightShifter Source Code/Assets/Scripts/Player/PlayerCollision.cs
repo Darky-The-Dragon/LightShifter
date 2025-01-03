@@ -1,12 +1,12 @@
 using LightShift;
 using UnityEngine;
 
-namespace LightShift
+namespace Player
 {
-    public class BlockShiftDetection : MonoBehaviour
+    public class PlayerCollision : MonoBehaviour
     {
         private BoxCollider2D _boxCollider2D;
-        [SerializeField] private LightShift lightShift;
+        [SerializeField] private LightShifter lightShift;
         [SerializeField] private float collider_xSize_in = 0.58f, collider_xSize_out = 1f;
         void Awake()
         {

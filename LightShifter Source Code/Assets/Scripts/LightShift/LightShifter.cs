@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace LightShift
 {
-    public class LightShift : MonoBehaviour
+    public class LightShifter : MonoBehaviour
     {
         [SerializeField] private GameObject gridLight, gridDark;
         private SortingGroup _lightSortingGroup, _darkSortingGroup;
@@ -17,7 +17,7 @@ namespace LightShift
         [SerializeField] private bool _canChange = true, _isShiftLoaded = true;
         [SerializeField] private KeyCode lightShiftKey = KeyCode.LeftShift;
         [SerializeField] private float shiftCooldown = 0.5f;
-        public static LightShift Instance;
+        public static LightShifter Instance;
 
         private void Awake()
         {
