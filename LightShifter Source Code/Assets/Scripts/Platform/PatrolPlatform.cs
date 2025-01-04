@@ -51,32 +51,44 @@ namespace TarodevController.Demo
             CreateRuntimePoints();
         }
 
+        public override void Reset()
+        {
+            base.Reset();
+            _time = 0;
+            _currentPauseTime = 0;
+        }
+
         protected override Vector2 Evaluate(float delta)
         {
-            _currentPauseTime += delta;
-
-            if (_currentPauseTime < _endPauseDuration)
-            {
-                Rb.gravityScale = 0;
+            if(_freezeMovement) {
                 return Rb.position;
             }
+            else {
+                _currentPauseTime += delta;
 
-            Rb.gravityScale = 1;
+                if (_currentPauseTime < _endPauseDuration)
+                {
+                    Rb.gravityScale = 0;
+                    return Rb.position;
+                }
 
-            if (_ascending || _loop) _time += delta / _duration;
-            else _time -= delta / _duration;
+                Rb.gravityScale = 1;
 
-            _time = Mathf.Clamp(_time, 0, 1);
-            var curveTime = _curve.Evaluate(_time);
+                if (_ascending || _loop) _time += delta / _duration;
+                else _time -= delta / _duration;
 
-            if (_time is >= 1 or <= 0)
-            {
-                if (_loop) _time = 0;
-                _ascending = !_ascending;
-                _currentPauseTime = 0;
+                _time = Mathf.Clamp(_time, 0, 1);
+                var curveTime = _curve.Evaluate(_time);
+
+                if (_time is >= 1 or <= 0)
+                {
+                    if (_loop) _time = 0;
+                    _ascending = !_ascending;
+                    _currentPauseTime = 0;
+                }
+
+                return _patrolPath?.GetPointAtDistance(curveTime) ?? Vector2.zero;
             }
-
-            return _patrolPath?.GetPointAtDistance(curveTime) ?? Vector2.zero;
         }
 
         private void CreateRuntimePoints()

@@ -55,6 +55,7 @@ namespace LevelController
         {
             foreach (ResetObject resetObject in _resetObjects)
             {
+                Debug.Log("Resetted game object: " + resetObject.gameObject.name);
                 resetObject.Reset();
             }
         }
@@ -63,7 +64,7 @@ namespace LevelController
         public void Respawn(GameObject checkPoint)
         {
 
-            // Reset();
+            Reset();
             if (checkPoint == null)
             {
                 player.transform.position = _startPosition;

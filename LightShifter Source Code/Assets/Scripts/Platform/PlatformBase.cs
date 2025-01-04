@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace TarodevController.Demo
 {
-    public abstract class PlatformBase : MonoBehaviour, IPhysicsObject, IPhysicsMover
+    public abstract class PlatformBase : MonoBehaviour, IPhysicsObject, IPhysicsMover 
     {
         [SerializeField] private bool _requireGrounding;
         [SerializeField] private BoxCollider2D _boundingEffector;
@@ -23,7 +23,7 @@ namespace TarodevController.Demo
 
         public void Start()
         {
-            _startPosition = transform.position;
+            _startingPosition = transform.position;
         }
 
         protected virtual void OnDestroy()
@@ -42,50 +42,45 @@ namespace TarodevController.Demo
         public Vector2 FramePosition => Rb.position;
         public Vector2 Velocity => Rb.velocity;
         public Vector2 TakeOffVelocity => _useTakeOffVelocity ? Velocity : Vector2.zero;
-        [SerializeField] private bool _freezeMovement = false;
+        [SerializeField] public bool _freezeMovement = false;
         private bool _OriginalFreezeMovement = false;
-        private Vector3 _startPosition;
+        private Vector3 _startingPosition;
         public void EnableMovement(bool enable)
         {
             _freezeMovement = !enable;
 
         }
 
-        public void Reset()
+        public virtual void Reset()
         {
             _freezeMovement = _OriginalFreezeMovement;
-            transform.position = _startPosition;
+            transform.position = _startingPosition;
         }
 
 
         public void TickFixedUpdate(float delta)
         {
-            if (_freezeMovement)
-            {
-                FramePositionDelta = Vector3.zero;
-                Rb.velocity = Vector3.zero;
-                Evaluate(0);
+            var newPos = Evaluate(delta);
+            // if _freezeMovement is true, we don't want to update the position
+            if(_freezeMovement) {
                 Rb.gravityScale = 0;
+                newPos = Rb.position;
+            }
+            // Position
+            var positionDifference = newPos - Rb.position;
+
+            if (positionDifference.sqrMagnitude > 0)
+            {
+                FramePositionDelta = positionDifference;
+                Rb.velocity = FramePositionDelta / delta;
+                //Debug.Log("Velocity: " + this.gameObject.name + " " + Rb.velocity);
             }
             else
             {
-                var newPos = Evaluate(delta);
-
-                // Position
-                var positionDifference = newPos - Rb.position;
-
-                if (positionDifference.sqrMagnitude > 0)
-                {
-                    FramePositionDelta = positionDifference;
-                    Rb.velocity = FramePositionDelta / delta;
-                    //Debug.Log("Velocity: " + this.gameObject.name + " " + Rb.velocity);
-                }
-                else
-                {
-                    FramePositionDelta = Vector3.zero;
-                    Rb.velocity = Vector3.zero;
-                }
+                FramePositionDelta = Vector3.zero;
+                Rb.velocity = Vector3.zero;
             }
+            
 
         }
 
