@@ -49061,7 +49061,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.2395835
+  orthographic size: 5.2291665
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -49086,7 +49086,7 @@ Transform:
   m_GameObject: {fileID: 769483066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 23.600006, y: 4.8832364, z: -9.98165}
+  m_LocalPosition: {x: 276.33002, y: 4.87282, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -65387,7 +65387,7 @@ Transform:
   m_GameObject: {fileID: 902318270}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 324.6, y: -2.7, z: 0}
+  m_LocalPosition: {x: 577.33, y: -2.62, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -77649,6 +77649,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1246813612}
   walkSound: {fileID: 8300000, guid: 8420cf17e21d6354a98e6ef6d19dc9cc, type: 3}
+  jumpStart: {fileID: 0}
+  jumpEnd: {fileID: 0}
 --- !u!4 &1246813614
 Transform:
   m_ObjectHideFlags: 0
@@ -125807,7 +125809,7 @@ Transform:
   m_GameObject: {fileID: 1806820188}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 23.600006, y: 1.653888, z: -9.98165}
+  m_LocalPosition: {x: 276.33002, y: 1.7338881, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
