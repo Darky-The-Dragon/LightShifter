@@ -1,20 +1,27 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using LightShift;
 using TarodevController;
+using TMPro;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace StoryIntroCutscene {
 public class CutsceneManager : MonoBehaviour
 {
     [SerializeField] private GameObject player;
     [SerializeField] private LightShifter lightShifter;
+    [SerializeField] private TextMeshProUGUI text;
     private FrameInput _cutsceneframeInput;
     private bool _enableParallax, _freezeMovement;
-
+    private int _currentStoryTextIndex = 0;
+    private List<StoryText> _storyTexts;
     void Start()
     {
-        // _playerObjectAnim.Play(CutsceneKey);
+        var jsonStoryTexts = Resources.Load<TextAsset>("StoryTexts");
+        _storyTexts = JsonConvert.DeserializeObject<List<StoryText>>(jsonStoryTexts.text);
+
         _cutsceneframeInput = new FrameInput
         {
             JumpDown = false,
@@ -25,6 +32,7 @@ public class CutsceneManager : MonoBehaviour
         };
         
         StartCoroutine(CutsceneCoroutine());
+        StartCoroutine(StoryTextCouroutine());
     }
 
     public FrameInput GetFrameInput() {
@@ -36,6 +44,24 @@ public class CutsceneManager : MonoBehaviour
     }
     public bool GetFreezePlayerMovement() {
         return _freezeMovement;
+    }
+
+    private IEnumerator StoryTextCouroutine() {
+        _currentStoryTextIndex = 0;
+        foreach (StoryText x in _storyTexts) {
+            text.text = x.Text;
+            text.CrossFadeAlpha(1, 1.5f, false);
+            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds((float) x.Duration);
+            text.CrossFadeAlpha(0, 1.5f, false);
+            yield return new WaitForSeconds(1.5f);
+        }
+
+        yield return null;
+    }
+
+    private void GoToNextStoryText() {
+        
     }
 
     private IEnumerator CutsceneCoroutine() {
@@ -76,5 +102,13 @@ public class CutsceneManager : MonoBehaviour
     private static readonly int CutsceneKey = Animator.StringToHash("Cutscene");
     
 }
+
+    [System.Serializable]
+    class StoryText {
+        public double Index { get; set; }
+        public string Text { get; set; }
+        public double Duration { get; set; }
+    }
+
 }
 

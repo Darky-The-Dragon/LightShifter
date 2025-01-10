@@ -10940,6 +10940,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 902318270}
   lightShifter: {fileID: 1741655625}
+  textContainer: {fileID: 387575815}
+  text: {fileID: 1697979438}
 --- !u!4 &276821888
 Transform:
   m_ObjectHideFlags: 0
@@ -11261,7 +11263,7 @@ GameObject:
   - component: {fileID: 387575817}
   - component: {fileID: 387575816}
   m_Layer: 0
-  m_Name: CutsceneTextContainer
+  m_Name: TextContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -1,0 +1,27 @@
+[
+    {
+        "Index": 0,
+        "Text": "You are a young adventurer who has been traveling the world for years. You have seen many things and have had many adventures. But now you are tired and want to settle down.",
+        "Duration": 5
+    },
+    {
+        "Index": 1,
+        "Text": "You arrive at the Valley of the Ancients and are amazed by its beauty. The valley is filled with lush green forests, crystal clear rivers, and majestic mountains.",
+        "Duration": 5
+    },
+    {
+        "Index": 2,
+        "Text": "You decide to make the valley your home and build a small cabin near the river. You spend your days exploring the valley, fishing in the river, and hunting in the forest.",
+        "Duration": 5
+    },
+    {
+        "Index": 3,
+        "Text": "One day, while exploring the valley, you come across an ancient temple hidden deep in the forest. The temple is covered in vines and moss, and its entrance is guarded by two stone statues.",
+        "Duration": 5
+    },
+    {
+        "Index": 4,
+        "Text": "You are intrigued by the temple and decide to explore it. As you enter the temple, you are greeted by a musty smell and the sound of dripping water.",
+        "Duration": 5
+    }
+]
