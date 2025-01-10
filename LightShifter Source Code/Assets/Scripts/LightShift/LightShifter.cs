@@ -75,8 +75,8 @@ namespace LightShift
                 StartCoroutine(ShiftCooldown());
             }
         }
-
-        private void ToggleEnvironment()
+        
+        public void ToggleEnvironment()
         {
             if (_isLight)
                 ShowDark();

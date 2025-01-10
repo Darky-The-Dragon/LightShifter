@@ -10939,6 +10939,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 902318270}
+  lightShifter: {fileID: 1741655625}
 --- !u!4 &276821888
 Transform:
   m_ObjectHideFlags: 0
@@ -11334,7 +11335,7 @@ Transform:
   m_GameObject: {fileID: 463440149}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -28.56813, y: -0.53, z: -0.08449612}
+  m_LocalPosition: {x: 0, y: -0.53, z: -0.08449612}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -63719,7 +63720,7 @@ Transform:
   m_GameObject: {fileID: 2106417778}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -28.56813, y: -0.53, z: -0.08449612}
+  m_LocalPosition: {x: 0, y: -0.53, z: -0.08449612}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -153,7 +153,7 @@ namespace StoryIntroCutscene
         {
             _delta = delta;
 
-            if (!Active || cutsceneManager.GetFreezeMovement()) return;
+            if (!Active || cutsceneManager.GetFreezePlayerMovement()) return;
 
             RemoveTransientVelocity();
 
