@@ -19,6 +19,7 @@ namespace LightShift
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private AudioClip transitionClip;
         private float _volume = 0.1f;
+        private bool _start;
 
         private void Awake()
         {
@@ -39,15 +40,18 @@ namespace LightShift
 
         private void Start()
         {
+            _start = true;
             if (startWithLight)
             {
                 _isLight = true;
                 ShowLight();
+                _start = false;
             }
             else
             {
                 _isLight = false;
                 ShowDark();
+                _start = false;
             }
             canChange = true;
             isShiftLoaded = true;
@@ -96,7 +100,8 @@ namespace LightShift
             // move the dark world beneath the light world
             _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder - 1;
             
-            audioSource.PlayOneShot(transitionClip, _volume);
+            if(!_start)
+                audioSource.PlayOneShot(transitionClip, _volume);
         }
 
         private void ShowDark()
@@ -109,7 +114,8 @@ namespace LightShift
             // move the dark world on top of the light world
             _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder + 1;
             
-            audioSource.PlayOneShot(transitionClip, _volume);
+            if(!_start)
+                audioSource.PlayOneShot(transitionClip, _volume);
 
         }
 
