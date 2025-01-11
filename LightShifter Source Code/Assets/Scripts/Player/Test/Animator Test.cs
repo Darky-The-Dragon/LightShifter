@@ -1,7 +1,11 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Platforms;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 namespace TarodevController
 {
@@ -44,6 +48,9 @@ namespace TarodevController
 
         [SerializeField] private AudioSource source;
         private IPlayerController _player;
+        
+        private Vector2 _playerPosition;
+        private bool _isCheckpointUpdating;
 
         //private Vector2 _defaultSpriteSize;
         //private GeneratedCharacterSize _character;
@@ -374,6 +381,14 @@ namespace TarodevController
             // Perform raycast
             var ray = Physics2D.Raycast(transform.position, detectionDir, 2);
             if (ray.collider == null) return;
+            if (ray.collider.tag == "MovingPlatform" || ray.collider.tag == "BlockShift")
+            {
+                _update = true;
+            }
+            else
+            {
+                _update = false;
+            }
 
             // Attempt to handle Tilemap colors
             if (ray.transform.TryGetComponent(out Tilemap tilemap))
@@ -468,5 +483,27 @@ namespace TarodevController
         private static readonly int JumpKey = Animator.StringToHash("Jump");
 
         #endregion
+
+        private bool _update;
+        private IEnumerator CheckpointUpdate(float waitTime)
+        {
+            yield return new WaitForSeconds(waitTime);
+            if (_grounded && !_update)
+            {
+                _playerPosition = _player.State.Position;
+                Debug.Log("Updated " + _playerPosition);
+            }
+
+            RespawnPlatform.Instance.NewUpdateCheckpoint(_playerPosition);
+            _isCheckpointUpdating = false;
+        }
+        private void FixedUpdate()
+        {
+            if (_grounded && !_isCheckpointUpdating && !_update)
+            {
+                _isCheckpointUpdating = true;
+                StartCoroutine(CheckpointUpdate(2f));
+            }
+        }
     }
 }

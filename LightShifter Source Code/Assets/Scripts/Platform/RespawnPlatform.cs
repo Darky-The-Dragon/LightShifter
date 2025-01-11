@@ -10,6 +10,7 @@ namespace Platforms
         public static RespawnPlatform Instance;
         [SerializeField] private Transform respawnPlatform;
         public GameObject lastCheckpoint;
+        public Vector2 newLastCheckpoint;
 
         private void Awake()
         {
@@ -28,6 +29,11 @@ namespace Platforms
         {
             lastCheckpoint = checkpoint;
         }
+        
+        public void NewUpdateCheckpoint(Vector2 checkpoint)
+        {
+            newLastCheckpoint = checkpoint;
+        }
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
@@ -37,7 +43,7 @@ namespace Platforms
         private IEnumerator WaitAndRespawn()
         {
             yield return new WaitForSeconds(0.5f);
-            SceneController.Instance.Respawn(lastCheckpoint);
+            SceneController.Instance.Respawn(newLastCheckpoint);
         }
     }
 }
