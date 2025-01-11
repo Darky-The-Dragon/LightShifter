@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TarodevController.Demo;
 using UnityEngine;
 
@@ -9,11 +7,14 @@ public class SwitchPlatformBehavior : ResetObject
     public PatrolPlatform patrolPlatform;
     [Tooltip("If true, the platform will start moving when the switch is pressed, otherwise it will stop moving")]
     public bool switchOn = true;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip leverTwistClip;
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            this.gameObject.SetActive(false);
+            audioSource.PlayOneShot(leverTwistClip);
+            gameObject.SetActive(false);
             patrolPlatform.EnableMovement(switchOn);
         }
     }

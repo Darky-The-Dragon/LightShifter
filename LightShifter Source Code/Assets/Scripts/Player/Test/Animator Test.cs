@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -16,12 +16,12 @@ namespace TarodevController
         [SerializeField] private TrailRenderer trail;
 
 
-        [Header("Particles")] [SerializeField] private ParticleSystem _jumpParticles;
-        [SerializeField] private ParticleSystem _launchParticles;
-        [SerializeField] private ParticleSystem _moveParticles;
-        [SerializeField] private ParticleSystem _landParticles;
+        [Header("Particles")] [SerializeField] private ParticleSystem jumpParticles;
+        [SerializeField] private ParticleSystem launchParticles;
+        [SerializeField] private ParticleSystem moveParticles;
+        [SerializeField] private ParticleSystem landParticles;
 
-        [SerializeField] private ParticleSystem _doubleJumpParticles;
+        [SerializeField] private ParticleSystem doubleJumpParticles;
 
         private float _originalTrailTime;
         //[SerializeField] private ParticleSystem _dashParticles;
@@ -29,19 +29,20 @@ namespace TarodevController
         //[SerializeField] private Transform _dashRingTransform;
 
 
-        /*
-        [Header("Audio Clips")] [SerializeField]
-        private AudioClip _doubleJumpClip;
 
-        [SerializeField] private AudioClip _dashClip;
-        [SerializeField] private AudioClip[] _jumpClips;
-        [SerializeField] private AudioClip[] _splats;
-        [SerializeField] private AudioClip[] _slideClips;
-        [SerializeField] private AudioClip _wallGrabClip;
-        */
+        [Header("Audio Clips")] 
+        private bool _isMovementSoundPlaying;
+        [SerializeField] private AudioClip[] doubleJumpClip;
+        
+        [SerializeField] private AudioClip[] jumpClips;
+        [SerializeField] private AudioClip[] landClip;
+        [SerializeField] private AudioClip[] runClip;
+        // [SerializeField] private AudioClip[] slideClips;
+        // [SerializeField] private AudioClip wallGrabClip;
+        
 
 
-        //private AudioSource _source;
+        [SerializeField] private AudioSource source;
         private IPlayerController _player;
 
         //private Vector2 _defaultSpriteSize;
@@ -51,6 +52,7 @@ namespace TarodevController
 
         private void Awake()
         {
+            _isMovementSoundPlaying = false;
             //_source = GetComponent<AudioSource>();
             _player = GetComponentInParent<IPlayerController>();
             //_character = _player.Stats.CharacterSize.GenerateCharacterSize();
@@ -69,13 +71,15 @@ namespace TarodevController
             var yInput = _player.Input.y;
             //var velocity = _player.Velocity;
 
-            SetParticleColor(-_player.Up, _moveParticles);
+            SetParticleColor(-_player.Up, moveParticles);
 
             HandleSpriteFlip(xInput);
 
             HandleMovementAnimation(xInput, yInput);
 
             HandleWallSlideEffects();
+            
+            PlayMovementSound(xInput, yInput);
         }
 
         private void LateUpdate()
@@ -93,7 +97,8 @@ namespace TarodevController
             //_player.Repositioned += PlayerOnRepositioned;
             _player.ToggledPlayer += PlayerOnToggledPlayer;
 
-            _moveParticles.Play();
+            moveParticles.Play();
+            
         }
 
         private void OnDisable()
@@ -105,7 +110,7 @@ namespace TarodevController
             //_player.Repositioned -= PlayerOnRepositioned;
             _player.ToggledPlayer -= PlayerOnToggledPlayer;
 
-            _moveParticles.Stop();
+            moveParticles.Stop();
         }
 
         /*
@@ -235,8 +240,22 @@ namespace TarodevController
             anim.SetFloat(YVelocity, Mathf.Lerp(_player.Velocity.y, 1, yInputStrength));
 
             anim.SetFloat(AnimationSpeed, Mathf.Lerp(1, maxAnimationSpeed, Mathf.Abs(xInput)));
-            _moveParticles.transform.localScale = Vector3.MoveTowards(_moveParticles.transform.localScale,
+            moveParticles.transform.localScale = Vector3.MoveTowards(moveParticles.transform.localScale,
                 Vector3.one * xInputStrength, 2 * Time.deltaTime);
+        }
+        private void PlayMovementSound(float xInput, float yInput)
+        {
+            // Check if the player is moving
+            bool isMoving = Mathf.Abs(xInput) > 0.1f || Mathf.Abs(yInput) > 0.1f;
+
+            if (isMoving && _grounded)
+            {
+                if (!source.isPlaying)
+                {
+                    PlayRandomSound(runClip, 0.4f);
+                }
+            }
+
         }
 
         private void HandleSpriteFlip(float xInput)
@@ -271,7 +290,7 @@ namespace TarodevController
                 _sprite.size = Vector2.SmoothDamp(_sprite.size, new Vector2(1, _crouching ? _character.Height * percentage : _character.Height), ref _currentCrouchSizeVelocity, 0.03f);
             }
         }
-
+        
         #endregion
         */
 
@@ -283,20 +302,19 @@ namespace TarodevController
             {
                 anim.SetTrigger(JumpKey);
                 anim.ResetTrigger(GroundedKey);
-                //PlayRandomSound(_jumpClips, 0.2f, Random.Range(0.98f, 1.02f));
+                PlayRandomSound(jumpClips, 1f);
 
                 // Only play particles when grounded (avoid coyote)
                 if (type is JumpType.Jump)
                 {
-                    SetColor(_jumpParticles);
-                    SetColor(_launchParticles);
-                    _jumpParticles.Play();
+                    SetColor(jumpParticles);
+                    SetColor(launchParticles);
+                    jumpParticles.Play();
                 }
             }
             else if (type is JumpType.AirJump)
             {
-                //_source.PlayOneShot(_doubleJumpClip);
-                _doubleJumpParticles.Play();
+                PlayRandomSound(doubleJumpClip, 1f);
             }
         }
 
@@ -313,16 +331,17 @@ namespace TarodevController
                 //CancelSquish();
                 //_squishRoutine = StartCoroutine(SquishPlayer(Mathf.Abs(impact)));
                 //_source.PlayOneShot(_splats[Random.Range(0, _splats.Length)],0.5f);
-                _moveParticles.Play();
+                moveParticles.Play();
+                PlayRandomSound(landClip, 0.25f);
 
-                _landParticles.transform.localScale = Vector3.one * Mathf.InverseLerp(0, 40, Mathf.Abs(impact));
-                SetColor(_landParticles);
-                _landParticles.Play();
+                landParticles.transform.localScale = Vector3.one * Mathf.InverseLerp(0, 40, Mathf.Abs(impact));
+                SetColor(landParticles);
+                landParticles.Play();
             }
             else
             {
                 anim.SetBool(GroundedKey, false);
-                _moveParticles.Stop();
+                moveParticles.Stop();
             }
         }
 
@@ -426,18 +445,17 @@ namespace TarodevController
             main.startColor = _currentGradient;
         }
 
-        /*
-        private void PlayRandomSound(IReadOnlyList<AudioClip> clips, float volume = 1, float pitch = 1)
+        
+        private void PlayRandomSound(IReadOnlyList<AudioClip> clips, float volume)
         {
-            PlaySound(clips[Random.Range(0, clips.Count)], volume, pitch);
+            PlaySound(clips[Random.Range(0, clips.Count)], volume);
         }
 
-        private void PlaySound(AudioClip clip, float volume = 1, float pitch = 1)
+        private void PlaySound(AudioClip clip, float volume)
         {
-            _source.pitch = pitch;
-            _source.PlayOneShot(clip, volume);
+            source.PlayOneShot(clip, volume);
         }
-        */
+        
 
         #endregion
 

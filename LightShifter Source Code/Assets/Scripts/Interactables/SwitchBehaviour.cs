@@ -15,6 +15,9 @@ public class SwitchBehaviour : MonoBehaviour
     private float _switchSizeY;
     private readonly float _switchSpeed = 1f;
     private Vector3 _switchUpPos;
+    
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip leverTwistClip;
 
 
     // Start is called before the first frame update
@@ -41,6 +44,10 @@ public class SwitchBehaviour : MonoBehaviour
             _isPressingSwitch = !_isPressingSwitch;
 
             _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
+            
+            audioSource.PlayOneShot(leverTwistClip);
+            
+            DoorSound();
         }
     }
 
@@ -65,5 +72,22 @@ public class SwitchBehaviour : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         _isPressingSwitch = false;
+    }
+    
+    [SerializeField] private AudioClip doorMovingClip;
+
+    private void DoorSound()
+    {
+        audioSource.clip = doorMovingClip;
+        audioSource.loop = true; 
+        audioSource.Play();
+        StartCoroutine(StopDoorSound(1.5f));
+    }
+
+    private IEnumerator StopDoorSound(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        audioSource.Stop();
+
     }
 }

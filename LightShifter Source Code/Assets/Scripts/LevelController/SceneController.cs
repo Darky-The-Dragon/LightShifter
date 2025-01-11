@@ -21,10 +21,28 @@ namespace LevelController
 
             _resetObjects.AddRange(FindObjectsOfType<ResetObject>());
         }
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip backgroundMusic;
+        [SerializeField] private float volume = 0.5f;
 
         private void Start()
         {
             _startPosition = player.transform.position;
+            
+            //Sounds
+            if (audioSource == null)
+            {
+                Debug.LogError("AudioSource not assigned!");
+                return;
+            }
+
+            // Assign and configure the AudioSource
+            audioSource.clip = backgroundMusic;
+            audioSource.loop = true;
+            audioSource.volume = volume;
+
+            // Play the music
+            audioSource.Play();
         }
 
         private void Update()

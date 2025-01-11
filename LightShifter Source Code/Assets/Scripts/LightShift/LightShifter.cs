@@ -1,9 +1,6 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Tilemaps;
-using UnityEngine.UIElements;
 
 namespace LightShift
 {
@@ -14,15 +11,19 @@ namespace LightShift
         private Collider2D[] _lightColliders, _darkColliders;
         [SerializeField] private bool startWithLight = true;
         private bool _isLight;
-        [SerializeField] private bool _canChange = true, _isShiftLoaded = true;
+        [SerializeField] private bool canChange = true, isShiftLoaded = true;
         [SerializeField] private KeyCode lightShiftKey = KeyCode.LeftShift;
         [SerializeField] private float shiftCooldown = 0.5f;
-        public static LightShifter Instance;
+        private LightShifter _instance;
+        
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip transitionClip;
+        private float _volume = 0.1f;
 
         private void Awake()
         {
-            if(Instance == null) {
-                Instance = this;
+            if(_instance == null) {
+                _instance = this;
 
                 _lightSortingGroup = gridLight.GetComponent<SortingGroup>();
                 _lightColliders = gridLight.GetComponentsInChildren<Collider2D>();
@@ -48,28 +49,28 @@ namespace LightShift
                 _isLight = false;
                 ShowDark();
             }
-            _canChange = true;
-            _isShiftLoaded = true;
+            canChange = true;
+            isShiftLoaded = true;
         }
         public void BlockShift()
         {
-            this._canChange = false;
+            canChange = false;
         }
         public void EnableShift()
         {
-            this._canChange = true;
+            canChange = true;
         }
 
         private IEnumerator ShiftCooldown()
         {
-            _isShiftLoaded = false;
+            isShiftLoaded = false;
             yield return new WaitForSeconds(shiftCooldown);
-            _isShiftLoaded = true;
+            isShiftLoaded = true;
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(lightShiftKey) && _canChange && _isShiftLoaded)
+            if (Input.GetKeyDown(lightShiftKey) && canChange && isShiftLoaded)
             {
                 ToggleEnvironment();
                 StartCoroutine(ShiftCooldown());
@@ -94,6 +95,8 @@ namespace LightShift
 
             // move the dark world beneath the light world
             _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder - 1;
+            
+            audioSource.PlayOneShot(transitionClip, _volume);
         }
 
         private void ShowDark()
@@ -105,14 +108,16 @@ namespace LightShift
 
             // move the dark world on top of the light world
             _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder + 1;
+            
+            audioSource.PlayOneShot(transitionClip, _volume);
 
         }
 
         private void SetColliderTrigger(Collider2D[] colliders, bool isTrigger)
         {
-            foreach (Collider2D collider in colliders)
+            foreach (Collider2D collision in colliders)
             {
-                collider.isTrigger = isTrigger;
+                collision.isTrigger = isTrigger;
             }
         }
 

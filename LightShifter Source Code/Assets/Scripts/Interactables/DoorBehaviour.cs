@@ -27,7 +27,10 @@ public class DoorBehaviour : MonoBehaviour
     private void OpenDoor()
     {
         if (transform.position != _doorOpenPos)
+        {
             transform.position = Vector3.MoveTowards(transform.position, _doorOpenPos, _doorSpeed * Time.deltaTime);
+        }
+
     }
 
     private void CloseDoor()
