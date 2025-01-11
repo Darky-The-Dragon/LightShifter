@@ -451,9 +451,8 @@ namespace TarodevController
             PlaySound(clips[Random.Range(0, clips.Count)], volume);
         }
 
-        private void PlaySound(AudioClip clip, float volume = 1, float pitch = 1)
+        private void PlaySound(AudioClip clip, float volume)
         {
-            source.pitch = pitch;
             source.PlayOneShot(clip, volume);
         }
         
