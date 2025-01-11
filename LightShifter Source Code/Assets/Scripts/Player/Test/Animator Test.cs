@@ -252,7 +252,7 @@ namespace TarodevController
             {
                 if (!source.isPlaying)
                 {
-                    PlayRandomSound(runClip, 0.2f);
+                    PlayRandomSound(runClip, 0.4f);
                 }
             }
 
@@ -302,7 +302,7 @@ namespace TarodevController
             {
                 anim.SetTrigger(JumpKey);
                 anim.ResetTrigger(GroundedKey);
-                PlayRandomSound(jumpClips, 0.5f);
+                PlayRandomSound(jumpClips, 1f);
 
                 // Only play particles when grounded (avoid coyote)
                 if (type is JumpType.Jump)
@@ -314,7 +314,7 @@ namespace TarodevController
             }
             else if (type is JumpType.AirJump)
             {
-                PlayRandomSound(doubleJumpClip, 0.5f);
+                PlayRandomSound(doubleJumpClip, 1f);
             }
         }
 
