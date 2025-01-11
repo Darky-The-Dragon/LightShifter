@@ -1,27 +1,53 @@
 [
     {
-        "Index": 0,
-        "Text": "You are a young adventurer who has been traveling the world for years. You have seen many things and have had many adventures. But now you are tired and want to settle down.",
-        "Duration": 5
-    },
-    {
         "Index": 1,
-        "Text": "You arrive at the Valley of the Ancients and are amazed by its beauty. The valley is filled with lush green forests, crystal clear rivers, and majestic mountains.",
-        "Duration": 5
+        "Text": "In a universe where light and darkness coexist, two worlds mirror each other in perfect balance.",
+        "Duration": 10
     },
     {
         "Index": 2,
-        "Text": "You decide to make the valley your home and build a small cabin near the river. You spend your days exploring the valley, fishing in the river, and hunting in the forest.",
-        "Duration": 5
+        "Text": "These worlds, though aware of one another, are forbidden to interact as a delicate equilibrium must be maintained.",
+        "Duration": 10
     },
     {
         "Index": 3,
-        "Text": "One day, while exploring the valley, you come across an ancient temple hidden deep in the forest. The temple is covered in vines and moss, and its entrance is guarded by two stone statues.",
-        "Duration": 5
+        "Text": "One fateful day, Orin, a dweller of the dark world, discovered a secret path to the world of light. There, he met Solara, a girl whose light warmed his shadowed heart.",
+        "Duration": 10
     },
     {
         "Index": 4,
-        "Text": "You are intrigued by the temple and decide to explore it. As you enter the temple, you are greeted by a musty smell and the sound of dripping water.",
-        "Duration": 5
+        "Text": "Their forbidden love gave rise to a child, Kiran, who, unaware of its destiny, grew as the two worlds continued their quite harmony.",
+        "Duration": 10
+    },
+    {
+        "Index": 5,
+        "Text": "But peace was fragile. The balance began to unravel, and the two worlds edged toward collision. Strange changes overtook Kiran's body.",
+        "Duration": 10
+    },
+    {
+        "Index": 6,
+        "Text": "Seeking answers, Kiran set out to find his father Orin. In a surge of power, he teleported to the dark world, standing face-to-face with his father.",
+        "Duration": 10
+    },
+    {
+        "Index": 7,
+        "Text": "Through their reunion, Kiran learned of his unique gift, the ability to traverse both realms.",
+        "Duration": 10
+    },
+    {
+        "Index": 8,
+        "Text": "Haunted by visions of a catastrophic future, Kiran realized the truth: only he could restore balance to the universe.",
+        "Duration": 10
+    },
+    {
+        "Index": 9,
+        "Text": "Guided by his visions and his parents' love, Kiran embarks on a perilous journey to save both worlds.",
+        "Duration": 10
+    },
+    {
+        "Index": 10,
+        "Text": "Will he overcome the trials ahead and mend the fracture between light and darkness?",
+        "Duration": 10
     }
 ]
+

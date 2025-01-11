@@ -13,10 +13,12 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private LightShifter lightShifter;
     [SerializeField] private TextMeshProUGUI text;
+    [SerializeField] private float fadeInOutDuration = 1f;
     private FrameInput _cutsceneframeInput;
     private bool _enableParallax, _freezeMovement;
     private int _currentStoryTextIndex = 0;
     private List<StoryText> _storyTexts;
+
     void Start()
     {
         var jsonStoryTexts = Resources.Load<TextAsset>("StoryTexts");
@@ -50,11 +52,11 @@ public class CutsceneManager : MonoBehaviour
         _currentStoryTextIndex = 0;
         foreach (StoryText x in _storyTexts) {
             text.text = x.Text;
-            text.CrossFadeAlpha(1, 1.5f, false);
-            yield return new WaitForSeconds(1.5f);
+            text.CrossFadeAlpha(1, fadeInOutDuration, false);
+            yield return new WaitForSeconds(fadeInOutDuration);
             yield return new WaitForSeconds((float) x.Duration);
-            text.CrossFadeAlpha(0, 1.5f, false);
-            yield return new WaitForSeconds(1.5f);
+            text.CrossFadeAlpha(0, fadeInOutDuration, false);
+            yield return new WaitForSeconds(fadeInOutDuration);
         }
 
         yield return null;
