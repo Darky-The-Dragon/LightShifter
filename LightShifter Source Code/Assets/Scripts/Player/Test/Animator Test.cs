@@ -375,7 +375,7 @@ namespace TarodevController
         #region Helpers
 
         private ParticleSystem.MinMaxGradient _currentGradient;
-        
+
         private void SetParticleColor(Vector2 detectionDir, ParticleSystem system)
         {
             // Perform raycast
@@ -494,9 +494,13 @@ namespace TarodevController
                 Debug.Log("Updated " + _playerPosition);
             }
 
-            RespawnPlatform.Instance.NewUpdateCheckpoint(_playerPosition);
-            _isCheckpointUpdating = false;
+            if (_playerPosition.x != 0 && _playerPosition.y != 0)
+            {
+                RespawnPlatform.Instance.NewUpdateCheckpoint(_playerPosition);
+                _isCheckpointUpdating = false;
+            }
         }
+        
         private void FixedUpdate()
         {
             if (_grounded && !_isCheckpointUpdating && !_update)

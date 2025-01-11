@@ -11,6 +11,7 @@ namespace Platforms
         [SerializeField] private Transform respawnPlatform;
         public GameObject lastCheckpoint;
         public Vector2 newLastCheckpoint;
+        [SerializeField] private GameObject player;
 
         private void Awake()
         {
@@ -23,6 +24,7 @@ namespace Platforms
         private void Start()
         {
             lastCheckpoint = null;
+            newLastCheckpoint = player.transform.position;
         }
 
         public void UpdateCheckpoint(GameObject checkpoint)
