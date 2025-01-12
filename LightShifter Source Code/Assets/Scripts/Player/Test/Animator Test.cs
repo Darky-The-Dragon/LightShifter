@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Platforms;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
@@ -18,6 +19,17 @@ namespace TarodevController
         [SerializeField] private Transform trailRenderer;
         [SerializeField] private SpriteRenderer sprite;
         [SerializeField] private TrailRenderer trail;
+        
+        public AudioMixerGroup musicAudioMixerGroup;
+        public AudioMixerGroup sfxAudioMixerGroup;
+        public AudioSource musicAudioSource;
+        public AudioSource sfxAudioSource;
+
+        private void Start()
+        {
+            musicAudioSource.outputAudioMixerGroup = musicAudioMixerGroup;
+            sfxAudioSource.outputAudioMixerGroup = sfxAudioMixerGroup;
+        }
 
 
         [Header("Particles")] [SerializeField] private ParticleSystem jumpParticles;
