@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -11,6 +12,7 @@ namespace LightShift
         private Collider2D[] _lightColliders, _darkColliders;
         [SerializeField] private bool startWithLight = true;
         private bool _isLight;
+        
         [SerializeField] private bool canChange = true, isShiftLoaded = true;
         [SerializeField] private KeyCode lightShiftKey = KeyCode.LeftShift;
         [SerializeField] private float shiftCooldown = 0.5f;
@@ -21,6 +23,10 @@ namespace LightShift
         private float _volume = 0.1f;
         private bool _start;
 
+        public event Action<bool> OnWorldShifted; // passes 'true' if light, 'false' if dark
+        
+        public bool IsLight => _isLight;
+        
         private void Awake()
         {
             if(_instance == null) {
@@ -31,14 +37,15 @@ namespace LightShift
 
                 _darkSortingGroup = gridDark.GetComponent<SortingGroup>();
                 _darkColliders = gridDark.GetComponentsInChildren<Collider2D>();
+                
+                
             }
             else
                 Destroy(gameObject);
             
         }
-
-
-        private void Start()
+        
+        private void OnEnable()
         {
             _start = true;
             if (startWithLight)
@@ -89,6 +96,9 @@ namespace LightShift
                 ShowLight();
             // Flip the toggle state
             _isLight = !_isLight;
+            
+            // Fire the event
+            OnWorldShifted?.Invoke(_isLight);
         }
 
         private void ShowLight()
