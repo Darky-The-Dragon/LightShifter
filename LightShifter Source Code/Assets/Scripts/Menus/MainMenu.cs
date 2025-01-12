@@ -5,16 +5,14 @@ namespace Menus
 {
     public class MainMenu : MonoBehaviour
     {
-        public void PlayGame()
+        public void Chapter1()
         {
-            Debug.Log(SceneManager.GetActiveScene().buildIndex);
-            if (SceneManager.GetActiveScene().buildIndex == 3)
-            {
-                SceneManager.LoadScene(2);
-                return;
-            }
-
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            SceneManager.LoadScene(1);
+        }
+        
+        public void Chapter2()
+        {
+            SceneManager.LoadScene(2);
         }
     }
 }

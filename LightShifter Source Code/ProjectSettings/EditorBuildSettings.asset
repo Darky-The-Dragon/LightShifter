@@ -6,15 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/GameScenes/UI/MainMenu.unity
-    guid: 9854fc0e1fdf140a0861f90652a567de
-  - enabled: 1
-    path: Assets/Scenes/GameScenes/UI/SelectChapter.unity
-    guid: 4af6a3018ccc443969603a4339a76cde
+    path: Assets/Scenes/MechanicsTest/UItest.unity
+    guid: ddc07c4a09e034d1db4c14614b8b49ed
   - enabled: 1
     path: Assets/Scenes/GameScenes/Chapters/Chapter1.unity
-    guid: e961aa3c1db1dde40b03ae8e0913f514
+    guid: 92401bbe38c99b54cab6e54c284b5370
   - enabled: 1
-    path: Assets/Scenes/GameScenes/UI/EndGame.unity
-    guid: 189ed7ae16d0c450ca81296213896d39
+    path: Assets/Scenes/GameScenes/Chapters/Chapter2.unity
+    guid: 305db1807bbce438bb03b7de27837e3f
   m_configObjects: {}
