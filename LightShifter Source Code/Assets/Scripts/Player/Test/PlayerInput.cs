@@ -5,9 +5,10 @@ using UnityEngine.InputSystem;
 
 namespace TarodevController
 {
-    public class PlayerInput : MonoBehaviour
+    public class TarodevPlayerInput : MonoBehaviour
     {
 #if ENABLE_INPUT_SYSTEM
+        private PlayerInput _playerInput;
         private PlayerInputActions _actions;
         private InputAction _move, _jump, _dash, _shift;
 
@@ -18,16 +19,77 @@ namespace TarodevController
             _jump = _actions.Player.Jump;
             _dash = _actions.Player.Dash;
             _shift = _actions.Player.LightShift;
+
+            // (Optional) If the PlayerInput is on the same GameObject,
+            // grab it here
+            _playerInput = GetComponent<PlayerInput>();
         }
 
         private void OnEnable()
         {
             _actions.Enable();
+
+            // If you have a PlayerInput component, subscribe to onControlsChanged
+            if (_playerInput != null)
+            {
+                _playerInput.onControlsChanged += OnControlsChanged;
+            }
         }
 
         private void OnDisable()
         {
             _actions.Disable();
+
+            if (_playerInput != null)
+            {
+                _playerInput.onControlsChanged -= OnControlsChanged;
+            }
+        }
+
+        private void OnControlsChanged(PlayerInput obj) 
+        {
+            Debug.Log("Active scheme: " + obj.currentControlScheme);
+
+            // 1. Check if it's keyboard/mouse or gamepad
+            bool isKeyboard = (obj.currentControlScheme == "Keyboard&Mouse");
+
+            // 2. If it's gamepad, detect the brand
+            GamepadBrand brand = GamepadBrand.Unknown;
+            if (!isKeyboard)
+            {
+                brand = DetectGamepadBrand(Gamepad.current);
+            }
+
+            // 3. Finally, notify the TutorialManager
+            TutorialManager.Instance.UpdateControlScheme(isKeyboard, brand);
+        }
+
+        private GamepadBrand DetectGamepadBrand(Gamepad gp)
+        {
+            if (gp == null) return GamepadBrand.Unknown;
+
+            string product = gp.description.product?.ToLower() ?? "";
+            string manufacturer = gp.description.manufacturer?.ToLower() ?? "";
+            
+            Debug.Log("Product: " + product);
+            Debug.Log("Manufacturer: " + manufacturer);
+
+
+            if (product.Contains("sony") || product.Contains("dualshock") ||
+                product.Contains("ps5") || product.Contains("ps4") ||
+                product.Contains("dualsense") ||
+                manufacturer.Contains("sony"))
+                return GamepadBrand.PlayStation;
+
+            if (product.Contains("xbox") || manufacturer.Contains("microsoft") ||
+                product.Contains("xinput"))
+                return GamepadBrand.Xbox;
+
+            if (product.Contains("switch") || product.Contains("joy-con") ||
+                product.Contains("nintendo") || manufacturer.Contains("nintendo"))
+                return GamepadBrand.Switch;
+
+            return GamepadBrand.Unknown;
         }
 
         public FrameInput Gather()
@@ -42,7 +104,7 @@ namespace TarodevController
             };
         }
 #else
-    public FrameInput Gather()
+        public FrameInput Gather()
         {
             return new FrameInput
             {

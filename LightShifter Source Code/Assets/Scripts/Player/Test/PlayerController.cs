@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace TarodevController
 {
@@ -40,8 +41,7 @@ namespace TarodevController
         }
 
         #endregion
-
-
+        
         private void SaveCharacterState()
         {
             State = new ControllerState
@@ -59,7 +59,8 @@ namespace TarodevController
         private CapsuleCollider2D _airborneCollider;
         private ConstantForce2D _constantForce;
         private Rigidbody2D _rb;
-        private PlayerInput _playerInput;
+        private TarodevPlayerInput _playerInput;
+        private PlayerInput _unityPlayerInput;
 
         #endregion
 
@@ -73,6 +74,7 @@ namespace TarodevController
         public event Action<bool> WallGrabChanged;
         public event Action<Vector2> Repositioned;
         public event Action<bool> ToggledPlayer;
+        public event Action<string, GamepadBrand> OnControlSchemeChanged; 
 
         public bool Active { get; private set; } = true;
         public Vector2 Up { get; private set; }
@@ -122,14 +124,19 @@ namespace TarodevController
 
         private void Awake()
         {
-            if (!TryGetComponent(out _playerInput)) _playerInput = gameObject.AddComponent<PlayerInput>();
+            if (!TryGetComponent(out _playerInput)) _playerInput = gameObject.AddComponent<TarodevPlayerInput>();
             if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
-
+            if (!TryGetComponent(out _unityPlayerInput)) _unityPlayerInput = gameObject.AddComponent<PlayerInput>();
+            
+            if (!_unityPlayerInput) {
+                Debug.LogWarning("No Unity PlayerInput attached. Device detection won't work.");
+            }
+            
             SetupCharacter();
 
             PhysicsSimulator.Instance.AddPlayer(this);
         }
-
+        
         private void OnDestroy()
         {
             PhysicsSimulator.Instance.RemovePlayer(this);
@@ -236,7 +243,7 @@ namespace TarodevController
 
             //if (_frameInput.DashDown) _dashToConsume = true;
         }
-
+        
         #endregion
 
         #region Frame Data

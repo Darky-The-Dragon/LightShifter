@@ -60,7 +60,7 @@ namespace StoryIntroCutscene
         private CapsuleCollider2D _airborneCollider;
         private ConstantForce2D _constantForce;
         private Rigidbody2D _rb;
-        private PlayerInput _playerInput;
+        private TarodevPlayerInput _playerInput;
 
         #endregion
 
@@ -123,7 +123,7 @@ namespace StoryIntroCutscene
 
         private void Awake()
         {
-            if (!TryGetComponent(out _playerInput)) _playerInput = gameObject.AddComponent<PlayerInput>();
+            if (!TryGetComponent(out _playerInput)) _playerInput = gameObject.AddComponent<TarodevPlayerInput>();
             if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
 
             SetupCharacter();
