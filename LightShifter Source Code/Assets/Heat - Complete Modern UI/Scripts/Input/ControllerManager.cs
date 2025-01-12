@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
 using UnityEngine.InputSystem.XInput;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
@@ -18,27 +18,26 @@ namespace Michsky.UI.Heat
         // Resources
         public ControllerPresetManager presetManager;
         public GameObject firstSelected;
-        public List<PanelManager> panels = new List<PanelManager>();
-        public List<ButtonManager> buttons = new List<ButtonManager>();
-        public List<BoxButtonManager> boxButtons = new List<BoxButtonManager>();
-        public List<ShopButtonManager> shopButtons = new List<ShopButtonManager>();
-        public List<SettingsElement> settingsElements = new List<SettingsElement>();
+        public List<PanelManager> panels = new();
+        public List<ButtonManager> buttons = new();
+        public List<BoxButtonManager> boxButtons = new();
+        public List<ShopButtonManager> shopButtons = new();
+        public List<SettingsElement> settingsElements = new();
+
         [Tooltip("Objects in this list will be enabled when the gamepad is un-plugged.")]
-        public List<GameObject> keyboardObjects = new List<GameObject>();
+        public List<GameObject> keyboardObjects = new();
+
         [Tooltip("Objects in this list will be enabled when the gamepad is plugged.")]
-        public List<GameObject> gamepadObjects = new List<GameObject>();
-        public List<HotkeyEvent> hotkeyObjects = new List<HotkeyEvent>();
+        public List<GameObject> gamepadObjects = new();
+
+        public List<HotkeyEvent> hotkeyObjects = new();
 
         // Settings
         [Tooltip("Checks for input changes each frame.")]
         public bool alwaysUpdate = true;
+
         public bool affectCursor = true;
         public InputAction gamepadHotkey;
-
-        // Helpers
-        Vector3 cursorPos;
-        Vector3 lastCursorPos;
-        Navigation customNav = new Navigation();
         [HideInInspector] public int currentManagerIndex;
 
         [HideInInspector] public bool gamepadConnected;
@@ -51,17 +50,22 @@ namespace Michsky.UI.Heat
         [HideInInspector] public string currentController;
         [HideInInspector] public ControllerPreset currentControllerPreset;
 
-        void Awake()
+        // Helpers
+        private Vector3 cursorPos;
+        private Navigation customNav;
+        private Vector3 lastCursorPos;
+
+        private void Awake()
         {
             instance = this;
         }
 
-        void Start()
+        private void Start()
         {
             InitInput();
         }
 
-        void Update()
+        private void Update()
         {
             if (!alwaysUpdate)
                 return;
@@ -70,28 +74,41 @@ namespace Michsky.UI.Heat
             CheckForEmptyObject();
         }
 
-        void InitInput()
+        private void InitInput()
         {
             gamepadHotkey.Enable();
 
-            if (Gamepad.current == null) { gamepadConnected = false; SwitchToKeyboard(); }
-            else { gamepadConnected = true; SwitchToGamepad(); }
+            if (Gamepad.current == null)
+            {
+                gamepadConnected = false;
+                SwitchToKeyboard();
+            }
+            else
+            {
+                gamepadConnected = true;
+                SwitchToGamepad();
+            }
         }
 
-        void CheckForEmptyObject()
+        private void CheckForEmptyObject()
         {
-            if (!gamepadEnabled) { return; }
-            else if (EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.gameObject.activeInHierarchy) { return; }
+            if (!gamepadEnabled)
+                return;
+            if (EventSystem.current.currentSelectedGameObject != null &&
+                EventSystem.current.currentSelectedGameObject.gameObject.activeInHierarchy) return;
 
-            if (gamepadHotkey.triggered && panels.Count != 0 && panels[currentManagerIndex].panels[panels[currentManagerIndex].currentPanelIndex].firstSelected != null)
-            {
-                SelectUIObject(panels[currentManagerIndex].panels[panels[currentManagerIndex].currentPanelIndex].firstSelected);
-            }
+            if (gamepadHotkey.triggered && panels.Count != 0 && panels[currentManagerIndex]
+                    .panels[panels[currentManagerIndex].currentPanelIndex].firstSelected != null)
+                SelectUIObject(panels[currentManagerIndex].panels[panels[currentManagerIndex].currentPanelIndex]
+                    .firstSelected);
         }
 
         public void CheckForController()
         {
-            if (Gamepad.current == null) { gamepadConnected = false; }
+            if (Gamepad.current == null)
+            {
+                gamepadConnected = false;
+            }
             else
             {
                 gamepadConnected = true;
@@ -99,25 +116,27 @@ namespace Michsky.UI.Heat
                 vAxis = Gamepad.current.rightStick.y.ReadValue();
             }
 
-            if (Mouse.current != null) { cursorPos = Mouse.current.position.ReadValue(); }
-            if (gamepadConnected && gamepadEnabled && !keyboardEnabled && cursorPos != lastCursorPos) { SwitchToKeyboard(); }
-            else if (gamepadConnected && !gamepadEnabled && keyboardEnabled && gamepadHotkey.triggered) { SwitchToGamepad(); }
-            else if (!gamepadConnected && !keyboardEnabled) { SwitchToKeyboard(); }
+            if (Mouse.current != null) cursorPos = Mouse.current.position.ReadValue();
+            if (gamepadConnected && gamepadEnabled && !keyboardEnabled && cursorPos != lastCursorPos)
+                SwitchToKeyboard();
+            else if (gamepadConnected && !gamepadEnabled && keyboardEnabled && gamepadHotkey.triggered)
+                SwitchToGamepad();
+            else if (!gamepadConnected && !keyboardEnabled) SwitchToKeyboard();
         }
 
-        void CheckForCurrentObject()
+        private void CheckForCurrentObject()
         {
-            if ((EventSystem.current.currentSelectedGameObject == null || !EventSystem.current.currentSelectedGameObject.activeInHierarchy) && panels.Count != 0)
-            {
-                SelectUIObject(panels[currentManagerIndex].panels[panels[currentManagerIndex].currentPanelIndex].firstSelected);
-            }
+            if ((EventSystem.current.currentSelectedGameObject == null ||
+                 !EventSystem.current.currentSelectedGameObject.activeInHierarchy) && panels.Count != 0)
+                SelectUIObject(panels[currentManagerIndex].panels[panels[currentManagerIndex].currentPanelIndex]
+                    .firstSelected);
         }
 
         public void SwitchToGamepad()
         {
-            if (affectCursor) { Cursor.visible = false; }
-          
-            for (int i = 0; i < keyboardObjects.Count; i++) 
+            if (affectCursor) Cursor.visible = false;
+
+            for (var i = 0; i < keyboardObjects.Count; i++)
             {
                 if (keyboardObjects[i] == null)
                     continue;
@@ -125,7 +144,7 @@ namespace Michsky.UI.Heat
                 keyboardObjects[i].SetActive(false);
             }
 
-            for (int i = 0; i < gamepadObjects.Count; i++)
+            for (var i = 0; i < gamepadObjects.Count; i++)
             {
                 if (gamepadObjects[i] == null)
                     continue;
@@ -136,20 +155,28 @@ namespace Michsky.UI.Heat
 
             customNav.mode = Navigation.Mode.Automatic;
 
-            for (int i = 0; i < buttons.Count; i++) { if (buttons[i] != null && !buttons[i].useUINavigation) { buttons[i].AddUINavigation(); } }
-            for (int i = 0; i < boxButtons.Count; i++) { if (boxButtons[i] != null && !boxButtons[i].useUINavigation) { boxButtons[i].AddUINavigation(); } }
-            for (int i = 0; i < shopButtons.Count; i++) { if (shopButtons[i] != null && !shopButtons[i].useUINavigation) { shopButtons[i].AddUINavigation(); } }
-            for (int i = 0; i < settingsElements.Count; i++) { if (settingsElements[i] != null && !settingsElements[i].useUINavigation) { settingsElements[i].AddUINavigation(); } }
+            for (var i = 0; i < buttons.Count; i++)
+                if (buttons[i] != null && !buttons[i].useUINavigation)
+                    buttons[i].AddUINavigation();
+            for (var i = 0; i < boxButtons.Count; i++)
+                if (boxButtons[i] != null && !boxButtons[i].useUINavigation)
+                    boxButtons[i].AddUINavigation();
+            for (var i = 0; i < shopButtons.Count; i++)
+                if (shopButtons[i] != null && !shopButtons[i].useUINavigation)
+                    shopButtons[i].AddUINavigation();
+            for (var i = 0; i < settingsElements.Count; i++)
+                if (settingsElements[i] != null && !settingsElements[i].useUINavigation)
+                    settingsElements[i].AddUINavigation();
 
             gamepadEnabled = true;
             keyboardEnabled = false;
-            if (Mouse.current != null) { lastCursorPos = Mouse.current.position.ReadValue(); }
+            if (Mouse.current != null) lastCursorPos = Mouse.current.position.ReadValue();
 
             CheckForGamepadType();
             CheckForCurrentObject();
         }
 
-        void CheckForGamepadType()
+        private void CheckForGamepadType()
         {
             if (Gamepad.current == null)
                 return;
@@ -157,23 +184,22 @@ namespace Michsky.UI.Heat
             currentController = Gamepad.current.displayName;
 
             // Search for main and custom gameapds
-            if (Gamepad.current is XInputController && presetManager != null && presetManager.xboxPreset != null) { currentControllerPreset = presetManager.xboxPreset; }
+            if (Gamepad.current is XInputController && presetManager != null && presetManager.xboxPreset != null)
+                currentControllerPreset = presetManager.xboxPreset;
 #if !UNITY_WEBGL && !UNITY_IOS && !UNITY_ANDROID && !UNITY_STANDALONE_LINUX
-            else if (Gamepad.current is DualSenseGamepadHID && presetManager != null && presetManager.dualsensePreset != null) { currentControllerPreset = presetManager.dualsensePreset; }
+            else if (Gamepad.current is DualSenseGamepadHID && presetManager != null &&
+                     presetManager.dualsensePreset != null)
+                currentControllerPreset = presetManager.dualsensePreset;
 #endif
             else
-            {
-                for (int i = 0; i < presetManager.customPresets.Count; i++)
-                {
+                for (var i = 0; i < presetManager.customPresets.Count; i++)
                     if (currentController == presetManager.customPresets[i].controllerName)
                     {
                         currentControllerPreset = presetManager.customPresets[i];
                         break;
                     }
-                }
-            }
 
-            foreach (HotkeyEvent he in hotkeyObjects) 
+            foreach (var he in hotkeyObjects)
             {
                 if (he == null)
                     continue;
@@ -185,12 +211,12 @@ namespace Michsky.UI.Heat
 
         public void SwitchToKeyboard()
         {
-            if (affectCursor) { Cursor.visible = true; }
-            if (presetManager != null && presetManager.keyboardPreset != null) 
+            if (affectCursor) Cursor.visible = true;
+            if (presetManager != null && presetManager.keyboardPreset != null)
             {
                 currentControllerPreset = presetManager.keyboardPreset;
-             
-                foreach (HotkeyEvent he in hotkeyObjects)
+
+                foreach (var he in hotkeyObjects)
                 {
                     if (he == null)
                         continue;
@@ -200,7 +226,7 @@ namespace Michsky.UI.Heat
                 }
             }
 
-            for (int i = 0; i < gamepadObjects.Count; i++) 
+            for (var i = 0; i < gamepadObjects.Count; i++)
             {
                 if (gamepadObjects[i] == null)
                     continue;
@@ -208,7 +234,7 @@ namespace Michsky.UI.Heat
                 gamepadObjects[i].SetActive(false);
             }
 
-            for (int i = 0; i < keyboardObjects.Count; i++)
+            for (var i = 0; i < keyboardObjects.Count; i++)
             {
                 if (keyboardObjects[i] == null)
                     continue;
@@ -219,10 +245,18 @@ namespace Michsky.UI.Heat
 
             customNav.mode = Navigation.Mode.None;
 
-            for (int i = 0; i < buttons.Count; i++) { if (buttons[i] != null && !buttons[i].useUINavigation) { buttons[i].DisableUINavigation(); } }
-            for (int i = 0; i < boxButtons.Count; i++) { if (boxButtons[i] != null && !boxButtons[i].useUINavigation) { boxButtons[i].DisableUINavigation(); } }
-            for (int i = 0; i < shopButtons.Count; i++) { if (shopButtons[i] != null && !shopButtons[i].useUINavigation) { shopButtons[i].DisableUINavigation(); } }
-            for (int i = 0; i < settingsElements.Count; i++) { if (settingsElements[i] != null && !settingsElements[i].useUINavigation) { settingsElements[i].DisableUINavigation(); } }
+            for (var i = 0; i < buttons.Count; i++)
+                if (buttons[i] != null && !buttons[i].useUINavigation)
+                    buttons[i].DisableUINavigation();
+            for (var i = 0; i < boxButtons.Count; i++)
+                if (boxButtons[i] != null && !boxButtons[i].useUINavigation)
+                    boxButtons[i].DisableUINavigation();
+            for (var i = 0; i < shopButtons.Count; i++)
+                if (shopButtons[i] != null && !shopButtons[i].useUINavigation)
+                    shopButtons[i].DisableUINavigation();
+            for (var i = 0; i < settingsElements.Count; i++)
+                if (settingsElements[i] != null && !settingsElements[i].useUINavigation)
+                    settingsElements[i].DisableUINavigation();
 
             gamepadEnabled = false;
             keyboardEnabled = true;

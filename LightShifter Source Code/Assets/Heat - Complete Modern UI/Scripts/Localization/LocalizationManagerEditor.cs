@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -8,15 +8,17 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(LocalizationManager))]
     public class LocalizationManagerEditor : Editor
     {
-        private LocalizationManager lmTarget;
         private GUISkin customSkin;
+        private LocalizationManager lmTarget;
 
         private void OnEnable()
         {
             lmTarget = (LocalizationManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -33,13 +35,17 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawProperty(languageSelector, customSkin, "Language Selector");
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-            setLanguageOnAwake.boolValue = HeatUIEditorHandler.DrawToggle(setLanguageOnAwake.boolValue, customSkin, "Set Language On Awake");
-            updateItemsOnSet.boolValue = HeatUIEditorHandler.DrawToggle(updateItemsOnSet.boolValue, customSkin, "Update Items On Language Set");
-            saveLanguageChanges.boolValue = HeatUIEditorHandler.DrawToggle(saveLanguageChanges.boolValue, customSkin, "Save Language Changes");
-            LocalizationManager.enableLogs = HeatUIEditorHandler.DrawToggle(LocalizationManager.enableLogs, customSkin, "Enable Logs");
+            setLanguageOnAwake.boolValue =
+                HeatUIEditorHandler.DrawToggle(setLanguageOnAwake.boolValue, customSkin, "Set Language On Awake");
+            updateItemsOnSet.boolValue = HeatUIEditorHandler.DrawToggle(updateItemsOnSet.boolValue, customSkin,
+                "Update Items On Language Set");
+            saveLanguageChanges.boolValue =
+                HeatUIEditorHandler.DrawToggle(saveLanguageChanges.boolValue, customSkin, "Save Language Changes");
+            LocalizationManager.enableLogs =
+                HeatUIEditorHandler.DrawToggle(LocalizationManager.enableLogs, customSkin, "Enable Logs");
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

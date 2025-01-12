@@ -10,53 +10,75 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/Animation/UI Popup")]
     public class UIPopup : MonoBehaviour
     {
-        [Header("Settings")]
-        [SerializeField] private bool playOnEnable = true;
-        [SerializeField] private bool closeOnDisable = false;
-        [Tooltip("Skip out animation.")]
-        [SerializeField] private bool instantOut = false;
-        [Tooltip("Enables content size fitter mode.")]
-        [SerializeField] private bool fitterMode = false;
+        public enum AnimationMode
+        {
+            Scale,
+            Horizontal,
+            Vertical
+        }
+
+        public enum StartBehaviour
+        {
+            Default,
+            Disabled,
+            Static
+        }
+
+        public enum UpdateMode
+        {
+            DeltaTime,
+            UnscaledTime
+        }
+
+        [Header("Settings")] [SerializeField] private bool playOnEnable = true;
+
+        [SerializeField] private bool closeOnDisable;
+
+        [Tooltip("Skip out animation.")] [SerializeField]
+        private bool instantOut;
+
+        [Tooltip("Enables content size fitter mode.")] [SerializeField]
+        private bool fitterMode;
+
         [SerializeField] private StartBehaviour startBehaviour;
         [SerializeField] private UpdateMode updateMode = UpdateMode.UnscaledTime;
 
-        [Header("Animation")]
-        [SerializeField] private AnimationMode animationMode;
-        [SerializeField] private AnimationCurve animationCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+        [Header("Animation")] [SerializeField] private AnimationMode animationMode;
+
+        [SerializeField]
+        private AnimationCurve animationCurve = new(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+
         [Range(0.5f, 10)] public float curveSpeed = 4f;
 
-        [Header("Events")]
-        public UnityEvent onEnable = new UnityEvent();
-        public UnityEvent onVisible = new UnityEvent();
-        public UnityEvent onDisable = new UnityEvent();
+        [Header("Events")] public UnityEvent onEnable = new();
+
+        public UnityEvent onVisible = new();
+        public UnityEvent onDisable = new();
+        [HideInInspector] public bool isOn;
+        private CanvasGroup cg;
+        private bool isFitterInitialized;
+        private bool isInitialized;
 
         // Helpers
-        RectTransform rect;
-        CanvasGroup cg;
-        Vector2 rectHelper;
-        bool isInitialized = false;
-        bool isFitterInitialized = false;
-        [HideInInspector] public bool isOn = false;
+        private RectTransform rect;
+        private Vector2 rectHelper;
 
-        public enum AnimationMode { Scale, Horizontal, Vertical }
-        public enum StartBehaviour { Default, Disabled, Static }
-        public enum UpdateMode { DeltaTime, UnscaledTime }
-
-        void Start()
+        private void Start()
         {
-            if (startBehaviour == StartBehaviour.Disabled)
+            if (startBehaviour == StartBehaviour.Disabled) gameObject.SetActive(false);
+        }
+
+        private void OnEnable()
+        {
+            if (!isInitialized) Initialize();
+            if (playOnEnable)
             {
-                gameObject.SetActive(false);
+                isOn = false;
+                PlayIn();
             }
         }
 
-        void OnEnable()
-        {
-            if (!isInitialized) { Initialize(); }
-            if (playOnEnable) { isOn = false; PlayIn(); }
-        }
-
-        void OnDisable()
+        private void OnDisable()
         {
             if (closeOnDisable)
             {
@@ -67,10 +89,12 @@ namespace Michsky.UI.Heat
 
         private void Initialize()
         {
-            if (rect == null) { rect = GetComponent<RectTransform>(); }
-            if (cg == null) { cg = GetComponent<CanvasGroup>(); }
-            if (startBehaviour == StartBehaviour.Disabled || startBehaviour == StartBehaviour.Static) { rectHelper = rect.sizeDelta; }
-            else if (startBehaviour == StartBehaviour.Default && gameObject.activeInHierarchy && !fitterMode) { isOn = true; }
+            if (rect == null) rect = GetComponent<RectTransform>();
+            if (cg == null) cg = GetComponent<CanvasGroup>();
+            if (startBehaviour == StartBehaviour.Disabled || startBehaviour == StartBehaviour.Static)
+                rectHelper = rect.sizeDelta;
+            else if (startBehaviour == StartBehaviour.Default && gameObject.activeInHierarchy && !fitterMode)
+                isOn = true;
 
             isInitialized = true;
         }
@@ -82,8 +106,10 @@ namespace Michsky.UI.Heat
 
         public void Animate()
         {
-            if (isOn) { PlayOut(); }
-            else { PlayIn(); }
+            if (isOn)
+                PlayOut();
+            else
+                PlayIn();
         }
 
         public void PlayIn()
@@ -102,20 +128,31 @@ namespace Michsky.UI.Heat
 
             if (animationMode == AnimationMode.Scale && cg != null)
             {
-                if (gameObject.activeInHierarchy) { StartCoroutine("ScaleIn"); }
-                else { cg.alpha = 1; rect.localScale = new Vector3(1, 1, 1); }
+                if (gameObject.activeInHierarchy)
+                {
+                    StartCoroutine("ScaleIn");
+                }
+                else
+                {
+                    cg.alpha = 1;
+                    rect.localScale = new Vector3(1, 1, 1);
+                }
             }
 
             else if (animationMode == AnimationMode.Horizontal && cg != null)
             {
-                if (gameObject.activeInHierarchy) { StartCoroutine("HorizontalIn"); }
-                else { cg.alpha = 1; }
+                if (gameObject.activeInHierarchy)
+                    StartCoroutine("HorizontalIn");
+                else
+                    cg.alpha = 1;
             }
 
             else if (animationMode == AnimationMode.Vertical && cg != null)
             {
-                if (gameObject.activeInHierarchy) { StartCoroutine("VerticalIn"); }
-                else { cg.alpha = 1; }
+                if (gameObject.activeInHierarchy)
+                    StartCoroutine("VerticalIn");
+                else
+                    cg.alpha = 1;
             }
 
             isOn = true;
@@ -136,32 +173,56 @@ namespace Michsky.UI.Heat
 
             if (animationMode == AnimationMode.Scale && cg != null)
             {
-                if (gameObject.activeInHierarchy) { StartCoroutine("ScaleOut"); }
-                else { cg.alpha = 0; rect.localScale = new Vector3(0, 0, 0); gameObject.SetActive(false); }
+                if (gameObject.activeInHierarchy)
+                {
+                    StartCoroutine("ScaleOut");
+                }
+                else
+                {
+                    cg.alpha = 0;
+                    rect.localScale = new Vector3(0, 0, 0);
+                    gameObject.SetActive(false);
+                }
             }
 
             else if (animationMode == AnimationMode.Horizontal && cg != null)
             {
-                if (gameObject.activeInHierarchy) { StartCoroutine("HorizontalOut"); }
-                else { cg.alpha = 0; gameObject.SetActive(false); }
+                if (gameObject.activeInHierarchy)
+                {
+                    StartCoroutine("HorizontalOut");
+                }
+                else
+                {
+                    cg.alpha = 0;
+                    gameObject.SetActive(false);
+                }
             }
 
             else if (animationMode == AnimationMode.Vertical && cg != null)
             {
-                if (gameObject.activeInHierarchy) { StartCoroutine("VerticalOut"); }
-                else { cg.alpha = 0; gameObject.SetActive(false); }
+                if (gameObject.activeInHierarchy)
+                {
+                    StartCoroutine("VerticalOut");
+                }
+                else
+                {
+                    cg.alpha = 0;
+                    gameObject.SetActive(false);
+                }
             }
 
             isOn = false;
             onDisable.Invoke();
         }
 
-        IEnumerator InitFitter()
+        private IEnumerator InitFitter()
         {
-            if (updateMode == UpdateMode.UnscaledTime) { yield return new WaitForSecondsRealtime(0.04f); }
-            else { yield return new WaitForSeconds(0.04f); }
+            if (updateMode == UpdateMode.UnscaledTime)
+                yield return new WaitForSecondsRealtime(0.04f);
+            else
+                yield return new WaitForSeconds(0.04f);
 
-            ContentSizeFitter csf = GetComponent<ContentSizeFitter>();
+            var csf = GetComponent<ContentSizeFitter>();
             csf.enabled = false;
 
             rectHelper = rect.sizeDelta;
@@ -170,7 +231,7 @@ namespace Michsky.UI.Heat
             PlayIn();
         }
 
-        IEnumerator ScaleIn()
+        private IEnumerator ScaleIn()
         {
             StopCoroutine("ScaleOut");
 
@@ -183,8 +244,10 @@ namespace Michsky.UI.Heat
 
             while (rect.localScale.x < 0.99)
             {
-                if (updateMode == UpdateMode.UnscaledTime) { elapsedTime += Time.unscaledDeltaTime; }
-                else { elapsedTime += Time.deltaTime; }
+                if (updateMode == UpdateMode.UnscaledTime)
+                    elapsedTime += Time.unscaledDeltaTime;
+                else
+                    elapsedTime += Time.deltaTime;
 
                 smoothValue = Mathf.Lerp(startingPoint, 1, animationCurve.Evaluate(elapsedTime * curveSpeed));
                 rect.localScale = new Vector3(smoothValue, smoothValue, smoothValue);
@@ -198,7 +261,7 @@ namespace Michsky.UI.Heat
             onVisible.Invoke();
         }
 
-        IEnumerator ScaleOut()
+        private IEnumerator ScaleOut()
         {
             StopCoroutine("ScaleIn");
 
@@ -211,8 +274,10 @@ namespace Michsky.UI.Heat
 
             while (rect.localScale.x > 0.01)
             {
-                if (updateMode == UpdateMode.UnscaledTime) { elapsedTime += Time.unscaledDeltaTime; }
-                else { elapsedTime += Time.deltaTime; }
+                if (updateMode == UpdateMode.UnscaledTime)
+                    elapsedTime += Time.unscaledDeltaTime;
+                else
+                    elapsedTime += Time.deltaTime;
 
                 smoothValue = Mathf.Lerp(startingPoint, 0, animationCurve.Evaluate(elapsedTime * curveSpeed));
                 rect.localScale = new Vector3(smoothValue, smoothValue, smoothValue);
@@ -226,17 +291,18 @@ namespace Michsky.UI.Heat
             gameObject.SetActive(false);
         }
 
-        IEnumerator HorizontalIn()
+        private IEnumerator HorizontalIn()
         {
             StopCoroutine("HorizontalOut");
 
             float elapsedTime = 0;
 
-            Vector2 startPos = new Vector2(0, rect.sizeDelta.y);
-            Vector2 endPos = rectHelper;
+            var startPos = new Vector2(0, rect.sizeDelta.y);
+            var endPos = rectHelper;
 
-            if (!fitterMode && startBehaviour == StartBehaviour.Default) { endPos = rect.sizeDelta; }
-            else if (fitterMode && startBehaviour == StartBehaviour.Default) { endPos = rectHelper; }
+            if (!fitterMode && startBehaviour == StartBehaviour.Default)
+                endPos = rect.sizeDelta;
+            else if (fitterMode && startBehaviour == StartBehaviour.Default) endPos = rectHelper;
 
             rect.sizeDelta = startPos;
 
@@ -263,14 +329,14 @@ namespace Michsky.UI.Heat
             onVisible.Invoke();
         }
 
-        IEnumerator HorizontalOut()
+        private IEnumerator HorizontalOut()
         {
             StopCoroutine("HorizontalIn");
 
             float elapsedTime = 0;
 
-            Vector2 startPos = rect.sizeDelta;
-            Vector2 endPos = new Vector2(0, rect.sizeDelta.y);
+            var startPos = rect.sizeDelta;
+            var endPos = new Vector2(0, rect.sizeDelta.y);
 
             while (rect.sizeDelta.x >= 0.1f)
             {
@@ -295,17 +361,18 @@ namespace Michsky.UI.Heat
             rect.gameObject.SetActive(false);
         }
 
-        IEnumerator VerticalIn()
+        private IEnumerator VerticalIn()
         {
             StopCoroutine("VerticalOut");
 
             float elapsedTime = 0;
 
-            Vector2 startPos = new Vector2(rect.sizeDelta.x, 0);
-            Vector2 endPos = rectHelper;
+            var startPos = new Vector2(rect.sizeDelta.x, 0);
+            var endPos = rectHelper;
 
-            if (!fitterMode && startBehaviour == StartBehaviour.Default) { endPos = rect.sizeDelta; }
-            else if (fitterMode && startBehaviour == StartBehaviour.Default) { endPos = rectHelper; }
+            if (!fitterMode && startBehaviour == StartBehaviour.Default)
+                endPos = rect.sizeDelta;
+            else if (fitterMode && startBehaviour == StartBehaviour.Default) endPos = rectHelper;
 
             rect.sizeDelta = startPos;
 
@@ -332,14 +399,14 @@ namespace Michsky.UI.Heat
             onVisible.Invoke();
         }
 
-        IEnumerator VerticalOut()
+        private IEnumerator VerticalOut()
         {
             StopCoroutine("VerticalIn");
 
             float elapsedTime = 0;
 
-            Vector2 startPos = rect.sizeDelta;
-            Vector2 endPos = new Vector2(rect.sizeDelta.x, 0);
+            var startPos = rect.sizeDelta;
+            var endPos = new Vector2(rect.sizeDelta.x, 0);
 
             while (rect.sizeDelta.y >= 0.1f)
             {

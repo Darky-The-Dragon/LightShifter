@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using LevelController;
 using UnityEngine;
@@ -20,26 +19,26 @@ namespace Platforms
             else
                 Destroy(gameObject);
         }
-        
+
         private void Start()
         {
             lastCheckpoint = null;
             newLastCheckpoint = player.transform.position;
         }
 
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            StartCoroutine(WaitAndRespawn());
+        }
+
         public void UpdateCheckpoint(GameObject checkpoint)
         {
             lastCheckpoint = checkpoint;
         }
-        
+
         public void NewUpdateCheckpoint(Vector2 checkpoint)
         {
             newLastCheckpoint = checkpoint;
-        }
-
-        private void OnTriggerEnter2D(Collider2D collision)
-        {
-            StartCoroutine(WaitAndRespawn());
         }
 
         private IEnumerator WaitAndRespawn()

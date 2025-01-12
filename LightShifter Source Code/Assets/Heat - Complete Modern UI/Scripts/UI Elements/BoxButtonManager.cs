@@ -1,76 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Michsky.UI.Heat
 {
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Animator))]
-    public class BoxButtonManager : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler, ISubmitHandler
+    public class BoxButtonManager : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler,
+        ISelectHandler, IDeselectHandler, ISubmitHandler
     {
-        // Content
-        public Sprite buttonBackground;
-        public Sprite buttonIcon;
-        public string buttonTitle = "Button";
-        public string titleLocalizationKey;
-        public string buttonDescription = "Description";
-        public string descriptionLocalizationKey;
-        public BackgroundFilter backgroundFilter;
-
-        // Resources
-        [SerializeField] private Animator animator;
-        [SerializeField] private CanvasGroup buttonCG;
-        public Image backgroundObj;
-        public Image iconObj;
-        public TextMeshProUGUI titleObj;
-        public TextMeshProUGUI descriptionObj;
-        public Image filterObj;
-        public List<Sprite> filters = new List<Sprite>();
-
-        // Settings
-        public bool isInteractable = true;
-        public bool enableBackground = true;
-        public bool enableIcon = false;
-        public bool enableTitle = true;
-        public bool enableDescription = true;
-        public bool enableFilter = true;
-        public bool useCustomContent = false;
-        public bool checkForDoubleClick = true;
-        public bool useLocalization = true;
-        public bool bypassUpdateOnEnable = false;
-        public bool useUINavigation = false;
-        public Navigation.Mode navigationMode = Navigation.Mode.Automatic;
-        public GameObject selectOnUp;
-        public GameObject selectOnDown;
-        public GameObject selectOnLeft;
-        public GameObject selectOnRight;
-        public bool wrapAround = false;
-        public bool useSounds = true;
-        [Range(0.1f, 1)] public float doubleClickPeriod = 0.25f;
-        [Range(0.1f, 1)] public float disabledOpacity = 0.5f;
-
-        // Events
-        public UnityEvent onClick = new UnityEvent();
-        public UnityEvent onDoubleClick = new UnityEvent();
-        public UnityEvent onHover = new UnityEvent();
-        public UnityEvent onLeave = new UnityEvent();
-        public UnityEvent onSelect = new UnityEvent();
-        public UnityEvent onDeselect = new UnityEvent();
-
-        // Helpers
-        bool isInitialized = false;
-        float cachedStateLength = 0.5f;
-        bool waitingForDoubleClickInput;
-        Button targetButton;
-#if UNITY_EDITOR
-        public int latestTabIndex = 0;
-#endif
-
         public enum BackgroundFilter
         {
             Aqua,
@@ -89,39 +32,178 @@ namespace Michsky.UI.Heat
             Random
         }
 
-        void Awake()
+        // Content
+        public Sprite buttonBackground;
+        public Sprite buttonIcon;
+        public string buttonTitle = "Button";
+        public string titleLocalizationKey;
+        public string buttonDescription = "Description";
+        public string descriptionLocalizationKey;
+        public BackgroundFilter backgroundFilter;
+
+        // Resources
+        [SerializeField] private Animator animator;
+        [SerializeField] private CanvasGroup buttonCG;
+        public Image backgroundObj;
+        public Image iconObj;
+        public TextMeshProUGUI titleObj;
+        public TextMeshProUGUI descriptionObj;
+        public Image filterObj;
+        public List<Sprite> filters = new();
+
+        // Settings
+        public bool isInteractable = true;
+        public bool enableBackground = true;
+        public bool enableIcon;
+        public bool enableTitle = true;
+        public bool enableDescription = true;
+        public bool enableFilter = true;
+        public bool useCustomContent;
+        public bool checkForDoubleClick = true;
+        public bool useLocalization = true;
+        public bool bypassUpdateOnEnable;
+        public bool useUINavigation;
+        public Navigation.Mode navigationMode = Navigation.Mode.Automatic;
+        public GameObject selectOnUp;
+        public GameObject selectOnDown;
+        public GameObject selectOnLeft;
+        public GameObject selectOnRight;
+        public bool wrapAround;
+        public bool useSounds = true;
+        [Range(0.1f, 1)] public float doubleClickPeriod = 0.25f;
+        [Range(0.1f, 1)] public float disabledOpacity = 0.5f;
+
+        // Events
+        public UnityEvent onClick = new();
+        public UnityEvent onDoubleClick = new();
+        public UnityEvent onHover = new();
+        public UnityEvent onLeave = new();
+        public UnityEvent onSelect = new();
+        public UnityEvent onDeselect = new();
+#if UNITY_EDITOR
+        public int latestTabIndex;
+#endif
+        private float cachedStateLength = 0.5f;
+
+        // Helpers
+        private bool isInitialized;
+        private Button targetButton;
+        private bool waitingForDoubleClickInput;
+
+        private void Awake()
         {
             cachedStateLength = HeatUIInternalTools.GetAnimatorClipLength(animator, "BoxButton_Highlighted") + 0.1f;
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
-            if (!isInitialized) { Initialize(); }
-            if (!bypassUpdateOnEnable) { UpdateUI(); }
-            if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject) { TriggerAnimation("Highlighted"); }
-            if (Application.isPlaying && useUINavigation) { AddUINavigation(); }
+            if (!isInitialized) Initialize();
+            if (!bypassUpdateOnEnable) UpdateUI();
+            if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject)
+                TriggerAnimation("Highlighted");
+            if (Application.isPlaying && useUINavigation)
+            {
+                AddUINavigation();
+            }
             else if (Application.isPlaying && !useUINavigation && targetButton == null)
             {
-                if (gameObject.GetComponent<Button>() == null) { targetButton = gameObject.AddComponent<Button>(); }
-                else { targetButton = GetComponent<Button>(); }
+                if (gameObject.GetComponent<Button>() == null)
+                    targetButton = gameObject.AddComponent<Button>();
+                else
+                    targetButton = GetComponent<Button>();
 
                 targetButton.transition = Selectable.Transition.None;
             }
         }
 
-        void Initialize()
+        public void OnDeselect(BaseEventData eventData)
+        {
+            if (!isInteractable)
+                return;
+
+            TriggerAnimation("Normal");
+            onDeselect.Invoke();
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!isInteractable || eventData.button != PointerEventData.InputButton.Left) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
+
+            // Invoke click actions
+            onClick.Invoke();
+
+            // Check for double click
+            if (!checkForDoubleClick) return;
+            if (waitingForDoubleClickInput)
+            {
+                onDoubleClick.Invoke();
+                waitingForDoubleClickInput = false;
+                return;
+            }
+
+            waitingForDoubleClickInput = true;
+
+            if (gameObject.activeInHierarchy)
+            {
+                StopCoroutine("CheckForDoubleClick");
+                StartCoroutine("CheckForDoubleClick");
+            }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
+
+            TriggerAnimation("Highlighted");
+            onHover.Invoke();
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (!isInteractable)
+                return;
+
+            TriggerAnimation("Normal");
+            onLeave.Invoke();
+        }
+
+        public void OnSelect(BaseEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
+
+            TriggerAnimation("Highlighted");
+            onSelect.Invoke();
+        }
+
+        public void OnSubmit(BaseEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
+            if (EventSystem.current.currentSelectedGameObject != gameObject) TriggerAnimation("Normal");
+
+            onClick.Invoke();
+        }
+
+        private void Initialize()
         {
 #if UNITY_EDITOR
             if (!Application.isPlaying)
                 return;
 #endif
-            if (ControllerManager.instance != null) { ControllerManager.instance.boxButtons.Add(this); }
-            if (UIManagerAudio.instance == null) { useSounds = false; }
-            if (animator == null) { animator = GetComponent<Animator>(); }
-            if (buttonCG == null) { buttonCG = gameObject.AddComponent<CanvasGroup>(); }
+            if (ControllerManager.instance != null) ControllerManager.instance.boxButtons.Add(this);
+            if (UIManagerAudio.instance == null) useSounds = false;
+            if (animator == null) animator = GetComponent<Animator>();
+            if (buttonCG == null) buttonCG = gameObject.AddComponent<CanvasGroup>();
             if (GetComponent<Image>() == null)
             {
-                Image raycastImg = gameObject.AddComponent<Image>();
+                var raycastImg = gameObject.AddComponent<Image>();
                 raycastImg.color = new Color(0, 0, 0, 0);
                 raycastImg.raycastTarget = true;
             }
@@ -130,9 +212,12 @@ namespace Michsky.UI.Heat
 
             if (useLocalization && !useCustomContent)
             {
-                LocalizedObject mainLoc = GetComponent<LocalizedObject>();
+                var mainLoc = GetComponent<LocalizedObject>();
 
-                if (mainLoc == null || !mainLoc.CheckLocalizationStatus()) { useLocalization = false; }
+                if (mainLoc == null || !mainLoc.CheckLocalizationStatus())
+                {
+                    useLocalization = false;
+                }
                 else if (mainLoc != null && !string.IsNullOrEmpty(titleLocalizationKey))
                 {
                     // Forcing button to take the localized output on awake
@@ -155,54 +240,105 @@ namespace Michsky.UI.Heat
 
         public void UpdateUI()
         {
-            if (enableIcon && iconObj != null) { iconObj.gameObject.SetActive(true); iconObj.sprite = buttonIcon; }
-            else if (iconObj != null) { iconObj.gameObject.SetActive(false); }
-
-            if (enableTitle && titleObj != null) { titleObj.gameObject.SetActive(true); titleObj.text = buttonTitle; }
-            else if (titleObj != null) { titleObj.gameObject.SetActive(false); }
-
-            if (enableDescription && descriptionObj != null) { descriptionObj.gameObject.SetActive(true); descriptionObj.text = buttonDescription; }
-            else if (descriptionObj != null) 
-            { 
-                descriptionObj.gameObject.SetActive(false);
-                if (Application.isPlaying && enableTitle && titleObj != null) { titleObj.transform.parent.gameObject.name = titleObj.gameObject.name + "_D"; }
+            if (enableIcon && iconObj != null)
+            {
+                iconObj.gameObject.SetActive(true);
+                iconObj.sprite = buttonIcon;
+            }
+            else if (iconObj != null)
+            {
+                iconObj.gameObject.SetActive(false);
             }
 
-            if (!enableFilter && filterObj != null) { filterObj.gameObject.SetActive(false); }
+            if (enableTitle && titleObj != null)
+            {
+                titleObj.gameObject.SetActive(true);
+                titleObj.text = buttonTitle;
+            }
+            else if (titleObj != null)
+            {
+                titleObj.gameObject.SetActive(false);
+            }
+
+            if (enableDescription && descriptionObj != null)
+            {
+                descriptionObj.gameObject.SetActive(true);
+                descriptionObj.text = buttonDescription;
+            }
+            else if (descriptionObj != null)
+            {
+                descriptionObj.gameObject.SetActive(false);
+                if (Application.isPlaying && enableTitle && titleObj != null)
+                    titleObj.transform.parent.gameObject.name = titleObj.gameObject.name + "_D";
+            }
+
+            if (!enableFilter && filterObj != null)
+            {
+                filterObj.gameObject.SetActive(false);
+            }
             else if (enableFilter && filterObj != null && filters.Count >= (int)backgroundFilter + 1)
             {
                 filterObj.gameObject.SetActive(true);
 
-                if (backgroundFilter == BackgroundFilter.Random) { filterObj.sprite = filters[(int)Random.Range(0, filters.Count - 2)]; }
-                else { filterObj.sprite = filters[(int)backgroundFilter]; }
+                if (backgroundFilter == BackgroundFilter.Random)
+                    filterObj.sprite = filters[Random.Range(0, filters.Count - 2)];
+                else
+                    filterObj.sprite = filters[(int)backgroundFilter];
             }
 
-            if (enableBackground && backgroundObj != null) { backgroundObj.sprite = buttonBackground; }
-            if (!Application.isPlaying || !gameObject.activeInHierarchy) { return; }
+            if (enableBackground && backgroundObj != null) backgroundObj.sprite = buttonBackground;
+            if (!Application.isPlaying || !gameObject.activeInHierarchy) return;
 
             TriggerAnimation("Start");
         }
 
-        public void SetText(string text) { buttonTitle = text; UpdateUI(); }
-        public void SetDescription(string text) { buttonDescription = text; UpdateUI(); }
-        public void SetIcon(Sprite icon) { buttonIcon = icon; UpdateUI(); }
-        public void SetBackground(Sprite bg) { buttonBackground = bg; UpdateUI(); }
-        public void SetInteractable(bool value) { isInteractable = value; }
-        public void Interactable(bool value) 
-        { 
+        public void SetText(string text)
+        {
+            buttonTitle = text;
+            UpdateUI();
+        }
+
+        public void SetDescription(string text)
+        {
+            buttonDescription = text;
+            UpdateUI();
+        }
+
+        public void SetIcon(Sprite icon)
+        {
+            buttonIcon = icon;
+            UpdateUI();
+        }
+
+        public void SetBackground(Sprite bg)
+        {
+            buttonBackground = bg;
+            UpdateUI();
+        }
+
+        public void SetInteractable(bool value)
+        {
+            isInteractable = value;
+        }
+
+        public void Interactable(bool value)
+        {
             isInteractable = value;
 
-            if (!isInteractable) { buttonCG.alpha = disabledOpacity; }
-            else if (isInteractable) { buttonCG.alpha = 1; }
-            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Normal")) { TriggerAnimation("Normal"); }
+            if (!isInteractable)
+                buttonCG.alpha = disabledOpacity;
+            else if (isInteractable) buttonCG.alpha = 1;
+            if (!animator.GetCurrentAnimatorStateInfo(0).IsName("Normal")) TriggerAnimation("Normal");
         }
 
         public void AddUINavigation()
         {
             if (targetButton == null)
             {
-                if (gameObject.GetComponent<Button>() == null) { targetButton = gameObject.AddComponent<Button>(); }
-                else { targetButton = GetComponent<Button>(); }
+                if (gameObject.GetComponent<Button>() == null)
+                    targetButton = gameObject.AddComponent<Button>();
+                else
+                    targetButton = GetComponent<Button>();
 
                 targetButton.transition = Selectable.Transition.None;
             }
@@ -210,11 +346,18 @@ namespace Michsky.UI.Heat
             if (targetButton.navigation.mode == navigationMode)
                 return;
 
-            Navigation customNav = new Navigation();
+            var customNav = new Navigation();
             customNav.mode = navigationMode;
 
-            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal) { customNav.wrapAround = wrapAround; }
-            else if (navigationMode == Navigation.Mode.Explicit) { StartCoroutine("InitUINavigation", customNav); return; }
+            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal)
+            {
+                customNav.wrapAround = wrapAround;
+            }
+            else if (navigationMode == Navigation.Mode.Explicit)
+            {
+                StartCoroutine("InitUINavigation", customNav);
+                return;
+            }
 
             targetButton.navigation = customNav;
         }
@@ -223,19 +366,19 @@ namespace Michsky.UI.Heat
         {
             if (targetButton != null)
             {
-                Navigation customNav = new Navigation();
-                Navigation.Mode navMode = Navigation.Mode.None;
+                var customNav = new Navigation();
+                var navMode = Navigation.Mode.None;
                 customNav.mode = navMode;
                 targetButton.navigation = customNav;
             }
         }
 
-        public void InvokeOnClick() 
-        { 
-            onClick.Invoke(); 
+        public void InvokeOnClick()
+        {
+            onClick.Invoke();
         }
 
-        void TriggerAnimation(string triggername)
+        private void TriggerAnimation(string triggername)
         {
             animator.enabled = true;
 
@@ -249,96 +392,25 @@ namespace Michsky.UI.Heat
             StartCoroutine("DisableAnimator");
         }
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (!isInteractable || eventData.button != PointerEventData.InputButton.Left) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
-
-            // Invoke click actions
-            onClick.Invoke();
-
-            // Check for double click
-            if (!checkForDoubleClick) { return; }
-            if (waitingForDoubleClickInput)
-            {
-                onDoubleClick.Invoke();
-                waitingForDoubleClickInput = false;
-                return;
-            }
-
-            waitingForDoubleClickInput = true;
-
-            if (gameObject.activeInHierarchy)
-            {
-                StopCoroutine("CheckForDoubleClick");
-                StartCoroutine("CheckForDoubleClick");
-            }
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
-
-            TriggerAnimation("Highlighted");
-            onHover.Invoke();
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            if (!isInteractable)
-                return;
-
-            TriggerAnimation("Normal");
-            onLeave.Invoke();
-        }
-
-        public void OnSelect(BaseEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
-
-            TriggerAnimation("Highlighted");
-            onSelect.Invoke();
-        }
-
-        public void OnDeselect(BaseEventData eventData)
-        {
-            if (!isInteractable)
-                return;
-
-            TriggerAnimation("Normal");
-            onDeselect.Invoke();
-        }
-
-        public void OnSubmit(BaseEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
-            if (EventSystem.current.currentSelectedGameObject != gameObject) { TriggerAnimation("Normal"); }
-
-            onClick.Invoke();
-        }
-
-        IEnumerator CheckForDoubleClick()
+        private IEnumerator CheckForDoubleClick()
         {
             yield return new WaitForSecondsRealtime(doubleClickPeriod);
             waitingForDoubleClickInput = false;
         }
 
-        IEnumerator InitUINavigation(Navigation nav)
+        private IEnumerator InitUINavigation(Navigation nav)
         {
             yield return new WaitForSecondsRealtime(0.1f);
 
-            if (selectOnUp != null) { nav.selectOnUp = selectOnUp.GetComponent<Selectable>(); }
-            if (selectOnDown != null) { nav.selectOnDown = selectOnDown.GetComponent<Selectable>(); }
-            if (selectOnLeft != null) { nav.selectOnLeft = selectOnLeft.GetComponent<Selectable>(); }
-            if (selectOnRight != null) { nav.selectOnRight = selectOnRight.GetComponent<Selectable>(); }
-           
+            if (selectOnUp != null) nav.selectOnUp = selectOnUp.GetComponent<Selectable>();
+            if (selectOnDown != null) nav.selectOnDown = selectOnDown.GetComponent<Selectable>();
+            if (selectOnLeft != null) nav.selectOnLeft = selectOnLeft.GetComponent<Selectable>();
+            if (selectOnRight != null) nav.selectOnRight = selectOnRight.GetComponent<Selectable>();
+
             targetButton.navigation = nav;
         }
 
-        IEnumerator DisableAnimator()
+        private IEnumerator DisableAnimator()
         {
             yield return new WaitForSecondsRealtime(cachedStateLength);
             animator.enabled = false;

@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -68,11 +68,13 @@ namespace Michsky.UI.Heat
             GUILayout.EndHorizontal();
         }
 
-        public static void DrawPropertyCW(SerializedProperty property, GUISkin skin, string content, string tooltip, float width)
+        public static void DrawPropertyCW(SerializedProperty property, GUISkin skin, string content, string tooltip,
+            float width)
         {
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-            EditorGUILayout.LabelField(new GUIContent(content, tooltip), skin.FindStyle("Text"), GUILayout.Width(width));
+            EditorGUILayout.LabelField(new GUIContent(content, tooltip), skin.FindStyle("Text"),
+                GUILayout.Width(width));
             EditorGUILayout.PropertyField(property, new GUIContent("", tooltip));
 
             GUILayout.EndHorizontal();
@@ -121,8 +123,10 @@ namespace Michsky.UI.Heat
         {
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-            value = GUILayout.Toggle(value, new GUIContent(content, "Current state: " + value.ToString()), skin.FindStyle("Toggle"));
-            value = GUILayout.Toggle(value, new GUIContent("", "Current state: " + value.ToString()), skin.FindStyle("Toggle Helper"));
+            value = GUILayout.Toggle(value, new GUIContent(content, "Current state: " + value),
+                skin.FindStyle("Toggle"));
+            value = GUILayout.Toggle(value, new GUIContent("", "Current state: " + value),
+                skin.FindStyle("Toggle Helper"));
 
             GUILayout.EndHorizontal();
             return value;
@@ -143,8 +147,10 @@ namespace Michsky.UI.Heat
         {
             GUILayout.BeginHorizontal();
 
-            value = GUILayout.Toggle(value, new GUIContent(content, "Current state: " + value.ToString()), skin.FindStyle("Toggle"));
-            value = GUILayout.Toggle(value, new GUIContent("", "Current state: " + value.ToString()), skin.FindStyle("Toggle Helper"));
+            value = GUILayout.Toggle(value, new GUIContent(content, "Current state: " + value),
+                skin.FindStyle("Toggle"));
+            value = GUILayout.Toggle(value, new GUIContent("", "Current state: " + value),
+                skin.FindStyle("Toggle Helper"));
 
             GUILayout.EndHorizontal();
             return value;
@@ -164,13 +170,13 @@ namespace Michsky.UI.Heat
         public static void DrawUIManagerConnectedHeader()
         {
             EditorGUILayout.HelpBox("This object is connected with the UI Manager. Some parameters (such as colors, " +
-                               "fonts or booleans) are managed by the manager.", MessageType.Info);
+                                    "fonts or booleans) are managed by the manager.", MessageType.Info);
         }
 
         public static void DrawUIManagerPresetHeader()
         {
             EditorGUILayout.HelpBox("This object is subject to a preset and cannot be used with the UI Manager. " +
-                                         "You can use the standard object for UI Manager connection.", MessageType.Info);
+                                    "You can use the standard object for UI Manager connection.", MessageType.Info);
         }
 
         public static void DrawUIManagerDisconnectedHeader()
@@ -180,21 +186,21 @@ namespace Michsky.UI.Heat
 
         public static Texture2D TextureFromSprite(Sprite sprite)
         {
-            if (sprite == null) { return null; }
+            if (sprite == null) return null;
 
             if (sprite.rect.width != sprite.texture.width)
             {
-                Texture2D newText = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
-                Color[] newColors = sprite.texture.GetPixels((int)sprite.textureRect.x,
-                                                             (int)sprite.textureRect.y,
-                                                             (int)sprite.textureRect.width,
-                                                             (int)sprite.textureRect.height);
+                var newText = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
+                var newColors = sprite.texture.GetPixels((int)sprite.textureRect.x,
+                    (int)sprite.textureRect.y,
+                    (int)sprite.textureRect.width,
+                    (int)sprite.textureRect.height);
                 newText.SetPixels(newColors);
                 newText.Apply();
                 return newText;
             }
 
-            else { return sprite.texture; }
+            return sprite.texture;
         }
     }
 }

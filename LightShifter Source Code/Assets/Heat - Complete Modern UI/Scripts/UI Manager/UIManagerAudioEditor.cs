@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -8,15 +8,17 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(UIManagerAudio))]
     public class UIManagerAudioEditor : Editor
     {
-        private UIManagerAudio uimaTarget;
         private GUISkin customSkin;
+        private UIManagerAudio uimaTarget;
 
         private void OnEnable()
         {
             uimaTarget = (UIManagerAudio)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -38,7 +40,7 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawProperty(SFXSlider, customSkin, "SFX Slider");
             HeatUIEditorHandler.DrawProperty(UISlider, customSkin, "UI Slider");
 
-            if (Application.isPlaying == true)
+            if (Application.isPlaying)
                 return;
 
             serializedObject.ApplyModifiedProperties();

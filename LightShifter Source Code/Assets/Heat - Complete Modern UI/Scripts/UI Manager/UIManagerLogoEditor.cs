@@ -1,21 +1,23 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(UIManagerLogo))]
     public class UIManagerLogoEditor : Editor
     {
-        private UIManagerLogo uimlTarget;
         private GUISkin customSkin;
+        private UIManagerLogo uimlTarget;
 
         private void OnEnable()
         {
             uimlTarget = (UIManagerLogo)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -29,11 +31,10 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
 
             if (uimlTarget.UIManagerAsset != null)
-            {
                 HeatUIEditorHandler.DrawProperty(logoType, customSkin, "Logo Type");
-            }
 
-            else { EditorGUILayout.HelpBox("UI Manager should be assigned.", MessageType.Error); }
+            else
+                EditorGUILayout.HelpBox("UI Manager should be assigned.", MessageType.Error);
 
             serializedObject.ApplyModifiedProperties();
         }

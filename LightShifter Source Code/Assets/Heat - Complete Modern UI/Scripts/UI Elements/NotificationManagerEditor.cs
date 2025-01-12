@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -8,15 +8,17 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(NotificationManager))]
     public class NotificationManagerEditor : Editor
     {
-        private NotificationManager nmTarget;
         private GUISkin customSkin;
+        private NotificationManager nmTarget;
 
         private void OnEnable()
         {
             nmTarget = (NotificationManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -41,7 +43,8 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawHeader(customSkin, "Content Header", 6);
             HeatUIEditorHandler.DrawProperty(icon, customSkin, "Icon");
             GUILayout.BeginHorizontal(EditorStyles.helpBox);
-            EditorGUILayout.LabelField(new GUIContent("Notification Text"), customSkin.FindStyle("Text"), GUILayout.Width(-3));
+            EditorGUILayout.LabelField(new GUIContent("Notification Text"), customSkin.FindStyle("Text"),
+                GUILayout.Width(-3));
             EditorGUILayout.PropertyField(notificationText, new GUIContent(""), GUILayout.Height(70));
             GUILayout.EndHorizontal();
             HeatUIEditorHandler.DrawProperty(localizationKey, customSkin, "Localization Key");
@@ -53,8 +56,10 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawProperty(textObj, customSkin, "Text Object");
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-            useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization", "Bypasses localization functions when disabled.");
-            updateOnAnimate.boolValue = HeatUIEditorHandler.DrawToggle(updateOnAnimate.boolValue, customSkin, "Update On Animate");
+            useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin,
+                "Use Localization", "Bypasses localization functions when disabled.");
+            updateOnAnimate.boolValue =
+                HeatUIEditorHandler.DrawToggle(updateOnAnimate.boolValue, customSkin, "Update On Animate");
             HeatUIEditorHandler.DrawProperty(minimizeAfter, customSkin, "Minimize After");
             HeatUIEditorHandler.DrawProperty(defaultState, customSkin, "Default State");
             HeatUIEditorHandler.DrawProperty(afterMinimize, customSkin, "After Minimize");

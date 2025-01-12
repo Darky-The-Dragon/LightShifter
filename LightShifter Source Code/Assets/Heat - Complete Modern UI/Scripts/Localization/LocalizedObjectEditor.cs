@@ -1,51 +1,47 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(LocalizedObject))]
     public class LocalizedObjectEditor : Editor
     {
-        private LocalizedObject loTarget;
-        private GUISkin customSkin;
         private int currentTab;
-
-        private List<string> tableList = new List<string>();
+        private GUISkin customSkin;
+        private LocalizedObject loTarget;
+        private Vector2 scrollPosition = Vector2.zero;
         private string searchString;
+
+        private readonly List<string> tableList = new();
         private string tempValue;
-        Vector2 scrollPosition = Vector2.zero;
 
         private void OnEnable()
         {
             loTarget = (LocalizedObject)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
 
             if (loTarget.localizationSettings == null
                 && Resources.Load<UIManager>("Heat UI Manager") != null
                 && Resources.Load<UIManager>("Heat UI Manager").localizationSettings != null)
-            {
                 loTarget.localizationSettings = Resources.Load<UIManager>("Heat UI Manager").localizationSettings;
-            }
 
             if (loTarget.localizationSettings == null
                 && LocalizationManager.instance != null
                 && LocalizationManager.instance.UIManagerAsset != null
                 && LocalizationManager.instance.UIManagerAsset.localizationSettings != null)
-            {
                 loTarget.localizationSettings = LocalizationManager.instance.UIManagerAsset.localizationSettings;
-            }
 
             // Update language settings if it's driven by the manager
             else if (LocalizationManager.instance != null
-                && LocalizationManager.instance.UIManagerAsset != null
-                && LocalizationManager.instance.UIManagerAsset.localizationSettings != null)
-            {
+                     && LocalizationManager.instance.UIManagerAsset != null
+                     && LocalizationManager.instance.UIManagerAsset.localizationSettings != null)
                 loTarget.localizationSettings = LocalizationManager.instance.UIManagerAsset.localizationSettings;
-            }
 
             RefreshTableDropdown();
         }
@@ -54,7 +50,7 @@ namespace Michsky.UI.Heat
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Localization Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[2];
+            var toolbarTabs = new GUIContent[2];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Settings");
 
@@ -79,7 +75,8 @@ namespace Michsky.UI.Heat
             var imageObj = serializedObject.FindProperty("imageObj");
             var localizationKey = serializedObject.FindProperty("localizationKey");
 
-            if (LocalizationManager.instance != null && LocalizationManager.instance.UIManagerAsset != null && LocalizationManager.instance.UIManagerAsset.enableLocalization == false)
+            if (LocalizationManager.instance != null && LocalizationManager.instance.UIManagerAsset != null &&
+                LocalizationManager.instance.UIManagerAsset.enableLocalization == false)
             {
                 EditorGUILayout.HelpBox("Localization is disabled.", MessageType.Warning);
                 return;
@@ -89,13 +86,15 @@ namespace Michsky.UI.Heat
             {
                 case 0:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Content Header", 6);
-                    if (LocalizationManager.instance != null) { GUI.enabled = false; }
+                    if (LocalizationManager.instance != null) GUI.enabled = false;
                     HeatUIEditorHandler.DrawProperty(localizationSettings, customSkin, "Loc. Settings");
                     GUI.enabled = true;
 
                     if (loTarget.localizationSettings == null)
                     {
-                        EditorGUILayout.HelpBox("Localization Settings is missing. Please assign a valid variable to use component features.", MessageType.Warning);
+                        EditorGUILayout.HelpBox(
+                            "Localization Settings is missing. Please assign a valid variable to use component features.",
+                            MessageType.Warning);
                         serializedObject.ApplyModifiedProperties();
                         return;
                     }
@@ -104,19 +103,20 @@ namespace Michsky.UI.Heat
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(new GUIContent("Object Type"), customSkin.FindStyle("Text"), GUILayout.Width(120));
+                    EditorGUILayout.LabelField(new GUIContent("Object Type"), customSkin.FindStyle("Text"),
+                        GUILayout.Width(120));
                     EditorGUILayout.PropertyField(objectType, new GUIContent(""));
                     GUILayout.EndHorizontal();
-                   
-                    if (loTarget.objectType == LocalizedObject.ObjectType.TextMeshPro) 
+
+                    if (loTarget.objectType == LocalizedObject.ObjectType.TextMeshPro)
                     {
                         HeatUIEditorHandler.DrawProperty(textObj, customSkin, "Text Object");
                         if (Application.isPlaying == false
-                            && loTarget.showOutputOnEditor == true
+                            && loTarget.showOutputOnEditor
                             && string.IsNullOrEmpty(tempValue) == false
-                            && loTarget.textObj != null 
-                            && GUILayout.Button(new GUIContent("Update Text"), customSkin.button)) 
-                        { 
+                            && loTarget.textObj != null
+                            && GUILayout.Button(new GUIContent("Update Text"), customSkin.button))
+                        {
                             loTarget.textObj.text = tempValue;
                             loTarget.textObj.enabled = false;
                             loTarget.textObj.enabled = true;
@@ -142,50 +142,71 @@ namespace Michsky.UI.Heat
                         // Selected table
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
-                        EditorGUILayout.LabelField(new GUIContent("Selected Table"), customSkin.FindStyle("Text"), GUILayout.Width(120));
+                        EditorGUILayout.LabelField(new GUIContent("Selected Table"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(120));
                         tableIndex.intValue = EditorGUILayout.Popup(loTarget.tableIndex, tableList.ToArray());
                         GUILayout.EndHorizontal();
 
                         if (GUILayout.Button(new GUIContent("Edit Table"), customSkin.button))
-                        {
-                            LocalizationTableWindow.ShowWindow(loTarget.localizationSettings, loTarget.localizationSettings.tables[loTarget.tableIndex].localizationTable, loTarget.tableIndex);
-                        }
+                            LocalizationTableWindow.ShowWindow(loTarget.localizationSettings,
+                                loTarget.localizationSettings.tables[loTarget.tableIndex].localizationTable,
+                                loTarget.tableIndex);
 
                         if (loTarget.objectType != LocalizedObject.ObjectType.ComponentDriven)
                         {
                             GUILayout.BeginHorizontal(EditorStyles.helpBox);
-                            EditorGUILayout.LabelField(new GUIContent("Localization Key"), customSkin.FindStyle("Text"), GUILayout.Width(120));
+                            EditorGUILayout.LabelField(new GUIContent("Localization Key"), customSkin.FindStyle("Text"),
+                                GUILayout.Width(120));
                             EditorGUILayout.PropertyField(localizationKey, new GUIContent(""));
-                            loTarget.showOutputOnEditor = GUILayout.Toggle(loTarget.showOutputOnEditor, new GUIContent("", "See output"), GUILayout.Width(15), GUILayout.Height(18));
+                            loTarget.showOutputOnEditor = GUILayout.Toggle(loTarget.showOutputOnEditor,
+                                new GUIContent("", "See output"), GUILayout.Width(15), GUILayout.Height(18));
                             GUILayout.EndHorizontal();
 
                             // Search for keys
                             GUILayout.BeginVertical(EditorStyles.helpBox);
-                            EditorGUILayout.LabelField(new GUIContent("Search for keys in " + loTarget.localizationSettings.tables[loTarget.tableIndex].tableID), customSkin.FindStyle("Text"));
+                            EditorGUILayout.LabelField(
+                                new GUIContent("Search for keys in " +
+                                               loTarget.localizationSettings.tables[loTarget.tableIndex].tableID),
+                                customSkin.FindStyle("Text"));
 
                             GUILayout.BeginHorizontal();
-                            searchString = GUILayout.TextField(searchString, GUI.skin.FindStyle("ToolbarSearchTextField"));
-                            if (!string.IsNullOrEmpty(searchString) && GUILayout.Button(new GUIContent("", "Clear search bar"), GUI.skin.FindStyle("ToolbarSearchCancelButton"))) { searchString = ""; GUI.FocusControl(null); }
+                            searchString = GUILayout.TextField(searchString,
+                                GUI.skin.FindStyle("ToolbarSearchTextField"));
+                            if (!string.IsNullOrEmpty(searchString) && GUILayout.Button(
+                                    new GUIContent("", "Clear search bar"),
+                                    GUI.skin.FindStyle("ToolbarSearchCancelButton")))
+                            {
+                                searchString = "";
+                                GUI.FocusControl(null);
+                            }
+
                             GUILayout.EndHorizontal();
 
                             if (!string.IsNullOrEmpty(searchString))
                             {
-                                scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Height(132));
+                                scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true, GUIStyle.none,
+                                    GUI.skin.verticalScrollbar, GUILayout.Height(132));
                                 GUILayout.BeginVertical();
 
-                                for (int i = 0; i < loTarget.localizationSettings.languages[0].localizationLanguage.tableList[loTarget.tableIndex].tableContent.Count; i++)
-                                {
-                                    if (loTarget.localizationSettings.languages[0].localizationLanguage.tableList[loTarget.tableIndex].tableContent[i].key.ToLower().Contains(searchString.ToLower()))
-                                    {
-                                        if (GUILayout.Button(new GUIContent(loTarget.localizationSettings.languages[0].localizationLanguage.tableList[loTarget.tableIndex].tableContent[i].key), customSkin.button))
+                                for (var i = 0;
+                                     i < loTarget.localizationSettings.languages[0].localizationLanguage
+                                         .tableList[loTarget.tableIndex].tableContent.Count;
+                                     i++)
+                                    if (loTarget.localizationSettings.languages[0].localizationLanguage
+                                        .tableList[loTarget.tableIndex].tableContent[i].key.ToLower()
+                                        .Contains(searchString.ToLower()))
+                                        if (GUILayout.Button(
+                                                new GUIContent(loTarget.localizationSettings.languages[0]
+                                                    .localizationLanguage.tableList[loTarget.tableIndex].tableContent[i]
+                                                    .key), customSkin.button))
                                         {
-                                            loTarget.localizationKey = loTarget.localizationSettings.languages[0].localizationLanguage.tableList[loTarget.tableIndex].tableContent[i].key;
+                                            loTarget.localizationKey = loTarget.localizationSettings.languages[0]
+                                                .localizationLanguage.tableList[loTarget.tableIndex].tableContent[i]
+                                                .key;
                                             searchString = "";
                                             GUI.FocusControl(null);
                                             EditorUtility.SetDirty(loTarget);
                                         }
-                                    }
-                                }
 
                                 GUILayout.EndVertical();
                                 GUILayout.EndScrollView();
@@ -193,32 +214,42 @@ namespace Michsky.UI.Heat
 
                             GUILayout.EndVertical();
 
-                            if (loTarget.showOutputOnEditor == true)
+                            if (loTarget.showOutputOnEditor)
                             {
                                 GUI.enabled = false;
-                                for (int i = 0; i < loTarget.localizationSettings.languages.Count; i++)
-                                {
-                                    for (int x = 0; x < loTarget.localizationSettings.languages[i].localizationLanguage.tableList[loTarget.tableIndex].tableContent.Count; x++)
+                                for (var i = 0; i < loTarget.localizationSettings.languages.Count; i++)
+                                for (var x = 0;
+                                     x < loTarget.localizationSettings.languages[i].localizationLanguage
+                                         .tableList[loTarget.tableIndex].tableContent.Count;
+                                     x++)
+                                    if (loTarget.localizationSettings.languages[i].localizationLanguage
+                                            .tableList[loTarget.tableIndex].tableContent[x].key ==
+                                        loTarget.localizationKey)
                                     {
-                                        if (loTarget.localizationSettings.languages[i].localizationLanguage.tableList[loTarget.tableIndex].tableContent[x].key == loTarget.localizationKey)
-                                        {
-                                            GUILayout.BeginHorizontal();
-                                            EditorGUILayout.LabelField(new GUIContent("[" + loTarget.localizationSettings.languages[i].languageID + "] " +
-                                                loTarget.localizationSettings.languages[i].localizationLanguage.tableList[loTarget.tableIndex].tableContent[x].value), customSkin.FindStyle("Text"));
-                                            GUILayout.EndHorizontal();
+                                        GUILayout.BeginHorizontal();
+                                        EditorGUILayout.LabelField(new GUIContent("[" +
+                                                loTarget.localizationSettings.languages[i].languageID + "] " +
+                                                loTarget.localizationSettings.languages[i].localizationLanguage
+                                                    .tableList[loTarget.tableIndex].tableContent[x].value),
+                                            customSkin.FindStyle("Text"));
+                                        GUILayout.EndHorizontal();
 
-                                            // Used for Update Text button
-                                            tempValue = loTarget.localizationSettings.languages[loTarget.localizationSettings.defaultLanguageIndex].localizationLanguage.tableList[loTarget.tableIndex].tableContent[x].value;
-                                        }
+                                        // Used for Update Text button
+                                        tempValue = loTarget.localizationSettings
+                                            .languages[loTarget.localizationSettings.defaultLanguageIndex]
+                                            .localizationLanguage.tableList[loTarget.tableIndex].tableContent[x].value;
                                     }
-                                }
+
                                 GUI.enabled = true;
                             }
                         }
 
                         GUILayout.EndVertical();
                     }
-                    else if (loTarget.localizationSettings.tables.Count != 0 && loTarget.tableIndex == -1) { RefreshTableDropdown(); }
+                    else if (loTarget.localizationSettings.tables.Count != 0 && loTarget.tableIndex == -1)
+                    {
+                        RefreshTableDropdown();
+                    }
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Events Header", 10);
                     EditorGUILayout.PropertyField(onLanguageChanged, new GUIContent("On Language Changed"), true);
@@ -226,13 +257,16 @@ namespace Michsky.UI.Heat
 
                 case 1:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    rebuildLayoutOnUpdate.boolValue = HeatUIEditorHandler.DrawToggle(rebuildLayoutOnUpdate.boolValue, customSkin, "Rebuild Layout On Update", "Force to rebuild layout on item update to prevent visual glitches.");
-                    forceAddToManager.boolValue = HeatUIEditorHandler.DrawToggle(forceAddToManager.boolValue, customSkin, "Force Add To Manager", "Force to add this component to the manager on awake.");
+                    rebuildLayoutOnUpdate.boolValue = HeatUIEditorHandler.DrawToggle(rebuildLayoutOnUpdate.boolValue,
+                        customSkin, "Rebuild Layout On Update",
+                        "Force to rebuild layout on item update to prevent visual glitches.");
+                    forceAddToManager.boolValue = HeatUIEditorHandler.DrawToggle(forceAddToManager.boolValue,
+                        customSkin, "Force Add To Manager", "Force to add this component to the manager on awake.");
                     break;
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
 
         private void RefreshTableDropdown()
@@ -240,17 +274,16 @@ namespace Michsky.UI.Heat
             if (loTarget.localizationSettings == null)
                 return;
 
-            for (int i = 0; i < loTarget.localizationSettings.tables.Count; i++)
-            {
+            for (var i = 0; i < loTarget.localizationSettings.tables.Count; i++)
                 if (loTarget.localizationSettings.tables[i].localizationTable != null)
-                {
                     tableList.Add(loTarget.localizationSettings.tables[i].tableID);
-                }
-            }
 
-            if (loTarget.localizationSettings.tables.Count == 0) { loTarget.tableIndex = -1; }
-            else if (loTarget.tableIndex > loTarget.localizationSettings.tables.Count - 1) { loTarget.tableIndex = 0; }
-            else if (loTarget.tableIndex == -1 && loTarget.localizationSettings.tables.Count != 0) { loTarget.tableIndex = 0; }
+            if (loTarget.localizationSettings.tables.Count == 0)
+                loTarget.tableIndex = -1;
+            else if (loTarget.tableIndex > loTarget.localizationSettings.tables.Count - 1)
+                loTarget.tableIndex = 0;
+            else if (loTarget.tableIndex == -1 && loTarget.localizationSettings.tables.Count != 0)
+                loTarget.tableIndex = 0;
         }
     }
 }

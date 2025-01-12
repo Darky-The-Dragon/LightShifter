@@ -1,7 +1,8 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Michsky.UI.Heat
 {
@@ -9,15 +10,17 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(MenuManager))]
     public class MenuManagerEditor : Editor
     {
-        private MenuManager mmTarget;
         private GUISkin customSkin;
+        private MenuManager mmTarget;
 
         private void OnEnable()
         {
             mmTarget = (MenuManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -37,8 +40,11 @@ namespace Michsky.UI.Heat
             {
                 HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
                 GUILayout.BeginHorizontal(EditorStyles.helpBox);
-                mmTarget.UIManagerAsset.enableSplashScreen = GUILayout.Toggle(mmTarget.UIManagerAsset.enableSplashScreen, "Enable Splash Screen", customSkin.FindStyle("Toggle"));
-                mmTarget.UIManagerAsset.enableSplashScreen = GUILayout.Toggle(mmTarget.UIManagerAsset.enableSplashScreen, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
+                mmTarget.UIManagerAsset.enableSplashScreen = GUILayout.Toggle(
+                    mmTarget.UIManagerAsset.enableSplashScreen, "Enable Splash Screen", customSkin.FindStyle("Toggle"));
+                mmTarget.UIManagerAsset.enableSplashScreen = GUILayout.Toggle(
+                    mmTarget.UIManagerAsset.enableSplashScreen, new GUIContent(""),
+                    customSkin.FindStyle("Toggle Helper"));
                 GUILayout.EndHorizontal();
 
                 if (mmTarget.splashScreen != null)
@@ -47,20 +53,23 @@ namespace Michsky.UI.Heat
 
                     if (Application.isPlaying == false)
                     {
-                        if (mmTarget.splashScreen.gameObject.activeSelf == false && GUILayout.Button("Show Splash Screen", customSkin.button))
+                        if (mmTarget.splashScreen.gameObject.activeSelf == false &&
+                            GUILayout.Button("Show Splash Screen", customSkin.button))
                         {
                             mmTarget.splashScreen.gameObject.SetActive(true);
-                            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         }
 
-                        else if (mmTarget.splashScreen.gameObject.activeSelf == true && GUILayout.Button("Hide Splash Screen", customSkin.button))
+                        else if (mmTarget.splashScreen.gameObject.activeSelf &&
+                                 GUILayout.Button("Hide Splash Screen", customSkin.button))
                         {
                             mmTarget.splashScreen.gameObject.SetActive(false);
-                            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         }
                     }
 
-                    if (GUILayout.Button("Select Splash Screen", customSkin.button)) { Selection.activeObject = mmTarget.splashScreen; }
+                    if (GUILayout.Button("Select Splash Screen", customSkin.button))
+                        Selection.activeObject = mmTarget.splashScreen;
                     GUILayout.EndHorizontal();
                 }
             }

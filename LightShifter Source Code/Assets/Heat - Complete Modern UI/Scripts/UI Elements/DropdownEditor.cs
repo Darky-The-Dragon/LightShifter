@@ -1,32 +1,34 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
-using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(Dropdown))]
     public class DropdownEditor : Editor
     {
+        private int currentTab;
         private GUISkin customSkin;
         private Dropdown dTarget;
-        private int currentTab;
 
         private void OnEnable()
         {
             dTarget = (Dropdown)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
 
-            if (dTarget.selectedItemIndex > dTarget.items.Count - 1) { dTarget.selectedItemIndex = 0; }
+            if (dTarget.selectedItemIndex > dTarget.items.Count - 1) dTarget.selectedItemIndex = 0;
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Dropdown Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -79,7 +81,7 @@ namespace Michsky.UI.Heat
             var itemPaddingRight = serializedObject.FindProperty("itemPaddingRight");
             var itemPaddingTop = serializedObject.FindProperty("itemPaddingTop");
             var itemPaddingBottom = serializedObject.FindProperty("itemPaddingBottom");
-           
+
             var useUINavigation = serializedObject.FindProperty("useUINavigation");
             var navigationMode = serializedObject.FindProperty("navigationMode");
             var selectOnUp = serializedObject.FindProperty("selectOnUp");
@@ -99,27 +101,32 @@ namespace Michsky.UI.Heat
                         GUILayout.BeginHorizontal();
 
                         GUI.enabled = false;
-                        EditorGUILayout.LabelField(new GUIContent("Selected Item:"), customSkin.FindStyle("Text"), GUILayout.Width(82));
+                        EditorGUILayout.LabelField(new GUIContent("Selected Item:"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(82));
                         GUI.enabled = true;
 
-                        EditorGUILayout.LabelField(new GUIContent(dTarget.items[selectedItemIndex.intValue].itemName), customSkin.FindStyle("Text"));
+                        EditorGUILayout.LabelField(new GUIContent(dTarget.items[selectedItemIndex.intValue].itemName),
+                            customSkin.FindStyle("Text"));
 
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2);
 
-                        selectedItemIndex.intValue = EditorGUILayout.IntSlider(selectedItemIndex.intValue, 0, dTarget.items.Count - 1);
+                        selectedItemIndex.intValue =
+                            EditorGUILayout.IntSlider(selectedItemIndex.intValue, 0, dTarget.items.Count - 1);
 
                         GUILayout.EndVertical();
                     }
 
-                    else if (Application.isPlaying == true && dTarget.items.Count != 0)
+                    else if (Application.isPlaying && dTarget.items.Count != 0)
                     {
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
                         GUI.enabled = false;
 
-                        EditorGUILayout.LabelField(new GUIContent("Current Item:"), customSkin.FindStyle("Text"), GUILayout.Width(74));
-                        EditorGUILayout.LabelField(new GUIContent(dTarget.items[dTarget.selectedItemIndex].itemName), customSkin.FindStyle("Text"));
+                        EditorGUILayout.LabelField(new GUIContent("Current Item:"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(74));
+                        EditorGUILayout.LabelField(new GUIContent(dTarget.items[dTarget.selectedItemIndex].itemName),
+                            customSkin.FindStyle("Text"));
 
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2);
@@ -130,18 +137,24 @@ namespace Michsky.UI.Heat
                         GUILayout.EndVertical();
                     }
 
-                    else { EditorGUILayout.HelpBox("There is no item in the list.", MessageType.Warning); }
+                    else
+                    {
+                        EditorGUILayout.HelpBox("There is no item in the list.", MessageType.Warning);
+                    }
 
                     GUILayout.BeginVertical();
                     EditorGUI.indentLevel = 1;
-                    EditorGUILayout.PropertyField(items, new GUIContent("Dropdown Items"), true);          
+                    EditorGUILayout.PropertyField(items, new GUIContent("Dropdown Items"), true);
                     EditorGUI.indentLevel = 0;
                     GUILayout.EndVertical();
 
                     if (Application.isPlaying == false && dTarget.contentCG != null)
                     {
-                        if (dTarget.contentCG.alpha == 0 && GUILayout.Button("Show Content Preview", customSkin.button)) { dTarget.contentCG.alpha = 1; }
-                        else if (dTarget.contentCG.alpha == 1 && GUILayout.Button("Disable Content Preview", customSkin.button)) { dTarget.contentCG.alpha = 0; }
+                        if (dTarget.contentCG.alpha == 0 && GUILayout.Button("Show Content Preview", customSkin.button))
+                            dTarget.contentCG.alpha = 1;
+                        else if (dTarget.contentCG.alpha == 1 &&
+                                 GUILayout.Button("Disable Content Preview", customSkin.button))
+                            dTarget.contentCG.alpha = 0;
                     }
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Events Header", 10);
@@ -164,44 +177,53 @@ namespace Michsky.UI.Heat
 
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Customization Header", 6);
-                    enableIcon.boolValue = HeatUIEditorHandler.DrawToggle(enableIcon.boolValue, customSkin, "Enable Header Icon");
+                    enableIcon.boolValue =
+                        HeatUIEditorHandler.DrawToggle(enableIcon.boolValue, customSkin, "Enable Header Icon");
 
                     if (dTarget.headerImage != null)
                     {
-                        if (enableIcon.boolValue == true) { dTarget.headerImage.gameObject.SetActive(true); }
-                        else { dTarget.headerImage.gameObject.SetActive(false); }
+                        if (enableIcon.boolValue)
+                            dTarget.headerImage.gameObject.SetActive(true);
+                        else
+                            dTarget.headerImage.gameObject.SetActive(false);
                     }
 
-                    else if (enableIcon.boolValue == true)
+                    else if (enableIcon.boolValue)
                     {
                         GUILayout.BeginHorizontal();
                         EditorGUILayout.HelpBox("'Header Image' is missing from the resources.", MessageType.Warning);
                         GUILayout.EndHorizontal();
                     }
 
-                    enableScrollbar.boolValue = HeatUIEditorHandler.DrawToggle(enableScrollbar.boolValue, customSkin, "Enable Scrollbar");
+                    enableScrollbar.boolValue =
+                        HeatUIEditorHandler.DrawToggle(enableScrollbar.boolValue, customSkin, "Enable Scrollbar");
 
                     if (dTarget.scrollbar != null)
                     {
-                        if (enableScrollbar.boolValue == true) { dTarget.scrollbar.gameObject.SetActive(true); }
-                        else { dTarget.scrollbar.gameObject.SetActive(false); }
+                        if (enableScrollbar.boolValue)
+                            dTarget.scrollbar.gameObject.SetActive(true);
+                        else
+                            dTarget.scrollbar.gameObject.SetActive(false);
                     }
 
-                    else if (enableScrollbar.boolValue == true)
+                    else if (enableScrollbar.boolValue)
                     {
                         GUILayout.BeginHorizontal();
                         EditorGUILayout.HelpBox("'Scrollbar' is missing from the resources.", MessageType.Warning);
                         GUILayout.EndHorizontal();
                     }
 
-                    startAtBottom.boolValue = HeatUIEditorHandler.DrawToggle(startAtBottom.boolValue, customSkin, "Start At Bottom");
-                    useGamepadInput.boolValue = HeatUIEditorHandler.DrawToggle(useGamepadInput.boolValue, customSkin, "Use Gamepad Input");
+                    startAtBottom.boolValue =
+                        HeatUIEditorHandler.DrawToggle(startAtBottom.boolValue, customSkin, "Start At Bottom");
+                    useGamepadInput.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useGamepadInput.boolValue, customSkin, "Use Gamepad Input");
 
                     HeatUIEditorHandler.DrawPropertyCW(itemSpacing, customSkin, "Item Spacing", 90);
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(new GUIContent("Item Padding"), customSkin.FindStyle("Text"), GUILayout.Width(90));
+                    EditorGUILayout.LabelField(new GUIContent("Item Padding"), customSkin.FindStyle("Text"),
+                        GUILayout.Width(90));
                     GUILayout.EndHorizontal();
                     EditorGUI.indentLevel = 1;
 
@@ -221,24 +243,34 @@ namespace Michsky.UI.Heat
                     HeatUIEditorHandler.DrawProperty(animationCurve, customSkin, "Animation Curve");
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-                    initOnEnable.boolValue = HeatUIEditorHandler.DrawToggle(initOnEnable.boolValue, customSkin, "Initialize On Enable");
-                    invokeOnEnable.boolValue = HeatUIEditorHandler.DrawToggle(invokeOnEnable.boolValue, customSkin, "Invoke On Enable", "Process events on awake.");
+                    initOnEnable.boolValue =
+                        HeatUIEditorHandler.DrawToggle(initOnEnable.boolValue, customSkin, "Initialize On Enable");
+                    invokeOnEnable.boolValue = HeatUIEditorHandler.DrawToggle(invokeOnEnable.boolValue, customSkin,
+                        "Invoke On Enable", "Process events on awake.");
 
-                    enableTrigger.boolValue = HeatUIEditorHandler.DrawToggle(enableTrigger.boolValue, customSkin, "Enable Trigger", "Clicking outside will close the dropdown.");
-                    if (enableTrigger.boolValue == true && dTarget.triggerObject == null) { EditorGUILayout.HelpBox("'Trigger Object' is missing from the resources.", MessageType.Warning); }
+                    enableTrigger.boolValue = HeatUIEditorHandler.DrawToggle(enableTrigger.boolValue, customSkin,
+                        "Enable Trigger", "Clicking outside will close the dropdown.");
+                    if (enableTrigger.boolValue && dTarget.triggerObject == null)
+                        EditorGUILayout.HelpBox("'Trigger Object' is missing from the resources.", MessageType.Warning);
 
-                    setHighPriority.boolValue = HeatUIEditorHandler.DrawToggle(setHighPriority.boolValue, customSkin, "Set High Priority");
-                    if (setHighPriority.boolValue == true) { EditorGUILayout.HelpBox("Set High Priority; renders the content above all objects when the dropdown is open.", MessageType.Info); }
+                    setHighPriority.boolValue =
+                        HeatUIEditorHandler.DrawToggle(setHighPriority.boolValue, customSkin, "Set High Priority");
+                    if (setHighPriority.boolValue)
+                        EditorGUILayout.HelpBox(
+                            "Set High Priority; renders the content above all objects when the dropdown is open.",
+                            MessageType.Info);
 
-                    outOnPointerExit.boolValue = HeatUIEditorHandler.DrawToggle(outOnPointerExit.boolValue, customSkin, "Out On Pointer Exit", "Close the dropdown on pointer exit.");
+                    outOnPointerExit.boolValue = HeatUIEditorHandler.DrawToggle(outOnPointerExit.boolValue, customSkin,
+                        "Out On Pointer Exit", "Close the dropdown on pointer exit.");
                     useSounds.boolValue = HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Sounds");
-                 
+
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    saveSelected.boolValue = HeatUIEditorHandler.DrawTogglePlain(saveSelected.boolValue, customSkin, "Save Selected");                 
+                    saveSelected.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(saveSelected.boolValue, customSkin, "Save Selected");
                     GUILayout.Space(3);
 
-                    if (saveSelected.boolValue == true)
+                    if (saveSelected.boolValue)
                     {
                         HeatUIEditorHandler.DrawPropertyPlainCW(saveKey, customSkin, "Save Key:", 66);
                         EditorGUILayout.HelpBox("You must set a unique save key for each dropdown.", MessageType.Info);
@@ -249,28 +281,31 @@ namespace Michsky.UI.Heat
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
 
-                    useUINavigation.boolValue = HeatUIEditorHandler.DrawTogglePlain(useUINavigation.boolValue, customSkin, "Use UI Navigation", "Enables controller navigation.");
+                    useUINavigation.boolValue = HeatUIEditorHandler.DrawTogglePlain(useUINavigation.boolValue,
+                        customSkin, "Use UI Navigation", "Enables controller navigation.");
 
                     GUILayout.Space(4);
 
-                    if (useUINavigation.boolValue == true)
+                    if (useUINavigation.boolValue)
                     {
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         HeatUIEditorHandler.DrawPropertyPlain(navigationMode, customSkin, "Navigation Mode");
 
-                        if (dTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Horizontal)
+                        if (dTarget.navigationMode == Navigation.Mode.Horizontal)
                         {
                             EditorGUI.indentLevel = 1;
-                            wrapAround.boolValue = HeatUIEditorHandler.DrawToggle(wrapAround.boolValue, customSkin, "Wrap Around");
+                            wrapAround.boolValue =
+                                HeatUIEditorHandler.DrawToggle(wrapAround.boolValue, customSkin, "Wrap Around");
                             EditorGUI.indentLevel = 0;
                         }
 
-                        else if (dTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Vertical)
+                        else if (dTarget.navigationMode == Navigation.Mode.Vertical)
                         {
-                            wrapAround.boolValue = HeatUIEditorHandler.DrawTogglePlain(wrapAround.boolValue, customSkin, "Wrap Around");
+                            wrapAround.boolValue =
+                                HeatUIEditorHandler.DrawTogglePlain(wrapAround.boolValue, customSkin, "Wrap Around");
                         }
 
-                        else if (dTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Explicit)
+                        else if (dTarget.navigationMode == Navigation.Mode.Explicit)
                         {
                             EditorGUI.indentLevel = 1;
                             HeatUIEditorHandler.DrawPropertyPlain(selectOnUp, customSkin, "Select On Up");
@@ -288,7 +323,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

@@ -1,78 +1,77 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Michsky.UI.Heat
 {
     public class SettingsDescriptionManager : MonoBehaviour
     {
-        [Header("Default Content")]
-        [SerializeField] private Sprite cover;
+        [Header("Default Content")] [SerializeField]
+        private Sprite cover;
+
         [SerializeField] private string title = "Settings";
         [SerializeField] [TextArea] private string description = "Description area.";
 
-        [Header("Localization")]
-        public string tableID = "UI";
+        [Header("Localization")] public string tableID = "UI";
+
         [SerializeField] private string titleKey;
         [SerializeField] private string descriptionKey;
 
-        [Header("Resources")]
-        [SerializeField] private Image coverImage;
+        [Header("Resources")] [SerializeField] private Image coverImage;
+
         [SerializeField] private TextMeshProUGUI titleObject;
         [SerializeField] private TextMeshProUGUI descriptionObject;
 
-        [Header("Settings")]
-        public bool useLocalization = true;
+        [Header("Settings")] public bool useLocalization = true;
 
         // Helpers
         [HideInInspector] public LocalizedObject localizedObject;
 
-        void Awake()
+        private void Awake()
         {
             if (useLocalization && !string.IsNullOrEmpty(titleKey) && !string.IsNullOrEmpty(descriptionKey))
-            { 
-                CheckForLocalization(); 
-            }
+                CheckForLocalization();
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             SetDefault();
         }
 
-        void CheckForLocalization()
+        private void CheckForLocalization()
         {
             localizedObject = gameObject.GetComponent<LocalizedObject>();
 
-            if (localizedObject == null) 
-            { 
+            if (localizedObject == null)
+            {
                 localizedObject = gameObject.AddComponent<LocalizedObject>();
-                localizedObject.objectType = LocalizedObject.ObjectType.ComponentDriven; 
+                localizedObject.objectType = LocalizedObject.ObjectType.ComponentDriven;
                 localizedObject.updateMode = LocalizedObject.UpdateMode.OnDemand;
                 localizedObject.InitializeItem();
 
-                LocalizationSettings locSettings = LocalizationManager.instance.UIManagerAsset.localizationSettings;
-                foreach (LocalizationSettings.Table table in locSettings.tables) 
-                {
-                    if (tableID == table.tableID) 
-                    { 
+                var locSettings = LocalizationManager.instance.UIManagerAsset.localizationSettings;
+                foreach (var table in locSettings.tables)
+                    if (tableID == table.tableID)
+                    {
                         localizedObject.tableIndex = locSettings.tables.IndexOf(table);
                         break;
                     }
-                }
             }
 
-            if (localizedObject.tableIndex == -1 || LocalizationManager.instance == null || !LocalizationManager.instance.UIManagerAsset.enableLocalization)
-            { 
+            if (localizedObject.tableIndex == -1 || LocalizationManager.instance == null ||
+                !LocalizationManager.instance.UIManagerAsset.enableLocalization)
+            {
                 localizedObject = null;
                 useLocalization = false;
             }
         }
 
-        public void UpdateUI(string newTitle, string newDescription, Sprite newCover) 
+        public void UpdateUI(string newTitle, string newDescription, Sprite newCover)
         {
-            if (newCover != null) { coverImage.sprite = newCover; }
-            else { coverImage.sprite = cover; }
+            if (newCover != null)
+                coverImage.sprite = newCover;
+            else
+                coverImage.sprite = cover;
 
             titleObject.text = newTitle;
             descriptionObject.text = newDescription;

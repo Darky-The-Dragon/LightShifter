@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -15,8 +15,10 @@ namespace Michsky.UI.Heat
         {
             amTarget = (AchievementManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -45,9 +47,12 @@ namespace Michsky.UI.Heat
             if (amTarget.UIManagerAsset != null)
             {
                 GUILayout.BeginHorizontal(EditorStyles.helpBox);
-                EditorGUILayout.LabelField(new GUIContent("Library Preset"), customSkin.FindStyle("Text"), GUILayout.Width(120));
+                EditorGUILayout.LabelField(new GUIContent("Library Preset"), customSkin.FindStyle("Text"),
+                    GUILayout.Width(120));
                 GUI.enabled = false;
-                amTarget.UIManagerAsset.achievementLibrary = EditorGUILayout.ObjectField(amTarget.UIManagerAsset.achievementLibrary, typeof(AchievementLibrary), true) as AchievementLibrary;
+                amTarget.UIManagerAsset.achievementLibrary =
+                    EditorGUILayout.ObjectField(amTarget.UIManagerAsset.achievementLibrary, typeof(AchievementLibrary),
+                        true) as AchievementLibrary;
                 GUI.enabled = true;
                 GUILayout.EndHorizontal();
             }
@@ -68,11 +73,13 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawProperty(legendaryTotalObj, customSkin, "Legendary Total");
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-            useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization", "Bypasses localization functions when disabled.");
-            useAlphabeticalOrder.boolValue = HeatUIEditorHandler.DrawToggle(useAlphabeticalOrder.boolValue, customSkin, "Use Alphabetical Order");
+            useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin,
+                "Use Localization", "Bypasses localization functions when disabled.");
+            useAlphabeticalOrder.boolValue = HeatUIEditorHandler.DrawToggle(useAlphabeticalOrder.boolValue, customSkin,
+                "Use Alphabetical Order");
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

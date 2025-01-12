@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -15,8 +15,10 @@ namespace Michsky.UI.Heat
         {
             cmTarget = (ControllerManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -32,7 +34,8 @@ namespace Michsky.UI.Heat
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Core Header", 6);
             HeatUIEditorHandler.DrawProperty(presetManager, customSkin, "Preset Manager");
-            HeatUIEditorHandler.DrawProperty(firstSelected, customSkin, "First Selected", "UI element to be selected first in the home panel (e.g. Play button).");
+            HeatUIEditorHandler.DrawProperty(firstSelected, customSkin, "First Selected",
+                "UI element to be selected first in the home panel (e.g. Play button).");
 
             GUILayout.BeginVertical();
             EditorGUI.indentLevel = 1;
@@ -47,9 +50,12 @@ namespace Michsky.UI.Heat
             GUILayout.EndVertical();
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-            alwaysUpdate.boolValue = HeatUIEditorHandler.DrawToggle(alwaysUpdate.boolValue, customSkin, "Always Update");
-            affectCursor.boolValue = HeatUIEditorHandler.DrawToggle(affectCursor.boolValue, customSkin, "Affect Cursor", "Changes the cursor state depending on the controller state.");
-            EditorGUILayout.PropertyField(gamepadHotkey, new GUIContent("Gamepad Hotkey", "Triggers to switch to gamepad when pressed."), true);
+            alwaysUpdate.boolValue =
+                HeatUIEditorHandler.DrawToggle(alwaysUpdate.boolValue, customSkin, "Always Update");
+            affectCursor.boolValue = HeatUIEditorHandler.DrawToggle(affectCursor.boolValue, customSkin, "Affect Cursor",
+                "Changes the cursor state depending on the controller state.");
+            EditorGUILayout.PropertyField(gamepadHotkey,
+                new GUIContent("Gamepad Hotkey", "Triggers to switch to gamepad when pressed."), true);
 
             serializedObject.ApplyModifiedProperties();
         }

@@ -6,52 +6,74 @@ namespace Michsky.UI.Heat
 {
     public class UISway : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        [Header("Resources")]
-        [SerializeField] private Canvas mainCanvas;
+        public enum InputType
+        {
+            Mouse,
+            Touchscreen
+        }
+
+        [Header("Resources")] [SerializeField] private Canvas mainCanvas;
+
         [SerializeField] private Camera mainCamera;
         [SerializeField] private RectTransform swayObject;
 
-        [Header("Settings")]
-        [SerializeField] [Range(1, 20)] private float smoothness = 10;
+        [Header("Settings")] [SerializeField] [Range(1, 20)]
+        private float smoothness = 10;
+
         [SerializeField] private InputType inputType = InputType.Mouse;
 
-        bool allowSway;
-        Vector3 cursorPos;
-        Vector2 defaultPos;
+        private bool allowSway;
+        private Vector3 cursorPos;
+        private Vector2 defaultPos;
 
-        public enum InputType { Mouse, Touchscreen }
-
-        void Start()
+        private void Start()
         {
             defaultPos = swayObject.anchoredPosition;
 
-            if (mainCamera == null) { mainCamera = Camera.main; }
-            if (mainCanvas == null) { mainCanvas = GetComponentInParent<Canvas>(); }
-            if (swayObject == null) { swayObject = GetComponent<RectTransform>(); }
+            if (mainCamera == null) mainCamera = Camera.main;
+            if (mainCanvas == null) mainCanvas = GetComponentInParent<Canvas>();
+            if (swayObject == null) swayObject = GetComponent<RectTransform>();
         }
 
-        void Update()
+        private void Update()
         {
-            if (allowSway == true && inputType == InputType.Mouse) { cursorPos = Mouse.current.position.ReadValue(); }
-            else if (allowSway == true && inputType == InputType.Touchscreen) { cursorPos = Touchscreen.current.position.ReadValue(); }
+            if (allowSway && inputType == InputType.Mouse)
+                cursorPos = Mouse.current.position.ReadValue();
+            else if (allowSway && inputType == InputType.Touchscreen)
+                cursorPos = Touchscreen.current.position.ReadValue();
 
-            if (mainCanvas.renderMode == RenderMode.ScreenSpaceOverlay) { ProcessOverlay(); }
-            else if (mainCanvas.renderMode == RenderMode.ScreenSpaceCamera) { ProcessSSC(); }
+            if (mainCanvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                ProcessOverlay();
+            else if (mainCanvas.renderMode == RenderMode.ScreenSpaceCamera) ProcessSSC();
         }
 
-        void ProcessOverlay()
+        public void OnPointerEnter(PointerEventData data)
         {
-            if (allowSway == true) { swayObject.position = Vector2.Lerp(swayObject.position, cursorPos, Time.unscaledDeltaTime * smoothness); }
-            else { swayObject.localPosition = Vector2.Lerp(swayObject.localPosition, defaultPos, Time.unscaledDeltaTime * smoothness); }
+            allowSway = true;
         }
 
-        void ProcessSSC()
+        public void OnPointerExit(PointerEventData data)
         {
-            if (allowSway == true) { swayObject.position = Vector2.Lerp(swayObject.position, mainCamera.ScreenToWorldPoint(cursorPos), Time.unscaledDeltaTime * smoothness); }
-            else { swayObject.localPosition = Vector2.Lerp(swayObject.localPosition, defaultPos, Time.unscaledDeltaTime * smoothness); }
+            allowSway = false;
         }
 
-        public void OnPointerEnter(PointerEventData data) { allowSway = true; }
-        public void OnPointerExit(PointerEventData data) { allowSway = false; }
+        private void ProcessOverlay()
+        {
+            if (allowSway)
+                swayObject.position = Vector2.Lerp(swayObject.position, cursorPos, Time.unscaledDeltaTime * smoothness);
+            else
+                swayObject.localPosition = Vector2.Lerp(swayObject.localPosition, defaultPos,
+                    Time.unscaledDeltaTime * smoothness);
+        }
+
+        private void ProcessSSC()
+        {
+            if (allowSway)
+                swayObject.position = Vector2.Lerp(swayObject.position, mainCamera.ScreenToWorldPoint(cursorPos),
+                    Time.unscaledDeltaTime * smoothness);
+            else
+                swayObject.localPosition = Vector2.Lerp(swayObject.localPosition, defaultPos,
+                    Time.unscaledDeltaTime * smoothness);
+        }
     }
 }

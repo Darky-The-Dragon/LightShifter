@@ -1,14 +1,26 @@
 using System.Collections;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
     [RequireComponent(typeof(Animator))]
     public class NotificationManager : MonoBehaviour
     {
+        public enum AfterMinimize
+        {
+            Disable,
+            Destroy
+        }
+
+        public enum DefaultState
+        {
+            Minimized,
+            Expanded
+        }
+
         // Content
         public Sprite icon;
         [TextArea] public string notificationText = "Notification Text";
@@ -28,23 +40,23 @@ namespace Michsky.UI.Heat
         public AfterMinimize afterMinimize = AfterMinimize.Disable;
 
         // Events
-        public UnityEvent onDestroy = new UnityEvent();
+        public UnityEvent onDestroy = new();
 
         // Helpers
-        bool isOn;
-        LocalizedObject localizedObject;
+        private bool isOn;
+        private LocalizedObject localizedObject;
 
-        public enum DefaultState { Minimized, Expanded }
-        public enum AfterMinimize { Disable, Destroy }
-
-        void Start()
+        private void Start()
         {
-            if (itemAnimator == null) { itemAnimator = GetComponent<Animator>(); }
+            if (itemAnimator == null) itemAnimator = GetComponent<Animator>();
             if (useLocalization)
             {
                 localizedObject = textObj.GetComponent<LocalizedObject>();
 
-                if (localizedObject == null || !localizedObject.CheckLocalizationStatus()) { useLocalization = false; }
+                if (localizedObject == null || !localizedObject.CheckLocalizationStatus())
+                {
+                    useLocalization = false;
+                }
                 else if (localizedObject != null && !string.IsNullOrEmpty(localizationKey))
                 {
                     // Forcing component to take the localized output on awake
@@ -59,8 +71,9 @@ namespace Michsky.UI.Heat
                 }
             }
 
-            if (defaultState == DefaultState.Minimized) { gameObject.SetActive(false); }
-            else if (defaultState == DefaultState.Expanded) { ExpandNotification(); }
+            if (defaultState == DefaultState.Minimized)
+                gameObject.SetActive(false);
+            else if (defaultState == DefaultState.Expanded) ExpandNotification();
 
             UpdateUI();
         }
@@ -97,11 +110,19 @@ namespace Michsky.UI.Heat
             itemAnimator.enabled = true;
             itemAnimator.Play("In");
 
-            if (updateOnAnimate) { UpdateUI(); }
-            if (minimizeAfter != 0) { StopCoroutine("MinimizeItem"); StartCoroutine("MinimizeItem"); }
+            if (updateOnAnimate) UpdateUI();
+            if (minimizeAfter != 0)
+            {
+                StopCoroutine("MinimizeItem");
+                StartCoroutine("MinimizeItem");
+            }
 
-            if (customSFX != null && UIManagerAudio.instance != null) { UIManagerAudio.instance.audioSource.PlayOneShot(customSFX); }
-            else if (UIManagerAudio.instance != null && UIManagerAudio.instance.UIManagerAsset.notificationSound != null) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.notificationSound); }
+            if (customSFX != null && UIManagerAudio.instance != null)
+                UIManagerAudio.instance.audioSource.PlayOneShot(customSFX);
+            else if (UIManagerAudio.instance != null &&
+                     UIManagerAudio.instance.UIManagerAsset.notificationSound != null)
+                UIManagerAudio.instance.audioSource.PlayOneShot(
+                    UIManagerAudio.instance.UIManagerAsset.notificationSound);
 
             StopCoroutine("DisableAnimator");
             StartCoroutine("DisableAnimator");
@@ -129,23 +150,25 @@ namespace Michsky.UI.Heat
             Destroy(gameObject);
         }
 
-        IEnumerator DisableAnimator()
+        private IEnumerator DisableAnimator()
         {
             yield return new WaitForSeconds(HeatUIInternalTools.GetAnimatorClipLength(itemAnimator, "Notification_In"));
             itemAnimator.enabled = false;
         }
 
-        IEnumerator DisableItem()
+        private IEnumerator DisableItem()
         {
-            yield return new WaitForSeconds(HeatUIInternalTools.GetAnimatorClipLength(itemAnimator, "Notification_Out"));
+            yield return
+                new WaitForSeconds(HeatUIInternalTools.GetAnimatorClipLength(itemAnimator, "Notification_Out"));
 
             isOn = false;
 
-            if (afterMinimize == AfterMinimize.Disable) { gameObject.SetActive(false); }
-            else if (afterMinimize == AfterMinimize.Destroy) { DestroyNotification(); }
+            if (afterMinimize == AfterMinimize.Disable)
+                gameObject.SetActive(false);
+            else if (afterMinimize == AfterMinimize.Destroy) DestroyNotification();
         }
 
-        IEnumerator MinimizeItem()
+        private IEnumerator MinimizeItem()
         {
             yield return new WaitForSeconds(minimizeAfter);
             MinimizeNotification();

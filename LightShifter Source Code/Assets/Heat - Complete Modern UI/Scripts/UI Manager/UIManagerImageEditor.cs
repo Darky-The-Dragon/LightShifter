@@ -1,21 +1,23 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(UIManagerImage))]
     public class UIManagerImageEditor : Editor
     {
-        private UIManagerImage uimiTarget;
         private GUISkin customSkin;
+        private UIManagerImage uimiTarget;
 
         private void OnEnable()
         {
             uimiTarget = (UIManagerImage)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -33,12 +35,17 @@ namespace Michsky.UI.Heat
             if (uimiTarget.UIManagerAsset != null)
             {
                 HeatUIEditorHandler.DrawProperty(colorType, customSkin, "Color Type");
-                useCustomColor.boolValue = HeatUIEditorHandler.DrawToggle(useCustomColor.boolValue, customSkin, "Use Custom Color");
-                if (useCustomColor.boolValue == true) { GUI.enabled = false; }
-                useCustomAlpha.boolValue = HeatUIEditorHandler.DrawToggle(useCustomAlpha.boolValue, customSkin, "Use Custom Alpha");
+                useCustomColor.boolValue =
+                    HeatUIEditorHandler.DrawToggle(useCustomColor.boolValue, customSkin, "Use Custom Color");
+                if (useCustomColor.boolValue) GUI.enabled = false;
+                useCustomAlpha.boolValue =
+                    HeatUIEditorHandler.DrawToggle(useCustomAlpha.boolValue, customSkin, "Use Custom Alpha");
             }
 
-            else { EditorGUILayout.HelpBox("UI Manager should be assigned.", MessageType.Error); }
+            else
+            {
+                EditorGUILayout.HelpBox("UI Manager should be assigned.", MessageType.Error);
+            }
 
             serializedObject.ApplyModifiedProperties();
         }

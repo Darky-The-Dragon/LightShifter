@@ -7,22 +7,30 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/Audio/UI Element Sound")]
     public class UIElementSound : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler
     {
-        [Header("Resources")]
-        public AudioSource audioSource;
+        [Header("Resources")] public AudioSource audioSource;
 
-        [Header("Custom SFX")]
-        public AudioClip hoverSFX;
+        [Header("Custom SFX")] public AudioClip hoverSFX;
+
         public AudioClip clickSFX;
 
-        [Header("Settings")]
-        public bool enableHoverSound = true;
+        [Header("Settings")] public bool enableHoverSound = true;
+
         public bool enableClickSound = true;
 
-        void OnEnable()
+        private void OnEnable()
         {
             if (UIManagerAudio.instance != null && audioSource == null)
-            {
                 audioSource = UIManagerAudio.instance.audioSource;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (enableClickSound)
+            {
+                if (clickSFX == null)
+                    audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
+                else
+                    audioSource.PlayOneShot(clickSFX);
             }
         }
 
@@ -30,17 +38,10 @@ namespace Michsky.UI.Heat
         {
             if (enableHoverSound)
             {
-                if (hoverSFX == null) { audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
-                else { audioSource.PlayOneShot(hoverSFX); }
-            }
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (enableClickSound)
-            {
-                if (clickSFX == null) { audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
-                else { audioSource.PlayOneShot(clickSFX); }
+                if (hoverSFX == null)
+                    audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
+                else
+                    audioSource.PlayOneShot(hoverSFX);
             }
         }
     }

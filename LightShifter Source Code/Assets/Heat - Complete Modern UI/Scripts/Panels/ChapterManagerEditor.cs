@@ -1,29 +1,31 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(ChapterManager))]
     public class ChapterManagerEditor : Editor
     {
-        private GUISkin customSkin;
         private ChapterManager cmTarget;
         private int currentTab;
+        private GUISkin customSkin;
 
         private void OnEnable()
         {
             cmTarget = (ChapterManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Chapters Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -68,27 +70,38 @@ namespace Michsky.UI.Heat
 
                     if (cmTarget.chapters.Count != 0)
                     {
-                        if (Application.isPlaying == true) { GUI.enabled = false; }
+                        if (Application.isPlaying) GUI.enabled = false;
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
                         GUI.enabled = false;
-                        EditorGUILayout.LabelField(new GUIContent("Current Chapter:"), customSkin.FindStyle("Text"), GUILayout.Width(94));
+                        EditorGUILayout.LabelField(new GUIContent("Current Chapter:"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(94));
                         GUI.enabled = true;
-                        
-                        if (setPanelAuto.boolValue == true) { GUI.enabled = false; }
-                        EditorGUILayout.LabelField(new GUIContent(cmTarget.chapters[currentChapterIndex.intValue].chapterID), customSkin.FindStyle("Text"));
-                       
+
+                        if (setPanelAuto.boolValue) GUI.enabled = false;
+                        EditorGUILayout.LabelField(
+                            new GUIContent(cmTarget.chapters[currentChapterIndex.intValue].chapterID),
+                            customSkin.FindStyle("Text"));
+
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2);
 
-                        currentChapterIndex.intValue = EditorGUILayout.IntSlider(currentChapterIndex.intValue, 0, cmTarget.chapters.Count - 1);
+                        currentChapterIndex.intValue = EditorGUILayout.IntSlider(currentChapterIndex.intValue, 0,
+                            cmTarget.chapters.Count - 1);
 
                         GUI.enabled = true;
-                        if (setPanelAuto.boolValue == true) { EditorGUILayout.HelpBox("'Set Panel Automatically' is enabled. Current chapter will be set automatically based on default chapter states.", MessageType.Info); }
+                        if (setPanelAuto.boolValue)
+                            EditorGUILayout.HelpBox(
+                                "'Set Panel Automatically' is enabled. Current chapter will be set automatically based on default chapter states.",
+                                MessageType.Info);
                         GUILayout.EndVertical();
                     }
 
-                    else { EditorGUILayout.HelpBox("Chapter list is empty. Create a new item to see more options.", MessageType.Info); }
+                    else
+                    {
+                        EditorGUILayout.HelpBox("Chapter list is empty. Create a new item to see more options.",
+                            MessageType.Info);
+                    }
 
                     GUILayout.BeginVertical();
                     EditorGUI.indentLevel = 1;
@@ -97,7 +110,8 @@ namespace Michsky.UI.Heat
                     GUILayout.EndVertical();
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Events Header", 10);
-                    EditorGUILayout.PropertyField(onChapterPanelChanged, new GUIContent("On Chapter Panel Changed"), true);
+                    EditorGUILayout.PropertyField(onChapterPanelChanged, new GUIContent("On Chapter Panel Changed"),
+                        true);
                     break;
 
                 case 1:
@@ -111,22 +125,28 @@ namespace Michsky.UI.Heat
 
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    showLockedChapters.boolValue = HeatUIEditorHandler.DrawToggle(showLockedChapters.boolValue, customSkin, "Show Locked Chapters");
-                    setPanelAuto.boolValue = HeatUIEditorHandler.DrawToggle(setPanelAuto.boolValue, customSkin, "Set Panel Automatically");
-                    checkChapterData.boolValue = HeatUIEditorHandler.DrawToggle(checkChapterData.boolValue, customSkin, "Check For Chapter Data");
-                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization");
+                    showLockedChapters.boolValue = HeatUIEditorHandler.DrawToggle(showLockedChapters.boolValue,
+                        customSkin, "Show Locked Chapters");
+                    setPanelAuto.boolValue = HeatUIEditorHandler.DrawToggle(setPanelAuto.boolValue, customSkin,
+                        "Set Panel Automatically");
+                    checkChapterData.boolValue = HeatUIEditorHandler.DrawToggle(checkChapterData.boolValue, customSkin,
+                        "Check For Chapter Data");
+                    useLocalization.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization");
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-2);
                     GUILayout.BeginHorizontal();
 
-                    backgroundStretch.boolValue = GUILayout.Toggle(backgroundStretch.boolValue, new GUIContent("Background Stretch"), customSkin.FindStyle("Toggle"));
-                    backgroundStretch.boolValue = GUILayout.Toggle(backgroundStretch.boolValue, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
-                    
+                    backgroundStretch.boolValue = GUILayout.Toggle(backgroundStretch.boolValue,
+                        new GUIContent("Background Stretch"), customSkin.FindStyle("Toggle"));
+                    backgroundStretch.boolValue = GUILayout.Toggle(backgroundStretch.boolValue, new GUIContent(""),
+                        customSkin.FindStyle("Toggle Helper"));
+
                     GUILayout.EndHorizontal();
                     GUILayout.Space(4);
 
-                    if (backgroundStretch.boolValue == true) 
+                    if (backgroundStretch.boolValue)
                     {
                         HeatUIEditorHandler.DrawProperty(maxStretch, customSkin, "Max Stretch");
                         HeatUIEditorHandler.DrawProperty(stretchCurveSpeed, customSkin, "Curve Speed");
@@ -142,7 +162,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

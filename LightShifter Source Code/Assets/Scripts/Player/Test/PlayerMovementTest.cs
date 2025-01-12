@@ -8,6 +8,8 @@ namespace Player.Test
     {
         [SerializeField] private Rigidbody2D Rigidbody2D_Component;
         [SerializeField] private Animator Animator_Component;
+        private readonly float jumpPower = 5f;
+        private readonly float moveSpeed = 5f;
         private Animator animator;
         private bool coyoteJump;
         private LayerMask ground;
@@ -16,8 +18,6 @@ namespace Player.Test
         private float horizontalInput;
         private bool isFacingRight;
         private bool isGrounded;
-        private readonly float jumpPower = 5f;
-        private readonly float moveSpeed = 5f;
 
         private Rigidbody2D rb;
 

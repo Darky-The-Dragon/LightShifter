@@ -1,9 +1,9 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using TMPro;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
@@ -11,6 +11,24 @@ namespace Michsky.UI.Heat
     [RequireComponent(typeof(CanvasGroup))]
     public class ModalWindowManager : MonoBehaviour
     {
+        public enum CloseBehaviour
+        {
+            Disable,
+            Destroy
+        }
+
+        public enum InputType
+        {
+            Focused,
+            Free
+        }
+
+        public enum StartBehaviour
+        {
+            Enable,
+            Disable
+        }
+
         // Resources
         public Image windowIcon;
         public TextMeshProUGUI windowTitle;
@@ -29,8 +47,8 @@ namespace Michsky.UI.Heat
         public string descriptionKey;
 
         // Settings
-        public bool useCustomContent = false;
-        public bool isOn = false;
+        public bool useCustomContent;
+        public bool isOn;
         public bool closeOnCancel = true;
         public bool closeOnConfirm = true;
         public bool showCancelButton = true;
@@ -42,67 +60,75 @@ namespace Michsky.UI.Heat
         public InputType inputType = InputType.Focused;
 
         // Events
-        public UnityEvent onConfirm = new UnityEvent();
-        public UnityEvent onCancel = new UnityEvent();
-        public UnityEvent onOpen = new UnityEvent();
-        public UnityEvent onClose = new UnityEvent();
+        public UnityEvent onConfirm = new();
+        public UnityEvent onCancel = new();
+        public UnityEvent onOpen = new();
+        public UnityEvent onClose = new();
 
         // Helpers
-        string animIn = "In";
-        string animOut = "Out";
-        string animSpeedKey = "AnimSpeed";
+        private readonly string animIn = "In";
+        private readonly string animOut = "Out";
+        private readonly string animSpeedKey = "AnimSpeed";
 
         // Event System
-        bool canProcessEventSystem;
-        float openStateLength;
-        float closeStateLength;
-        GameObject latestEventSystemObject;
+        private bool canProcessEventSystem;
+        private float closeStateLength;
+        private GameObject latestEventSystemObject;
+        private float openStateLength;
 
-        public enum StartBehaviour { Enable, Disable }
-        public enum CloseBehaviour { Disable, Destroy }
-        public enum InputType { Focused, Free }
-
-        void Awake()
+        private void Awake()
         {
             InitModalWindow();
             InitEventSystem();
             UpdateUI();
         }
 
-        void Start()
+        private void Start()
         {
-            if (startBehaviour == StartBehaviour.Disable) { isOn = false; gameObject.SetActive(false); }
-            else if (startBehaviour == StartBehaviour.Enable) { isOn = false; OpenWindow(); }
+            if (startBehaviour == StartBehaviour.Disable)
+            {
+                isOn = false;
+                gameObject.SetActive(false);
+            }
+            else if (startBehaviour == StartBehaviour.Enable)
+            {
+                isOn = false;
+                OpenWindow();
+            }
         }
 
-        void Update()
+        private void Update()
         {
-            if (inputType == InputType.Free || !isOn || !canProcessEventSystem || !ControllerManager.instance.gamepadEnabled)
+            if (inputType == InputType.Free || !isOn || !canProcessEventSystem ||
+                !ControllerManager.instance.gamepadEnabled)
                 return;
 
             CheckForEventButtons();
         }
 
-        void InitModalWindow()
+        private void InitModalWindow()
         {
-            if (mwAnimator == null) { mwAnimator = gameObject.GetComponent<Animator>(); }
-            if (closeOnCancel) { onCancel.AddListener(CloseWindow); }
-            if (closeOnConfirm) { onConfirm.AddListener(CloseWindow); }
-            if (confirmButton != null) { confirmButton.onClick.AddListener(onConfirm.Invoke); }
-            if (cancelButton != null) { cancelButton.onClick.AddListener(onCancel.Invoke); }
+            if (mwAnimator == null) mwAnimator = gameObject.GetComponent<Animator>();
+            if (closeOnCancel) onCancel.AddListener(CloseWindow);
+            if (closeOnConfirm) onConfirm.AddListener(CloseWindow);
+            if (confirmButton != null) confirmButton.onClick.AddListener(onConfirm.Invoke);
+            if (cancelButton != null) cancelButton.onClick.AddListener(onCancel.Invoke);
             if (useLocalization && !useCustomContent)
             {
-                LocalizedObject mainLoc = GetComponent<LocalizedObject>();
+                var mainLoc = GetComponent<LocalizedObject>();
 
-                if (mainLoc == null || !mainLoc.CheckLocalizationStatus()) { useLocalization = false; }
+                if (mainLoc == null || !mainLoc.CheckLocalizationStatus())
+                {
+                    useLocalization = false;
+                }
                 else
                 {
                     if (windowTitle != null && !string.IsNullOrEmpty(titleKey))
                     {
-                        LocalizedObject titleLoc = windowTitle.gameObject.GetComponent<LocalizedObject>();
-                        if (titleLoc != null) 
-                        { 
-                            titleLoc.tableIndex = mainLoc.tableIndex; 
+                        var titleLoc = windowTitle.gameObject.GetComponent<LocalizedObject>();
+                        if (titleLoc != null)
+                        {
+                            titleLoc.tableIndex = mainLoc.tableIndex;
                             titleLoc.localizationKey = titleKey;
                             titleLoc.UpdateItem();
                         }
@@ -110,10 +136,10 @@ namespace Michsky.UI.Heat
 
                     if (windowDescription != null && !string.IsNullOrEmpty(descriptionKey))
                     {
-                        LocalizedObject descLoc = windowDescription.gameObject.GetComponent<LocalizedObject>();
-                        if (descLoc != null) 
-                        { 
-                            descLoc.tableIndex = mainLoc.tableIndex; 
+                        var descLoc = windowDescription.gameObject.GetComponent<LocalizedObject>();
+                        if (descLoc != null)
+                        {
+                            descLoc.tableIndex = mainLoc.tableIndex;
                             descLoc.localizationKey = descriptionKey;
                             descLoc.UpdateItem();
                         }
@@ -125,39 +151,52 @@ namespace Michsky.UI.Heat
             closeStateLength = HeatUIInternalTools.GetAnimatorClipLength(mwAnimator, "ModalWindow_Out");
         }
 
-        void InitEventSystem()
+        private void InitEventSystem()
         {
-            if (ControllerManager.instance == null) { canProcessEventSystem = false; }
-            else if (cancelButton == null && confirmButton == null) { canProcessEventSystem = false; }
-            else { canProcessEventSystem = true; }
+            if (ControllerManager.instance == null)
+                canProcessEventSystem = false;
+            else if (cancelButton == null && confirmButton == null)
+                canProcessEventSystem = false;
+            else
+                canProcessEventSystem = true;
         }
 
-        void CheckForEventButtons()
+        private void CheckForEventButtons()
         {
-            if (cancelButton != null && EventSystem.current.currentSelectedGameObject != cancelButton.gameObject && EventSystem.current.currentSelectedGameObject != confirmButton.gameObject) { ControllerManager.instance.SelectUIObject(cancelButton.gameObject); }
-            else if (confirmButton != null && EventSystem.current.currentSelectedGameObject != cancelButton.gameObject && EventSystem.current.currentSelectedGameObject != confirmButton.gameObject) { ControllerManager.instance.SelectUIObject(confirmButton.gameObject); }
+            if (cancelButton != null && EventSystem.current.currentSelectedGameObject != cancelButton.gameObject &&
+                EventSystem.current.currentSelectedGameObject != confirmButton.gameObject)
+                ControllerManager.instance.SelectUIObject(cancelButton.gameObject);
+            else if (confirmButton != null &&
+                     EventSystem.current.currentSelectedGameObject != cancelButton.gameObject &&
+                     EventSystem.current.currentSelectedGameObject != confirmButton.gameObject)
+                ControllerManager.instance.SelectUIObject(confirmButton.gameObject);
         }
 
         public void UpdateUI()
         {
             if (!useCustomContent)
             {
-                if (windowIcon != null) { windowIcon.sprite = icon; }
-                if (windowTitle != null && (!useLocalization || string.IsNullOrEmpty(titleKey))) { windowTitle.text = titleText; }
-                if (windowDescription != null && (!useLocalization || string.IsNullOrEmpty(titleKey))) { windowDescription.text = descriptionText; }
+                if (windowIcon != null) windowIcon.sprite = icon;
+                if (windowTitle != null && (!useLocalization || string.IsNullOrEmpty(titleKey)))
+                    windowTitle.text = titleText;
+                if (windowDescription != null && (!useLocalization || string.IsNullOrEmpty(titleKey)))
+                    windowDescription.text = descriptionText;
             }
 
-            if (showCancelButton && cancelButton != null) { cancelButton.gameObject.SetActive(true); }
-            else if (cancelButton != null) { cancelButton.gameObject.SetActive(false); }
+            if (showCancelButton && cancelButton != null)
+                cancelButton.gameObject.SetActive(true);
+            else if (cancelButton != null) cancelButton.gameObject.SetActive(false);
 
-            if (showConfirmButton && confirmButton != null) { confirmButton.gameObject.SetActive(true); }
-            else if (confirmButton != null) { confirmButton.gameObject.SetActive(false); }
+            if (showConfirmButton && confirmButton != null)
+                confirmButton.gameObject.SetActive(true);
+            else if (confirmButton != null) confirmButton.gameObject.SetActive(false);
         }
 
         public void OpenWindow()
         {
-            if (isOn) { return; }
-            if (EventSystem.current.currentSelectedGameObject != null) { latestEventSystemObject = EventSystem.current.currentSelectedGameObject; }
+            if (isOn) return;
+            if (EventSystem.current.currentSelectedGameObject != null)
+                latestEventSystemObject = EventSystem.current.currentSelectedGameObject;
 
             gameObject.SetActive(true);
             isOn = true;
@@ -177,7 +216,7 @@ namespace Michsky.UI.Heat
             if (!isOn)
                 return;
 
-            if (gameObject.activeSelf == true)
+            if (gameObject.activeSelf)
             {
                 StopCoroutine("DisableObject");
                 StopCoroutine("DisableAnimator");
@@ -190,29 +229,31 @@ namespace Michsky.UI.Heat
             mwAnimator.Play(animOut);
             onClose.Invoke();
 
-            if (ControllerManager.instance != null && latestEventSystemObject != null && latestEventSystemObject.activeInHierarchy)
-            {
+            if (ControllerManager.instance != null && latestEventSystemObject != null &&
+                latestEventSystemObject.activeInHierarchy)
                 ControllerManager.instance.SelectUIObject(latestEventSystemObject);
-            }
         }
 
         public void AnimateWindow()
         {
-            if (!isOn) { OpenWindow(); }
-            else { CloseWindow(); }
+            if (!isOn)
+                OpenWindow();
+            else
+                CloseWindow();
         }
 
-        IEnumerator DisableObject()
+        private IEnumerator DisableObject()
         {
             yield return new WaitForSecondsRealtime(closeStateLength);
 
-            if (closeBehaviour == CloseBehaviour.Disable) { gameObject.SetActive(false); }
-            else if (closeBehaviour == CloseBehaviour.Destroy) { Destroy(gameObject); }
+            if (closeBehaviour == CloseBehaviour.Disable)
+                gameObject.SetActive(false);
+            else if (closeBehaviour == CloseBehaviour.Destroy) Destroy(gameObject);
 
             mwAnimator.enabled = false;
         }
 
-        IEnumerator DisableAnimator()
+        private IEnumerator DisableAnimator()
         {
             yield return new WaitForSecondsRealtime(openStateLength + 0.1f);
             mwAnimator.enabled = false;

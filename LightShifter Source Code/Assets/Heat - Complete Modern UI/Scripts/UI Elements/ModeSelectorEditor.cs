@@ -1,29 +1,32 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(ModeSelector))]
     public class ModeSelectorEditor : Editor
     {
+        private int currentTab;
         private GUISkin customSkin;
         private ModeSelector msTarget;
-        private int currentTab;
 
         private void OnEnable()
         {
             msTarget = (ModeSelector)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Horizontal Selector Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -84,25 +87,32 @@ namespace Michsky.UI.Heat
                     if (msTarget.items.Count != 0)
                     {
                         HeatUIEditorHandler.DrawPropertyCW(headerTitle, customSkin, "Header Title", 90);
-                        HeatUIEditorHandler.DrawPropertyCW(headerTitleKey, customSkin, "Header Key", "Used for localization.", 90);
+                        HeatUIEditorHandler.DrawPropertyCW(headerTitleKey, customSkin, "Header Key",
+                            "Used for localization.", 90);
 
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
 
                         GUI.enabled = false;
-                        EditorGUILayout.LabelField(new GUIContent("Default Item:"), customSkin.FindStyle("Text"), GUILayout.Width(74));
+                        EditorGUILayout.LabelField(new GUIContent("Default Item:"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(74));
                         GUI.enabled = true;
-                        EditorGUILayout.LabelField(new GUIContent(msTarget.items[currentModeIndex.intValue].title), customSkin.FindStyle("Text"));
+                        EditorGUILayout.LabelField(new GUIContent(msTarget.items[currentModeIndex.intValue].title),
+                            customSkin.FindStyle("Text"));
 
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2);
 
-                        currentModeIndex.intValue = EditorGUILayout.IntSlider(currentModeIndex.intValue, 0, msTarget.items.Count - 1);
+                        currentModeIndex.intValue =
+                            EditorGUILayout.IntSlider(currentModeIndex.intValue, 0, msTarget.items.Count - 1);
 
                         GUILayout.EndVertical();
                     }
 
-                    else { EditorGUILayout.HelpBox("There is no item in the list.", MessageType.Warning); }
+                    else
+                    {
+                        EditorGUILayout.HelpBox("There is no item in the list.", MessageType.Warning);
+                    }
 
                     GUILayout.BeginVertical();
                     EditorGUI.indentLevel = 1;
@@ -139,37 +149,44 @@ namespace Michsky.UI.Heat
 
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    HeatUIEditorHandler.DrawProperty(fadingMultiplier, customSkin, "Fading Multiplier", "Set the animation fade multiplier.");
-                    isInteractable.boolValue = HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
-                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization", "Bypasses localization functions when disabled.");
-                    useSounds.boolValue = HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Button Sounds");
+                    HeatUIEditorHandler.DrawProperty(fadingMultiplier, customSkin, "Fading Multiplier",
+                        "Set the animation fade multiplier.");
+                    isInteractable.boolValue =
+                        HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
+                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin,
+                        "Use Localization", "Bypasses localization functions when disabled.");
+                    useSounds.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Button Sounds");
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
 
-                    useUINavigation.boolValue = HeatUIEditorHandler.DrawTogglePlain(useUINavigation.boolValue, customSkin, "Use UI Navigation", "Enables controller navigation.");
+                    useUINavigation.boolValue = HeatUIEditorHandler.DrawTogglePlain(useUINavigation.boolValue,
+                        customSkin, "Use UI Navigation", "Enables controller navigation.");
 
                     GUILayout.Space(4);
 
-                    if (useUINavigation.boolValue == true)
+                    if (useUINavigation.boolValue)
                     {
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         HeatUIEditorHandler.DrawPropertyPlain(navigationMode, customSkin, "Navigation Mode");
 
-                        if (msTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Horizontal)
+                        if (msTarget.navigationMode == Navigation.Mode.Horizontal)
                         {
                             EditorGUI.indentLevel = 1;
                             //   GUILayout.Space(-3);
-                            wrapAround.boolValue = HeatUIEditorHandler.DrawToggle(wrapAround.boolValue, customSkin, "Wrap Around");
+                            wrapAround.boolValue =
+                                HeatUIEditorHandler.DrawToggle(wrapAround.boolValue, customSkin, "Wrap Around");
                             //  GUILayout.Space(4);
                             EditorGUI.indentLevel = 0;
                         }
 
-                        else if (msTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Vertical)
+                        else if (msTarget.navigationMode == Navigation.Mode.Vertical)
                         {
-                            wrapAround.boolValue = HeatUIEditorHandler.DrawTogglePlain(wrapAround.boolValue, customSkin, "Wrap Around");
+                            wrapAround.boolValue =
+                                HeatUIEditorHandler.DrawTogglePlain(wrapAround.boolValue, customSkin, "Wrap Around");
                         }
 
-                        else if (msTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Explicit)
+                        else if (msTarget.navigationMode == Navigation.Mode.Explicit)
                         {
                             EditorGUI.indentLevel = 1;
                             HeatUIEditorHandler.DrawPropertyPlain(selectOnUp, customSkin, "Select On Up");
@@ -187,7 +204,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

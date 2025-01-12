@@ -8,28 +8,26 @@ namespace LightShift
     public class LightShifter : MonoBehaviour
     {
         [SerializeField] private GameObject gridLight, gridDark;
-        private SortingGroup _lightSortingGroup, _darkSortingGroup;
-        private Collider2D[] _lightColliders, _darkColliders;
         [SerializeField] private bool startWithLight = true;
-        private bool _isLight;
-        
+
         [SerializeField] private bool canChange = true, isShiftLoaded = true;
         [SerializeField] private KeyCode lightShiftKey = KeyCode.LeftShift;
         [SerializeField] private float shiftCooldown = 0.5f;
-        private LightShifter _instance;
-        
+
         [SerializeField] private AudioSource audioSource;
         [SerializeField] private AudioClip transitionClip;
-        private float _volume = 0.1f;
+        private LightShifter _instance;
+        private Collider2D[] _lightColliders, _darkColliders;
+        private SortingGroup _lightSortingGroup, _darkSortingGroup;
         private bool _start;
+        private readonly float _volume = 0.1f;
 
-        public event Action<bool> OnWorldShifted; // passes 'true' if light, 'false' if dark
-        
-        public bool IsLight => _isLight;
-        
+        public bool IsLight { get; private set; }
+
         private void Awake()
         {
-            if(_instance == null) {
+            if (_instance == null)
+            {
                 _instance = this;
 
                 _lightSortingGroup = gridLight.GetComponent<SortingGroup>();
@@ -37,36 +35,49 @@ namespace LightShift
 
                 _darkSortingGroup = gridDark.GetComponent<SortingGroup>();
                 _darkColliders = gridDark.GetComponentsInChildren<Collider2D>();
-                
-                
             }
             else
+            {
                 Destroy(gameObject);
-            
+            }
         }
-        
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(lightShiftKey) && canChange && isShiftLoaded)
+            {
+                ToggleEnvironment();
+                StartCoroutine(ShiftCooldown());
+            }
+        }
+
         private void OnEnable()
         {
             _start = true;
             if (startWithLight)
             {
-                _isLight = true;
+                IsLight = true;
                 ShowLight();
                 _start = false;
             }
             else
             {
-                _isLight = false;
+                IsLight = false;
                 ShowDark();
                 _start = false;
             }
+
             canChange = true;
             isShiftLoaded = true;
         }
+
+        public event Action<bool> OnWorldShifted; // passes 'true' if light, 'false' if dark
+
         public void BlockShift()
         {
             canChange = false;
         }
+
         public void EnableShift()
         {
             canChange = true;
@@ -79,26 +90,17 @@ namespace LightShift
             isShiftLoaded = true;
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(lightShiftKey) && canChange && isShiftLoaded)
-            {
-                ToggleEnvironment();
-                StartCoroutine(ShiftCooldown());
-            }
-        }
-        
         public void ToggleEnvironment()
         {
-            if (_isLight)
+            if (IsLight)
                 ShowDark();
             else
                 ShowLight();
             // Flip the toggle state
-            _isLight = !_isLight;
-            
+            IsLight = !IsLight;
+
             // Fire the event
-            OnWorldShifted?.Invoke(_isLight);
+            OnWorldShifted?.Invoke(IsLight);
         }
 
         private void ShowLight()
@@ -109,8 +111,8 @@ namespace LightShift
 
             // move the dark world beneath the light world
             _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder - 1;
-            
-            if(!_start)
+
+            if (!_start)
                 audioSource.PlayOneShot(transitionClip, _volume);
         }
 
@@ -123,21 +125,14 @@ namespace LightShift
 
             // move the dark world on top of the light world
             _darkSortingGroup.sortingOrder = _lightSortingGroup.sortingOrder + 1;
-            
-            if(!_start)
-                audioSource.PlayOneShot(transitionClip, _volume);
 
+            if (!_start)
+                audioSource.PlayOneShot(transitionClip, _volume);
         }
 
         private void SetColliderTrigger(Collider2D[] colliders, bool isTrigger)
         {
-            foreach (Collider2D collision in colliders)
-            {
-                collision.isTrigger = isTrigger;
-            }
+            foreach (var collision in colliders) collision.isTrigger = isTrigger;
         }
-
-
     }
-
 }

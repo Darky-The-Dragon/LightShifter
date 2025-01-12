@@ -9,47 +9,57 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/Layout/Layout Group Fix")]
     public class LayoutGroupFix : MonoBehaviour
     {
+        public enum RebuildMethod
+        {
+            ForceRebuild,
+            MarkRebuild
+        }
+
         [SerializeField] private bool fixOnEnable = true;
         [SerializeField] private bool fixWithDelay = true;
         [SerializeField] private RebuildMethod rebuildMethod;
-        float fixDelay = 0.025f;
+        private readonly float fixDelay = 0.025f;
 
-        public enum RebuildMethod { ForceRebuild, MarkRebuild }
-         
-        void OnEnable()
+        private void OnEnable()
         {
 #if UNITY_EDITOR
             LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
-            if (Application.isPlaying == false) { return; }
+            if (Application.isPlaying == false) return;
 #endif
-            if (fixWithDelay == false && fixOnEnable == true && rebuildMethod == RebuildMethod.ForceRebuild) { ForceRebuild(); }
-            else if (fixWithDelay == false && fixOnEnable == true && rebuildMethod == RebuildMethod.MarkRebuild) { MarkRebuild(); }
-            else if (fixWithDelay == true) { StartCoroutine(FixDelay()); }
+            if (fixWithDelay == false && fixOnEnable && rebuildMethod == RebuildMethod.ForceRebuild)
+                ForceRebuild();
+            else if (fixWithDelay == false && fixOnEnable && rebuildMethod == RebuildMethod.MarkRebuild)
+                MarkRebuild();
+            else if (fixWithDelay) StartCoroutine(FixDelay());
         }
 
         public void FixLayout()
         {
-            if (fixWithDelay == false && rebuildMethod == RebuildMethod.ForceRebuild) { ForceRebuild(); }
-            else if (fixWithDelay == false && rebuildMethod == RebuildMethod.MarkRebuild) { MarkRebuild(); }
-            else { StartCoroutine(FixDelay()); }
+            if (fixWithDelay == false && rebuildMethod == RebuildMethod.ForceRebuild)
+                ForceRebuild();
+            else if (fixWithDelay == false && rebuildMethod == RebuildMethod.MarkRebuild)
+                MarkRebuild();
+            else
+                StartCoroutine(FixDelay());
         }
 
-        void ForceRebuild()
+        private void ForceRebuild()
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         }
 
-        void MarkRebuild()
+        private void MarkRebuild()
         {
             LayoutRebuilder.MarkLayoutForRebuild(GetComponent<RectTransform>());
         }
 
-        IEnumerator FixDelay()
+        private IEnumerator FixDelay()
         {
             yield return new WaitForSecondsRealtime(fixDelay);
 
-            if (rebuildMethod == RebuildMethod.ForceRebuild) { ForceRebuild(); }
-            else if (rebuildMethod == RebuildMethod.MarkRebuild) { MarkRebuild(); }
+            if (rebuildMethod == RebuildMethod.ForceRebuild)
+                ForceRebuild();
+            else if (rebuildMethod == RebuildMethod.MarkRebuild) MarkRebuild();
         }
     }
 }

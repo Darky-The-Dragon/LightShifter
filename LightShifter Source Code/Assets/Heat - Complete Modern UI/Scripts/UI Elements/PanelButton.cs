@@ -1,15 +1,16 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Michsky.UI.Heat
 {
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
-    public class PanelButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler, ISubmitHandler
+    public class PanelButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler,
+        ISelectHandler, IDeselectHandler, ISubmitHandler
     {
         // Content
         public Sprite buttonIcon;
@@ -34,44 +35,97 @@ namespace Michsky.UI.Heat
         public bool isInteractable = true;
         public bool isSelected;
         public bool useLocalization = true;
-        public bool useCustomText = false;
+        public bool useCustomText;
         public bool useSeperator = true;
-        public bool useUINavigation = false;
+        public bool useUINavigation;
         public Navigation.Mode navigationMode = Navigation.Mode.Automatic;
         public GameObject selectOnUp;
         public GameObject selectOnDown;
         public GameObject selectOnLeft;
         public GameObject selectOnRight;
-        public bool wrapAround = false;
+        public bool wrapAround;
         public bool useSounds = true;
         [Range(1, 15)] public float fadingMultiplier = 8;
 
         // Events
-        public UnityEvent onClick = new UnityEvent();
-        public UnityEvent onHover = new UnityEvent();
-        public UnityEvent onLeave = new UnityEvent();
-        public UnityEvent onSelect = new UnityEvent();
-
-        // Helpers
-        bool isInitialized = false;
-        Button targetButton;
-        LocalizedObject localizedObject;
+        public UnityEvent onClick = new();
+        public UnityEvent onHover = new();
+        public UnityEvent onLeave = new();
+        public UnityEvent onSelect = new();
         [HideInInspector] public NavigationBar navbar;
 
-        void OnEnable()
+        // Helpers
+        private bool isInitialized;
+        private LocalizedObject localizedObject;
+        private Button targetButton;
+
+        private void OnEnable()
         {
-            if (!isInitialized) { Initialize(); }
+            if (!isInitialized) Initialize();
             UpdateUI();
         }
 
-        void Initialize()
+        public void OnDeselect(BaseEventData eventData)
         {
-            if (!Application.isPlaying) { return; }
-            if (UIManagerAudio.instance == null) { useSounds = false; }
-            if (useUINavigation) { AddUINavigation(); }
+            if (!isInteractable || isSelected)
+                return;
+
+            StartCoroutine("SetNormal");
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
+
+            onClick.Invoke();
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (navbar != null) navbar.DimButtons(this);
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
+            if (!isInteractable || isSelected) return;
+
+            onHover.Invoke();
+            StartCoroutine("SetHighlight");
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (navbar != null) navbar.LitButtons();
+            if (!isInteractable || isSelected) return;
+
+            onLeave.Invoke();
+            StartCoroutine("SetNormal");
+        }
+
+        public void OnSelect(BaseEventData eventData)
+        {
+            if (!isInteractable || isSelected)
+                return;
+
+            StartCoroutine("SetHighlight");
+        }
+
+        public void OnSubmit(BaseEventData eventData)
+        {
+            if (!isInteractable || isSelected)
+                return;
+
+            onClick.Invoke();
+        }
+
+        private void Initialize()
+        {
+            if (!Application.isPlaying) return;
+            if (UIManagerAudio.instance == null) useSounds = false;
+            if (useUINavigation) AddUINavigation();
             if (gameObject.GetComponent<Image>() == null)
             {
-                Image raycastImg = gameObject.AddComponent<Image>();
+                var raycastImg = gameObject.AddComponent<Image>();
                 raycastImg.color = new Color(0, 0, 0, 0);
                 raycastImg.raycastTarget = true;
             }
@@ -85,7 +139,10 @@ namespace Michsky.UI.Heat
             {
                 localizedObject = gameObject.GetComponent<LocalizedObject>();
 
-                if (localizedObject == null || !localizedObject.CheckLocalizationStatus()) { useLocalization = false; }
+                if (localizedObject == null || !localizedObject.CheckLocalizationStatus())
+                {
+                    useLocalization = false;
+                }
                 else if (useLocalization && !string.IsNullOrEmpty(localizedObject.localizationKey))
                 {
                     // Forcing button to take the localized output on awake
@@ -107,25 +164,35 @@ namespace Michsky.UI.Heat
         {
             isInteractable = value;
 
-            if (!isInteractable) { StartCoroutine("SetDisabled"); }
-            else if (isInteractable && !isSelected) { StartCoroutine("SetNormal"); }
+            if (!isInteractable)
+                StartCoroutine("SetDisabled");
+            else if (isInteractable && !isSelected) StartCoroutine("SetNormal");
         }
 
         public void AddUINavigation()
         {
             if (targetButton == null)
             {
-                if (gameObject.GetComponent<Button>() == null) { targetButton = gameObject.AddComponent<Button>(); }
-                else { targetButton = GetComponent<Button>(); }
+                if (gameObject.GetComponent<Button>() == null)
+                    targetButton = gameObject.AddComponent<Button>();
+                else
+                    targetButton = GetComponent<Button>();
 
                 targetButton.transition = Selectable.Transition.None;
             }
 
-            Navigation customNav = new Navigation();
+            var customNav = new Navigation();
             customNav.mode = navigationMode;
 
-            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal) { customNav.wrapAround = wrapAround; }
-            else if (navigationMode == Navigation.Mode.Explicit) { StartCoroutine("InitUINavigation", customNav); return; }
+            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal)
+            {
+                customNav.wrapAround = wrapAround;
+            }
+            else if (navigationMode == Navigation.Mode.Explicit)
+            {
+                StartCoroutine("InitUINavigation", customNav);
+                return;
+            }
 
             targetButton.navigation = customNav;
         }
@@ -134,88 +201,67 @@ namespace Michsky.UI.Heat
         {
             if (targetButton != null)
             {
-                Navigation customNav = new Navigation();
-                Navigation.Mode navMode = Navigation.Mode.None;
+                var customNav = new Navigation();
+                var navMode = Navigation.Mode.None;
                 customNav.mode = navMode;
                 targetButton.navigation = customNav;
             }
         }
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
-
-            onClick.Invoke();
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (navbar != null) { navbar.DimButtons(this); }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
-            if (!isInteractable || isSelected) { return; }
-
-            onHover.Invoke();
-            StartCoroutine("SetHighlight");
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            if (navbar != null) { navbar.LitButtons(); }
-            if (!isInteractable || isSelected) { return; }
-
-            onLeave.Invoke();
-            StartCoroutine("SetNormal");
-        }
-
-        public void OnSelect(BaseEventData eventData)
-        {
-            if (!isInteractable || isSelected)
-                return;
-
-            StartCoroutine("SetHighlight");
-        }
-
-        public void OnDeselect(BaseEventData eventData)
-        {
-            if (!isInteractable || isSelected)
-                return;
-
-            StartCoroutine("SetNormal");
-        }
-
-        public void OnSubmit(BaseEventData eventData)
-        {
-            if (!isInteractable || isSelected)
-                return;
-
-            onClick.Invoke();
-        }
-
         public void UpdateUI()
         {
-            if (useSeperator && transform.parent != null && transform.GetSiblingIndex() != transform.parent.childCount - 1 && seperator != null) { seperator.SetActive(true); }
-            else if (seperator != null) { seperator.SetActive(false); }
+            if (useSeperator && transform.parent != null &&
+                transform.GetSiblingIndex() != transform.parent.childCount - 1 && seperator != null)
+                seperator.SetActive(true);
+            else if (seperator != null) seperator.SetActive(false);
 
             if (useCustomText)
                 return;
 
-            if (disabledTextObj != null) { disabledTextObj.text = buttonText; }
-            if (normalTextObj != null) { normalTextObj.text = buttonText; }
-            if (highlightTextObj != null) { highlightTextObj.text = buttonText; }
-            if (selectTextObj != null) { selectTextObj.text = buttonText; }
+            if (disabledTextObj != null) disabledTextObj.text = buttonText;
+            if (normalTextObj != null) normalTextObj.text = buttonText;
+            if (highlightTextObj != null) highlightTextObj.text = buttonText;
+            if (selectTextObj != null) selectTextObj.text = buttonText;
 
-            if (disabledImageObj != null && buttonIcon != null) { disabledImageObj.transform.parent.gameObject.SetActive(true); disabledImageObj.sprite = buttonIcon; }
-            else if (disabledImageObj != null && buttonIcon == null) { disabledImageObj.transform.parent.gameObject.SetActive(false); }
+            if (disabledImageObj != null && buttonIcon != null)
+            {
+                disabledImageObj.transform.parent.gameObject.SetActive(true);
+                disabledImageObj.sprite = buttonIcon;
+            }
+            else if (disabledImageObj != null && buttonIcon == null)
+            {
+                disabledImageObj.transform.parent.gameObject.SetActive(false);
+            }
 
-            if (normalImageObj != null && buttonIcon != null) { normalImageObj.transform.parent.gameObject.SetActive(true); normalImageObj.sprite = buttonIcon; }
-            else if (normalImageObj != null && buttonIcon == null) { normalImageObj.transform.parent.gameObject.SetActive(false); }
+            if (normalImageObj != null && buttonIcon != null)
+            {
+                normalImageObj.transform.parent.gameObject.SetActive(true);
+                normalImageObj.sprite = buttonIcon;
+            }
+            else if (normalImageObj != null && buttonIcon == null)
+            {
+                normalImageObj.transform.parent.gameObject.SetActive(false);
+            }
 
-            if (highlightImageObj != null && buttonIcon != null) { highlightImageObj.transform.parent.gameObject.SetActive(true); highlightImageObj.sprite = buttonIcon; }
-            else if (highlightImageObj != null && buttonIcon == null) { highlightImageObj.transform.parent.gameObject.SetActive(false); }
+            if (highlightImageObj != null && buttonIcon != null)
+            {
+                highlightImageObj.transform.parent.gameObject.SetActive(true);
+                highlightImageObj.sprite = buttonIcon;
+            }
+            else if (highlightImageObj != null && buttonIcon == null)
+            {
+                highlightImageObj.transform.parent.gameObject.SetActive(false);
+            }
 
-            if (selectedImageObj != null && buttonIcon != null) { selectedImageObj.transform.parent.gameObject.SetActive(true); selectedImageObj.sprite = buttonIcon; }
-            else if (selectedImageObj != null && buttonIcon == null) { selectedImageObj.transform.parent.gameObject.SetActive(false); }
+            if (selectedImageObj != null && buttonIcon != null)
+            {
+                selectedImageObj.transform.parent.gameObject.SetActive(true);
+                selectedImageObj.sprite = buttonIcon;
+            }
+            else if (selectedImageObj != null && buttonIcon == null)
+            {
+                selectedImageObj.transform.parent.gameObject.SetActive(false);
+            }
 
             if (isSelected)
             {
@@ -240,12 +286,19 @@ namespace Michsky.UI.Heat
         {
             isSelected = value;
 
-            if (navbar != null) { navbar.LitButtons(this); }
-            if (isSelected) { StartCoroutine("SetSelect"); onSelect.Invoke(); }
-            else { StartCoroutine("SetNormal"); }
+            if (navbar != null) navbar.LitButtons(this);
+            if (isSelected)
+            {
+                StartCoroutine("SetSelect");
+                onSelect.Invoke();
+            }
+            else
+            {
+                StartCoroutine("SetNormal");
+            }
         }
 
-        IEnumerator SetDisabled()
+        private IEnumerator SetDisabled()
         {
             StopCoroutine("SetNormal");
             StopCoroutine("SetHighlight");
@@ -266,7 +319,7 @@ namespace Michsky.UI.Heat
             selectCG.alpha = 0;
         }
 
-        IEnumerator SetNormal()
+        private IEnumerator SetNormal()
         {
             StopCoroutine("SetDisabled");
             StopCoroutine("SetHighlight");
@@ -287,7 +340,7 @@ namespace Michsky.UI.Heat
             selectCG.alpha = 0;
         }
 
-        IEnumerator SetHighlight()
+        private IEnumerator SetHighlight()
         {
             StopCoroutine("SetDisabled");
             StopCoroutine("SetNormal");
@@ -308,7 +361,7 @@ namespace Michsky.UI.Heat
             selectCG.alpha = 0;
         }
 
-        IEnumerator SetSelect()
+        private IEnumerator SetSelect()
         {
             StopCoroutine("SetDisabled");
             StopCoroutine("SetNormal");

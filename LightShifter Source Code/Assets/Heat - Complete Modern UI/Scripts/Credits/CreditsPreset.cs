@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,25 +7,25 @@ namespace Michsky.UI.Heat
     [CreateAssetMenu(fileName = "New Credits Preset", menuName = "Heat UI/Panel/New Credits Preset")]
     public class CreditsPreset : ScriptableObject
     {
-        [Header("Settings")]
-        public Sprite backgroundSprite;
+        [Header("Settings")] public Sprite backgroundSprite;
+
         public int sectionSpacing = 70;
         public int headerSpacing = 30;
         public int nameListSpacing = 50;
 
-        [Space(10)]
-        public List<CreditsSection> credits = new List<CreditsSection>();
-        public List<MentionSection> mentions = new List<MentionSection>();
+        [Space(10)] public List<CreditsSection> credits = new();
 
-        [System.Serializable]
+        public List<MentionSection> mentions = new();
+
+        [Serializable]
         public class CreditsSection
         {
             public string headerTitle = "Header";
             public string headerTitleKey = "Localization Key";
-            public List<string> items = new List<string>();
+            public List<string> items = new();
         }
 
-        [System.Serializable]
+        [Serializable]
         public class MentionSection
         {
             public string ID = "ID";

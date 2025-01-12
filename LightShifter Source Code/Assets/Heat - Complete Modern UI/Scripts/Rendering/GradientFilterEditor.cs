@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -8,15 +8,17 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(GradientFilter))]
     public class GradientFilterEditor : Editor
     {
-        private GradientFilter gfTarget;
         private GUISkin customSkin;
+        private GradientFilter gfTarget;
 
         private void OnEnable()
         {
             gfTarget = (GradientFilter)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()

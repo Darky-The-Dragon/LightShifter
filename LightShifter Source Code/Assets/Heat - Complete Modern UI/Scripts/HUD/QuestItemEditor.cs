@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -8,15 +8,17 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(QuestItem))]
     public class QuestItemEditor : Editor
     {
-        private QuestItem qiTarget;
         private GUISkin customSkin;
+        private QuestItem qiTarget;
 
         private void OnEnable()
         {
             qiTarget = (QuestItem)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -47,8 +49,10 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawProperty(questTextObj, customSkin, "Quest Text Object");
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-            useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization", "Bypasses localization functions when disabled.");
-            updateOnAnimate.boolValue = HeatUIEditorHandler.DrawToggle(updateOnAnimate.boolValue, customSkin, "Update On Animate");
+            useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin,
+                "Use Localization", "Bypasses localization functions when disabled.");
+            updateOnAnimate.boolValue =
+                HeatUIEditorHandler.DrawToggle(updateOnAnimate.boolValue, customSkin, "Update On Animate");
             HeatUIEditorHandler.DrawProperty(minimizeAfter, customSkin, "Minimize After");
             HeatUIEditorHandler.DrawProperty(defaultState, customSkin, "Default State");
             HeatUIEditorHandler.DrawProperty(afterMinimize, customSkin, "After Minimize");

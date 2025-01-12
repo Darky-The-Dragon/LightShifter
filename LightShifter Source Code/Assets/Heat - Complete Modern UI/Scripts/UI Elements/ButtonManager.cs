@@ -1,15 +1,17 @@
+using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Michsky.UI.Heat
 {
     [ExecuteInEditMode]
     [DisallowMultipleComponent]
-    public class ButtonManager : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler, ISubmitHandler
+    public class ButtonManager : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler,
+        ISelectHandler, IDeselectHandler, ISubmitHandler
     {
         // Content
         public Sprite buttonIcon;
@@ -42,82 +44,181 @@ namespace Michsky.UI.Heat
 
         // Settings
         public bool isInteractable = true;
-        public bool enableIcon = false;
+        public bool enableIcon;
         public bool enableText = true;
-        public bool useCustomContent = false;
-        [SerializeField] private bool useCustomTextSize = false;
+        public bool useCustomContent;
+        [SerializeField] private bool useCustomTextSize;
         public bool checkForDoubleClick = true;
         public bool useLocalization = true;
-        public bool bypassUpdateOnEnable = false;
-        public bool useUINavigation = false;
+        public bool bypassUpdateOnEnable;
+        public bool useUINavigation;
         public Navigation.Mode navigationMode = Navigation.Mode.Automatic;
         public GameObject selectOnUp;
         public GameObject selectOnDown;
         public GameObject selectOnLeft;
         public GameObject selectOnRight;
-        public bool wrapAround = false;
+        public bool wrapAround;
         public bool useSounds = true;
         [Range(0.1f, 1)] public float doubleClickPeriod = 0.25f;
         [Range(1, 15)] public float fadingMultiplier = 8;
 
         // Events
-        public UnityEvent onClick = new UnityEvent();
-        public UnityEvent onDoubleClick = new UnityEvent();
-        public UnityEvent onHover = new UnityEvent();
-        public UnityEvent onLeave = new UnityEvent();
-        public UnityEvent onSelect = new UnityEvent();
-        public UnityEvent onDeselect = new UnityEvent();
+        public UnityEvent onClick = new();
+        public UnityEvent onDoubleClick = new();
+        public UnityEvent onHover = new();
+        public UnityEvent onLeave = new();
+        public UnityEvent onSelect = new();
+        public UnityEvent onDeselect = new();
 
         // Helpers
         [HideInInspector] public bool overrideInteractable;
-        bool isInitialized = false;
-        Button targetButton;
-        LocalizedObject localizedObject;
-        bool waitingForDoubleClickInput;
 #if UNITY_EDITOR
-        public int latestTabIndex = 0;
+        public int latestTabIndex;
 #endif
+        private bool isInitialized;
+        private LocalizedObject localizedObject;
+        private Button targetButton;
+        private bool waitingForDoubleClickInput;
 
-        [System.Serializable] public class Padding { public int left = 18; public int right = 18; public int top = 15; public int bottom = 15; }
-
-        void OnEnable()
+        private void OnEnable()
         {
-            if (!isInitialized) { Initialize(); }
-            if (!bypassUpdateOnEnable) { UpdateUI(); }
-            if (Application.isPlaying && useUINavigation) { AddUINavigation(); }
+            if (!isInitialized) Initialize();
+            if (!bypassUpdateOnEnable) UpdateUI();
+            if (Application.isPlaying && useUINavigation)
+            {
+                AddUINavigation();
+            }
             else if (Application.isPlaying && !useUINavigation && targetButton == null)
             {
-                if (gameObject.GetComponent<Button>() == null) { targetButton = gameObject.AddComponent<Button>(); }
-                else { targetButton = GetComponent<Button>(); }
+                if (gameObject.GetComponent<Button>() == null)
+                    targetButton = gameObject.AddComponent<Button>();
+                else
+                    targetButton = GetComponent<Button>();
 
                 targetButton.transition = Selectable.Transition.None;
             }
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             if (!isInteractable)
                 return;
 
-            if (disabledCG != null) { disabledCG.alpha = 0; }
-            if (normalCG != null) { normalCG.alpha = 1; }
-            if (highlightCG != null) { highlightCG.alpha = 0; }
+            if (disabledCG != null) disabledCG.alpha = 0;
+            if (normalCG != null) normalCG.alpha = 1;
+            if (highlightCG != null) highlightCG.alpha = 0;
         }
 
-        void Initialize()
+        public void OnDeselect(BaseEventData eventData)
+        {
+            if (!overrideInteractable && !isInteractable)
+                return;
+
+            StartCoroutine("SetNormal");
+            onDeselect.Invoke();
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!isInteractable || eventData.button != PointerEventData.InputButton.Left) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
+
+            // Invoke click actions
+            onClick.Invoke();
+
+            // Check for double click
+            if (!checkForDoubleClick) return;
+            if (waitingForDoubleClickInput)
+            {
+                onDoubleClick.Invoke();
+                waitingForDoubleClickInput = false;
+                return;
+            }
+
+            waitingForDoubleClickInput = true;
+
+            if (gameObject.activeInHierarchy)
+            {
+                StopCoroutine("CheckForDoubleClick");
+                StartCoroutine("CheckForDoubleClick");
+            }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
+
+            StartCoroutine("SetHighlight");
+            onHover.Invoke();
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (!isInteractable)
+                return;
+
+            StartCoroutine("SetNormal");
+            onLeave.Invoke();
+        }
+
+        public void OnSelect(BaseEventData eventData)
+        {
+            if (!overrideInteractable && !isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
+
+            StartCoroutine("SetHighlight");
+            onSelect.Invoke();
+        }
+
+        public void OnSubmit(BaseEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
+            if (EventSystem.current.currentSelectedGameObject != gameObject) StartCoroutine("SetNormal");
+
+            onClick.Invoke();
+        }
+
+        private void Initialize()
         {
 #if UNITY_EDITOR
             if (!Application.isPlaying)
                 return;
 #endif
-            if (ControllerManager.instance != null) { ControllerManager.instance.buttons.Add(this); }
-            if (UIManagerAudio.instance == null) { useSounds = false; }
-            if (normalCG == null) { normalCG = new GameObject().AddComponent<CanvasGroup>(); normalCG.gameObject.AddComponent<RectTransform>(); normalCG.transform.SetParent(transform); normalCG.gameObject.name = "Normal"; }
-            if (highlightCG == null) { highlightCG = new GameObject().AddComponent<CanvasGroup>(); highlightCG.gameObject.AddComponent<RectTransform>(); highlightCG.transform.SetParent(transform); highlightCG.gameObject.name = "Highlight"; }
-            if (disabledCG == null) { disabledCG = new GameObject().AddComponent<CanvasGroup>(); disabledCG.gameObject.AddComponent<RectTransform>(); disabledCG.transform.SetParent(transform); disabledCG.gameObject.name = "Disabled"; }
+            if (ControllerManager.instance != null) ControllerManager.instance.buttons.Add(this);
+            if (UIManagerAudio.instance == null) useSounds = false;
+            if (normalCG == null)
+            {
+                normalCG = new GameObject().AddComponent<CanvasGroup>();
+                normalCG.gameObject.AddComponent<RectTransform>();
+                normalCG.transform.SetParent(transform);
+                normalCG.gameObject.name = "Normal";
+            }
+
+            if (highlightCG == null)
+            {
+                highlightCG = new GameObject().AddComponent<CanvasGroup>();
+                highlightCG.gameObject.AddComponent<RectTransform>();
+                highlightCG.transform.SetParent(transform);
+                highlightCG.gameObject.name = "Highlight";
+            }
+
+            if (disabledCG == null)
+            {
+                disabledCG = new GameObject().AddComponent<CanvasGroup>();
+                disabledCG.gameObject.AddComponent<RectTransform>();
+                disabledCG.transform.SetParent(transform);
+                disabledCG.gameObject.name = "Disabled";
+            }
+
             if (GetComponent<Image>() == null)
             {
-                Image raycastImg = gameObject.AddComponent<Image>();
+                var raycastImg = gameObject.AddComponent<Image>();
                 raycastImg.color = new Color(0, 0, 0, 0);
                 raycastImg.raycastTarget = true;
             }
@@ -130,7 +231,10 @@ namespace Michsky.UI.Heat
             {
                 localizedObject = gameObject.GetComponent<LocalizedObject>();
 
-                if (localizedObject == null || !localizedObject.CheckLocalizationStatus()) { useLocalization = false; }
+                if (localizedObject == null || !localizedObject.CheckLocalizationStatus())
+                {
+                    useLocalization = false;
+                }
                 else if (localizedObject != null && !string.IsNullOrEmpty(localizedObject.localizationKey))
                 {
                     // Forcing button to take the localized output on awake
@@ -152,11 +256,11 @@ namespace Michsky.UI.Heat
         {
             if (!autoFitContent)
             {
-                if (mainFitter != null) { mainFitter.enabled = false; }
-                if (mainLayout != null) { mainLayout.enabled = false; }
-                if (disabledLayout != null) { disabledLayout.childForceExpandWidth = false; }
-                if (normalLayout != null) { normalLayout.childForceExpandWidth = false; }
-                if (highlightedLayout != null) { highlightedLayout.childForceExpandWidth = false; }
+                if (mainFitter != null) mainFitter.enabled = false;
+                if (mainLayout != null) mainLayout.enabled = false;
+                if (disabledLayout != null) disabledLayout.childForceExpandWidth = false;
+                if (normalLayout != null) normalLayout.childForceExpandWidth = false;
+                if (highlightedLayout != null) highlightedLayout.childForceExpandWidth = false;
                 if (targetFitter != null)
                 {
                     targetFitter.enabled = false;
@@ -173,17 +277,31 @@ namespace Michsky.UI.Heat
 
             else
             {
-                if (disabledLayout != null) { disabledLayout.childForceExpandWidth = true; }
-                if (normalLayout != null) { normalLayout.childForceExpandWidth = true; }
-                if (highlightedLayout != null) { highlightedLayout.childForceExpandWidth = true; }
-                if (mainFitter != null) { mainFitter.enabled = true; }
-                if (mainLayout != null) { mainLayout.enabled = true; }
-                if (targetFitter != null) { targetFitter.enabled = true; }
+                if (disabledLayout != null) disabledLayout.childForceExpandWidth = true;
+                if (normalLayout != null) normalLayout.childForceExpandWidth = true;
+                if (highlightedLayout != null) highlightedLayout.childForceExpandWidth = true;
+                if (mainFitter != null) mainFitter.enabled = true;
+                if (mainLayout != null) mainLayout.enabled = true;
+                if (targetFitter != null) targetFitter.enabled = true;
             }
 
-            if (disabledLayout != null) { disabledLayout.padding = new RectOffset(padding.left, padding.right, padding.top, padding.bottom); disabledLayout.spacing = spacing; }
-            if (normalLayout != null) { normalLayout.padding = new RectOffset(padding.left, padding.right, padding.top, padding.bottom); normalLayout.spacing = spacing; }
-            if (highlightedLayout != null) { highlightedLayout.padding = new RectOffset(padding.left, padding.right, padding.top, padding.bottom); highlightedLayout.spacing = spacing; }
+            if (disabledLayout != null)
+            {
+                disabledLayout.padding = new RectOffset(padding.left, padding.right, padding.top, padding.bottom);
+                disabledLayout.spacing = spacing;
+            }
+
+            if (normalLayout != null)
+            {
+                normalLayout.padding = new RectOffset(padding.left, padding.right, padding.top, padding.bottom);
+                normalLayout.spacing = spacing;
+            }
+
+            if (highlightedLayout != null)
+            {
+                highlightedLayout.padding = new RectOffset(padding.left, padding.right, padding.top, padding.bottom);
+                highlightedLayout.spacing = spacing;
+            }
 
             if (enableText)
             {
@@ -191,90 +309,124 @@ namespace Michsky.UI.Heat
                 {
                     normalTextObj.gameObject.SetActive(true);
                     normalTextObj.text = buttonText;
-                    if (useCustomTextSize == false) { normalTextObj.fontSize = textSize; }
+                    if (useCustomTextSize == false) normalTextObj.fontSize = textSize;
                 }
 
                 if (highlightTextObj != null)
                 {
                     highlightTextObj.gameObject.SetActive(true);
                     highlightTextObj.text = buttonText;
-                    if (useCustomTextSize == false) { highlightTextObj.fontSize = textSize; }
+                    if (useCustomTextSize == false) highlightTextObj.fontSize = textSize;
                 }
 
                 if (disabledTextObj != null)
                 {
                     disabledTextObj.gameObject.SetActive(true);
                     disabledTextObj.text = buttonText;
-                    if (useCustomTextSize == false) { disabledTextObj.fontSize = textSize; }
+                    if (useCustomTextSize == false) disabledTextObj.fontSize = textSize;
                 }
             }
 
             else if (!enableText)
             {
-                if (normalTextObj != null) { normalTextObj.gameObject.SetActive(false); }
-                if (highlightTextObj != null) { highlightTextObj.gameObject.SetActive(false); }
-                if (disabledTextObj != null) { disabledTextObj.gameObject.SetActive(false); }
+                if (normalTextObj != null) normalTextObj.gameObject.SetActive(false);
+                if (highlightTextObj != null) highlightTextObj.gameObject.SetActive(false);
+                if (disabledTextObj != null) disabledTextObj.gameObject.SetActive(false);
             }
 
             if (enableIcon)
             {
-                Vector3 tempScale = new Vector3(iconScale, iconScale, iconScale);
-               
-                if (normalImageObj != null) { normalImageObj.transform.parent.gameObject.SetActive(true); normalImageObj.sprite = buttonIcon; normalImageObj.transform.localScale = tempScale; }
-                if (highlightImageObj != null) { highlightImageObj.transform.parent.gameObject.SetActive(true); highlightImageObj.sprite = buttonIcon; highlightImageObj.transform.localScale = tempScale; }
-                if (disabledImageObj != null) { disabledImageObj.transform.parent.gameObject.SetActive(true); disabledImageObj.sprite = buttonIcon; disabledImageObj.transform.localScale = tempScale; }
+                var tempScale = new Vector3(iconScale, iconScale, iconScale);
+
+                if (normalImageObj != null)
+                {
+                    normalImageObj.transform.parent.gameObject.SetActive(true);
+                    normalImageObj.sprite = buttonIcon;
+                    normalImageObj.transform.localScale = tempScale;
+                }
+
+                if (highlightImageObj != null)
+                {
+                    highlightImageObj.transform.parent.gameObject.SetActive(true);
+                    highlightImageObj.sprite = buttonIcon;
+                    highlightImageObj.transform.localScale = tempScale;
+                }
+
+                if (disabledImageObj != null)
+                {
+                    disabledImageObj.transform.parent.gameObject.SetActive(true);
+                    disabledImageObj.sprite = buttonIcon;
+                    disabledImageObj.transform.localScale = tempScale;
+                }
             }
 
             else
             {
-                if (normalImageObj != null) { normalImageObj.transform.parent.gameObject.SetActive(false); }
-                if (highlightImageObj != null) { highlightImageObj.transform.parent.gameObject.SetActive(false); }
-                if (disabledImageObj != null) { disabledImageObj.transform.parent.gameObject.SetActive(false); }
+                if (normalImageObj != null) normalImageObj.transform.parent.gameObject.SetActive(false);
+                if (highlightImageObj != null) highlightImageObj.transform.parent.gameObject.SetActive(false);
+                if (disabledImageObj != null) disabledImageObj.transform.parent.gameObject.SetActive(false);
             }
 
 #if UNITY_EDITOR
             if (!Application.isPlaying && autoFitContent)
             {
                 LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
-                if (disabledCG != null) { LayoutRebuilder.ForceRebuildLayoutImmediate(disabledCG.GetComponent<RectTransform>()); }
-                if (normalCG != null) { LayoutRebuilder.ForceRebuildLayoutImmediate(normalCG.GetComponent<RectTransform>()); }
-                if (highlightCG != null) { LayoutRebuilder.ForceRebuildLayoutImmediate(highlightCG.GetComponent<RectTransform>()); }
+                if (disabledCG != null)
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(disabledCG.GetComponent<RectTransform>());
+                if (normalCG != null)
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(normalCG.GetComponent<RectTransform>());
+                if (highlightCG != null)
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(highlightCG.GetComponent<RectTransform>());
             }
 #endif
 
-            if (!Application.isPlaying || !gameObject.activeInHierarchy) { return; }
-            if (!isInteractable) { StartCoroutine("SetDisabled"); }
-            else if (isInteractable && disabledCG.alpha == 1) { StartCoroutine("SetNormal"); }
+            if (!Application.isPlaying || !gameObject.activeInHierarchy) return;
+            if (!isInteractable)
+                StartCoroutine("SetDisabled");
+            else if (isInteractable && disabledCG.alpha == 1) StartCoroutine("SetNormal");
 
             StartCoroutine("LayoutFix");
         }
 
         public void UpdateState()
         {
-            if (!Application.isPlaying || !gameObject.activeInHierarchy) { return; }
-            if (!isInteractable) { StartCoroutine("SetDisabled"); }
-            else if (isInteractable) { StartCoroutine("SetNormal"); }
+            if (!Application.isPlaying || !gameObject.activeInHierarchy) return;
+            if (!isInteractable)
+                StartCoroutine("SetDisabled");
+            else if (isInteractable) StartCoroutine("SetNormal");
         }
 
 
-        public void SetText(string text) { buttonText = text; UpdateUI(); }
-        public void SetIcon(Sprite icon) { buttonIcon = icon; UpdateUI(); }
+        public void SetText(string text)
+        {
+            buttonText = text;
+            UpdateUI();
+        }
+
+        public void SetIcon(Sprite icon)
+        {
+            buttonIcon = icon;
+            UpdateUI();
+        }
 
         public void Interactable(bool value)
         {
             isInteractable = value;
 
-            if (gameObject.activeInHierarchy == false) { return; }
-            if (!isInteractable) { StartCoroutine("SetDisabled"); }
-            else if (isInteractable && disabledCG.alpha == 1) { StartCoroutine("SetNormal"); }
+            if (gameObject.activeInHierarchy == false) return;
+            if (!isInteractable)
+                StartCoroutine("SetDisabled");
+            else if (isInteractable && disabledCG.alpha == 1) StartCoroutine("SetNormal");
         }
 
         public void AddUINavigation()
         {
             if (targetButton == null)
             {
-                if (gameObject.GetComponent<Button>() == null) { targetButton = gameObject.AddComponent<Button>(); }
-                else { targetButton = GetComponent<Button>(); }
+                if (gameObject.GetComponent<Button>() == null)
+                    targetButton = gameObject.AddComponent<Button>();
+                else
+                    targetButton = GetComponent<Button>();
 
                 targetButton.transition = Selectable.Transition.None;
             }
@@ -282,110 +434,51 @@ namespace Michsky.UI.Heat
             if (targetButton.navigation.mode == navigationMode)
                 return;
 
-            Navigation customNav = new Navigation();
+            var customNav = new Navigation();
             customNav.mode = navigationMode;
 
-            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal) { customNav.wrapAround = wrapAround; }
-            else if (navigationMode == Navigation.Mode.Explicit) { StartCoroutine("InitUINavigation", customNav); return; }
+            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal)
+            {
+                customNav.wrapAround = wrapAround;
+            }
+            else if (navigationMode == Navigation.Mode.Explicit)
+            {
+                StartCoroutine("InitUINavigation", customNav);
+                return;
+            }
 
             targetButton.navigation = customNav;
         }
 
         public void DisableUINavigation()
         {
-            if (targetButton != null) 
+            if (targetButton != null)
             {
-                Navigation customNav = new Navigation();
-                Navigation.Mode navMode = Navigation.Mode.None;
+                var customNav = new Navigation();
+                var navMode = Navigation.Mode.None;
                 customNav.mode = navMode;
                 targetButton.navigation = customNav;
             }
         }
 
-        public void InvokeOnClick() { onClick.Invoke(); }
-
-        public void OnPointerClick(PointerEventData eventData)
+        public void InvokeOnClick()
         {
-            if (!isInteractable || eventData.button != PointerEventData.InputButton.Left) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
-
-            // Invoke click actions
-            onClick.Invoke();
-
-            // Check for double click
-            if (!checkForDoubleClick) { return; }
-            if (waitingForDoubleClickInput)
-            {
-                onDoubleClick.Invoke();
-                waitingForDoubleClickInput = false;
-                return;
-            }
-
-            waitingForDoubleClickInput = true;
-            
-            if (gameObject.activeInHierarchy)
-            {
-                StopCoroutine("CheckForDoubleClick");
-                StartCoroutine("CheckForDoubleClick");
-            }
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
-
-            StartCoroutine("SetHighlight");
-            onHover.Invoke();
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            if (!isInteractable)
-                return;
-
-            StartCoroutine("SetNormal");
-            onLeave.Invoke();
-        }
-
-        public void OnSelect(BaseEventData eventData)
-        {
-            if (!overrideInteractable && !isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
-
-            StartCoroutine("SetHighlight");
-            onSelect.Invoke();
-        }
-
-        public void OnDeselect(BaseEventData eventData)
-        {
-            if (!overrideInteractable && !isInteractable)
-                return;
-
-            StartCoroutine("SetNormal");
-            onDeselect.Invoke();
-        }
-
-        public void OnSubmit(BaseEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
-            if (EventSystem.current.currentSelectedGameObject != gameObject) { StartCoroutine("SetNormal"); }
-
             onClick.Invoke();
         }
 
-        IEnumerator LayoutFix()
+        private IEnumerator LayoutFix()
         {
             yield return new WaitForSecondsRealtime(0.025f);
             LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
             LayoutRebuilder.ForceRebuildLayoutImmediate(transform.parent.GetComponent<RectTransform>());
-            if (disabledCG != null) { LayoutRebuilder.ForceRebuildLayoutImmediate(disabledCG.GetComponent<RectTransform>()); }
-            if (normalCG != null) { LayoutRebuilder.ForceRebuildLayoutImmediate(normalCG.GetComponent<RectTransform>()); }
-            if (highlightCG != null) { LayoutRebuilder.ForceRebuildLayoutImmediate(highlightCG.GetComponent<RectTransform>()); }
+            if (disabledCG != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(disabledCG.GetComponent<RectTransform>());
+            if (normalCG != null) LayoutRebuilder.ForceRebuildLayoutImmediate(normalCG.GetComponent<RectTransform>());
+            if (highlightCG != null)
+                LayoutRebuilder.ForceRebuildLayoutImmediate(highlightCG.GetComponent<RectTransform>());
         }
 
-        IEnumerator SetNormal()
+        private IEnumerator SetNormal()
         {
             StopCoroutine("SetHighlight");
             StopCoroutine("SetDisabled");
@@ -403,7 +496,7 @@ namespace Michsky.UI.Heat
             disabledCG.alpha = 0;
         }
 
-        IEnumerator SetHighlight()
+        private IEnumerator SetHighlight()
         {
             StopCoroutine("SetNormal");
             StopCoroutine("SetDisabled");
@@ -421,7 +514,7 @@ namespace Michsky.UI.Heat
             disabledCG.alpha = 0;
         }
 
-        IEnumerator SetDisabled()
+        private IEnumerator SetDisabled()
         {
             StopCoroutine("SetNormal");
             StopCoroutine("SetHighlight");
@@ -439,20 +532,29 @@ namespace Michsky.UI.Heat
             disabledCG.alpha = 1;
         }
 
-        IEnumerator CheckForDoubleClick()
+        private IEnumerator CheckForDoubleClick()
         {
             yield return new WaitForSecondsRealtime(doubleClickPeriod);
             waitingForDoubleClickInput = false;
         }
 
-        IEnumerator InitUINavigation(Navigation nav)
+        private IEnumerator InitUINavigation(Navigation nav)
         {
             yield return new WaitForSecondsRealtime(0.1f);
-            if (selectOnUp != null) { nav.selectOnUp = selectOnUp.GetComponent<Selectable>(); }
-            if (selectOnDown != null) { nav.selectOnDown = selectOnDown.GetComponent<Selectable>(); }
-            if (selectOnLeft != null) { nav.selectOnLeft = selectOnLeft.GetComponent<Selectable>(); }
-            if (selectOnRight != null) { nav.selectOnRight = selectOnRight.GetComponent<Selectable>(); }
+            if (selectOnUp != null) nav.selectOnUp = selectOnUp.GetComponent<Selectable>();
+            if (selectOnDown != null) nav.selectOnDown = selectOnDown.GetComponent<Selectable>();
+            if (selectOnLeft != null) nav.selectOnLeft = selectOnLeft.GetComponent<Selectable>();
+            if (selectOnRight != null) nav.selectOnRight = selectOnRight.GetComponent<Selectable>();
             targetButton.navigation = nav;
+        }
+
+        [Serializable]
+        public class Padding
+        {
+            public int left = 18;
+            public int right = 18;
+            public int top = 15;
+            public int bottom = 15;
         }
     }
 }

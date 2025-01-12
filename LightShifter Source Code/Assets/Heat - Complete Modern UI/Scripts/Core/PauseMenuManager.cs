@@ -8,6 +8,13 @@ namespace Michsky.UI.Heat
 {
     public class PauseMenuManager : MonoBehaviour
     {
+        public enum CursorVisibility
+        {
+            Default,
+            Invisible,
+            Visible
+        }
+
         // Resources
         public GameObject pauseMenuCanvas;
         [SerializeField] private ButtonManager continueButton;
@@ -24,52 +31,55 @@ namespace Michsky.UI.Heat
         [SerializeField] private InputAction hotkey;
 
         // Events
-        public UnityEvent onOpen = new UnityEvent();
-        public UnityEvent onClose = new UnityEvent();
+        public UnityEvent onOpen = new();
+        public UnityEvent onClose = new();
+        private bool allowClosing = true;
+        private float disableAfter = 0.6f;
 
         // Helpers
-        bool isOn = false;
-        bool allowClosing = true;
-        float disableAfter = 0.6f;
+        private bool isOn;
 
-        public enum CursorVisibility { Default, Invisible, Visible }
-
-        void Awake()
+        private void Awake()
         {
             if (pauseMenuCanvas == null)
             {
                 Debug.LogError("<b>[Pause Menu Manager]</b> Pause Menu Canvas is missing!", this);
-                this.enabled = false;
+                enabled = false;
                 return;
             }
 
             pauseMenuCanvas.SetActive(true);
         }
 
-        void Start()
+        private void Start()
         {
-            if (panelManager != null) { disableAfter = HeatUIInternalTools.GetAnimatorClipLength(panelManager.panels[panelManager.currentPanelIndex].panelObject, "MainPanel_Out"); }
-            if (continueButton != null) { continueButton.onClick.AddListener(ClosePauseMenu); }
+            if (panelManager != null)
+                disableAfter =
+                    HeatUIInternalTools.GetAnimatorClipLength(
+                        panelManager.panels[panelManager.currentPanelIndex].panelObject, "MainPanel_Out");
+            if (continueButton != null) continueButton.onClick.AddListener(ClosePauseMenu);
 
             pauseMenuCanvas.SetActive(false);
             hotkey.Enable();
         }
 
-        void Update()
+        private void Update()
         {
-            if (hotkey.triggered) { AnimatePauseMenu(); }
+            if (hotkey.triggered) AnimatePauseMenu();
         }
 
         public void AnimatePauseMenu()
         {
-            if (!isOn) { OpenPauseMenu(); }
-            else { ClosePauseMenu(); }
+            if (!isOn)
+                OpenPauseMenu();
+            else
+                ClosePauseMenu();
         }
 
         public void OpenPauseMenu()
         {
-            if (isOn) { return; }
-            if (setTimeScale) { Time.timeScale = 0; }
+            if (isOn) return;
+            if (setTimeScale) Time.timeScale = 0;
             if (inputBlockDuration > 0)
             {
                 AllowClosing(false);
@@ -89,8 +99,9 @@ namespace Michsky.UI.Heat
 
             Cursor.lockState = menuCursorState;
 
-            if (menuCursorVisibility == CursorVisibility.Visible) { Cursor.visible = true; }
-            else if (menuCursorVisibility != CursorVisibility.Default) { Cursor.visible = false; }
+            if (menuCursorVisibility == CursorVisibility.Visible)
+                Cursor.visible = true;
+            else if (menuCursorVisibility != CursorVisibility.Default) Cursor.visible = false;
 
             if (continueButton != null && Gamepad.current != null)
             {
@@ -101,15 +112,16 @@ namespace Michsky.UI.Heat
 
         public void ClosePauseMenu()
         {
-            if (!isOn || !allowClosing) { return; }
-            if (setTimeScale == true) { Time.timeScale = 1; }
-            if (panelManager != null) { panelManager.HideCurrentPanel(); }
+            if (!isOn || !allowClosing) return;
+            if (setTimeScale) Time.timeScale = 1;
+            if (panelManager != null) panelManager.HideCurrentPanel();
 
             StopCoroutine("DisablePauseCanvas");
             StartCoroutine("DisablePauseCanvas");
 
-            if (gameCursorVisibility == CursorVisibility.Visible) { Cursor.visible = true; }
-            else if (gameCursorVisibility != CursorVisibility.Default) { Cursor.visible = false; }
+            if (gameCursorVisibility == CursorVisibility.Visible)
+                Cursor.visible = true;
+            else if (gameCursorVisibility != CursorVisibility.Default) Cursor.visible = false;
 
             isOn = false;
             onClose.Invoke();
@@ -140,13 +152,13 @@ namespace Michsky.UI.Heat
             allowClosing = value;
         }
 
-        IEnumerator DisablePauseCanvas()
+        private IEnumerator DisablePauseCanvas()
         {
             yield return new WaitForSecondsRealtime(disableAfter);
             pauseMenuCanvas.SetActive(false);
         }
 
-        IEnumerator InputBlockProcess()
+        private IEnumerator InputBlockProcess()
         {
             yield return new WaitForSecondsRealtime(inputBlockDuration);
             AllowClosing(true);

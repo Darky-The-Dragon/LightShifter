@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using TarodevController;
 
 namespace StoryIntroCutscene
 {
@@ -64,7 +62,11 @@ namespace StoryIntroCutscene
 
         private void Update()
         {
-            if (_player == null) {Debug.Log("player is null"); return;}
+            if (_player == null)
+            {
+                Debug.Log("player is null");
+                return;
+            }
 
             var xInput = _player.Input.x;
             var yInput = _player.Input.y;
@@ -122,12 +124,12 @@ namespace StoryIntroCutscene
             }
         }
         */
-        
+
         private void PlayerOnToggledPlayer(bool on)
         {
             effectsParent.SetActive(on);
         }
-        
+
         #region Walls & Ladders
 
         [Header("Walls & Ladders")] [SerializeField]
@@ -144,7 +146,9 @@ namespace StoryIntroCutscene
         private float _slidingVolumeGoal;
         private float _slideAudioVel;
         private bool _ascendingLadder;
+
         private float _lastClimbSoundY;
+
         //private int _wallClimbAudioIndex = 0;
         private int _ladderClimbAudioIndex;
 
@@ -170,9 +174,10 @@ namespace StoryIntroCutscene
             }
 
             SetParticleColor(new Vector2(_player.WallDirection, 0), _wallSlideParticles);
-            _wallSlideParticles.transform.localPosition = new Vector3(_wallSlideParticleOffset * _player.WallDirection, 0, 0);
+            _wallSlideParticles.transform.localPosition =
+                new Vector3(_wallSlideParticleOffset * _player.WallDirection, 0, 0);
 
-            var requiredAudio = _isSliding || _player.ClimbingLadder && _player.Velocity.y < 0;
+            var requiredAudio = _isSliding || (_player.ClimbingLadder && _player.Velocity.y < 0);
             var point = requiredAudio ? Mathf.InverseLerp(0, -_player.Stats.LadderSlideSpeed, _player.Velocity.y) : 0;
             //_wallSlideSource.volume = Mathf.SmoothDamp(_wallSlideSource.volume, Mathf.Lerp(0, _maxWallSlideVolume, point), ref _slideAudioVel, 0.2f);
 
@@ -186,10 +191,8 @@ namespace StoryIntroCutscene
                 }
 
                 if (transform.position.y >= _lastClimbSoundY + _distancePerClimbSound)
-                {
                     _lastClimbSoundY = transform.position.y;
-                    //Play();
-                }
+                //Play();
             }
             else
             {
@@ -350,7 +353,7 @@ namespace StoryIntroCutscene
         #region Helpers
 
         private ParticleSystem.MinMaxGradient _currentGradient;
-        
+
         private void SetParticleColor(Vector2 detectionDir, ParticleSystem system)
         {
             // Perform raycast

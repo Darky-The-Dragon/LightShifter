@@ -7,40 +7,47 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/Animation/Box Container")]
     public class BoxContainer : MonoBehaviour
     {
-        [Header("Animation")]
-        public AnimationCurve animationCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
-        [Range(0.5f, 10)] public float curveSpeed = 1;
-        [Range(0, 5)] public float animationDelay = 0;
+        public enum UpdateMode
+        {
+            DeltaTime,
+            UnscaledTime
+        }
 
-        [Header("Fading")]
-        [Range(0, 0.99f)] public float fadeAfterScale = 0.75f;
+        [Header("Animation")]
+        public AnimationCurve animationCurve = new(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+
+        [Range(0.5f, 10)] public float curveSpeed = 1;
+        [Range(0, 5)] public float animationDelay;
+
+        [Header("Fading")] [Range(0, 0.99f)] public float fadeAfterScale = 0.75f;
+
         [Range(0.1f, 10)] public float fadeSpeed = 5f;
 
-        [Header("Settings")]
-        public UpdateMode updateMode = UpdateMode.DeltaTime;
+        [Header("Settings")] public UpdateMode updateMode = UpdateMode.DeltaTime;
+
         [Range(0, 1)] public float itemCooldown = 0.1f;
-        public bool playOnce = false;
+        public bool playOnce;
 
         // Helpers
-        [HideInInspector] public bool isPlayedOnce = false;
-        List<BoxContainerItem> cachedItems = new List<BoxContainerItem>();
+        [HideInInspector] public bool isPlayedOnce;
+        private readonly List<BoxContainerItem> cachedItems = new();
 
-        public enum UpdateMode { DeltaTime, UnscaledTime }
-
-        void Awake()
+        private void Awake()
         {
             foreach (Transform child in transform)
             {
-                BoxContainerItem temp = child.gameObject.AddComponent<BoxContainerItem>();
+                var temp = child.gameObject.AddComponent<BoxContainerItem>();
                 temp.container = this;
                 cachedItems.Add(temp);
             }
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
-            if (animationDelay > 0) { Invoke(nameof(Animate), animationDelay); }
-            else { Animate(); }
+            if (animationDelay > 0)
+                Invoke(nameof(Animate), animationDelay);
+            else
+                Animate();
         }
 
         public void Animate()
@@ -51,13 +58,11 @@ namespace Michsky.UI.Heat
             float tempTime = 0;
 
             if (cachedItems.Count > 0)
-            {
-                foreach (BoxContainerItem item in cachedItems)
+                foreach (var item in cachedItems)
                 {
                     item.Process(tempTime);
                     tempTime += itemCooldown;
                 }
-            }
 
             isPlayedOnce = true;
         }

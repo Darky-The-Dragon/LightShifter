@@ -1,13 +1,25 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using TMPro;
 
 namespace Michsky.UI.Heat
 {
     [RequireComponent(typeof(Animator))]
     public class QuestItem : MonoBehaviour
     {
+        public enum AfterMinimize
+        {
+            Disable,
+            Destroy
+        }
+
+        public enum DefaultState
+        {
+            Minimized,
+            Expanded
+        }
+
         // Content
         [TextArea] public string questText = "Quest text here";
         public string localizationKey;
@@ -27,20 +39,20 @@ namespace Michsky.UI.Heat
         public UnityEvent onDestroy;
 
         // Helpers
-        bool isOn;
-        LocalizedObject localizedObject;
+        private bool isOn;
+        private LocalizedObject localizedObject;
 
-        public enum DefaultState { Minimized, Expanded }
-        public enum AfterMinimize { Disable, Destroy }
-
-        void Start()
+        private void Start()
         {
-            if (questAnimator == null) { questAnimator = GetComponent<Animator>(); }
-            if (useLocalization == true)
+            if (questAnimator == null) questAnimator = GetComponent<Animator>();
+            if (useLocalization)
             {
                 localizedObject = questTextObj.GetComponent<LocalizedObject>();
 
-                if (localizedObject == null || localizedObject.CheckLocalizationStatus() == false) { useLocalization = false; }
+                if (localizedObject == null || localizedObject.CheckLocalizationStatus() == false)
+                {
+                    useLocalization = false;
+                }
                 else if (localizedObject != null && !string.IsNullOrEmpty(localizationKey))
                 {
                     // Forcing component to take the localized output on awake
@@ -55,8 +67,9 @@ namespace Michsky.UI.Heat
                 }
             }
 
-            if (defaultState == DefaultState.Minimized) { gameObject.SetActive(false); }
-            else if (defaultState == DefaultState.Expanded) { ExpandQuest(); }
+            if (defaultState == DefaultState.Minimized)
+                gameObject.SetActive(false);
+            else if (defaultState == DefaultState.Expanded) ExpandQuest();
 
             UpdateUI();
         }
@@ -73,7 +86,7 @@ namespace Michsky.UI.Heat
 
         public void ExpandQuest()
         {
-            if (isOn == true)
+            if (isOn)
             {
                 StopCoroutine("DisableAnimator");
                 StartCoroutine("DisableAnimator");
@@ -92,8 +105,12 @@ namespace Michsky.UI.Heat
             questAnimator.enabled = true;
             questAnimator.Play("In");
 
-            if (updateOnAnimate == true) { UpdateUI(); }
-            if (minimizeAfter != 0) { StopCoroutine("MinimizeItem"); StartCoroutine("MinimizeItem"); }
+            if (updateOnAnimate) UpdateUI();
+            if (minimizeAfter != 0)
+            {
+                StopCoroutine("MinimizeItem");
+                StartCoroutine("MinimizeItem");
+            }
 
             StopCoroutine("DisableAnimator");
             StartCoroutine("DisableAnimator");
@@ -125,23 +142,24 @@ namespace Michsky.UI.Heat
             Destroy(gameObject);
         }
 
-        IEnumerator DisableAnimator()
+        private IEnumerator DisableAnimator()
         {
             yield return new WaitForSeconds(HeatUIInternalTools.GetAnimatorClipLength(questAnimator, "QuestItem_In"));
             questAnimator.enabled = false;
         }
 
-        IEnumerator DisableItem()
+        private IEnumerator DisableItem()
         {
             yield return new WaitForSeconds(HeatUIInternalTools.GetAnimatorClipLength(questAnimator, "QuestItem_Out"));
 
             isOn = false;
 
-            if (afterMinimize == AfterMinimize.Disable) { gameObject.SetActive(false); }
-            else if (afterMinimize == AfterMinimize.Destroy) { DestroyQuest(); }
+            if (afterMinimize == AfterMinimize.Disable)
+                gameObject.SetActive(false);
+            else if (afterMinimize == AfterMinimize.Destroy) DestroyQuest();
         }
 
-        IEnumerator MinimizeItem()
+        private IEnumerator MinimizeItem()
         {
             yield return new WaitForSeconds(minimizeAfter);
             MinimizeQuest();

@@ -1,21 +1,23 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(UIManagerText))]
     public class UIManagerTextEditor : Editor
     {
-        private UIManagerText uimtTarget;
         private GUISkin customSkin;
+        private UIManagerText uimtTarget;
 
         private void OnEnable()
         {
             uimtTarget = (UIManagerText)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -34,18 +36,24 @@ namespace Michsky.UI.Heat
 
             if (uimtTarget.UIManagerAsset != null)
             {
-                if (useCustomFont.boolValue == true) { GUI.enabled = false; }
+                if (useCustomFont.boolValue) GUI.enabled = false;
                 HeatUIEditorHandler.DrawProperty(fontType, customSkin, "Font Type");
                 GUI.enabled = true;
                 HeatUIEditorHandler.DrawProperty(colorType, customSkin, "Color Type");
-                useCustomColor.boolValue = HeatUIEditorHandler.DrawToggle(useCustomColor.boolValue, customSkin, "Use Custom Color");
-                if (useCustomColor.boolValue == true) { GUI.enabled = false; }
-                useCustomAlpha.boolValue = HeatUIEditorHandler.DrawToggle(useCustomAlpha.boolValue, customSkin, "Use Custom Alpha");
+                useCustomColor.boolValue =
+                    HeatUIEditorHandler.DrawToggle(useCustomColor.boolValue, customSkin, "Use Custom Color");
+                if (useCustomColor.boolValue) GUI.enabled = false;
+                useCustomAlpha.boolValue =
+                    HeatUIEditorHandler.DrawToggle(useCustomAlpha.boolValue, customSkin, "Use Custom Alpha");
                 GUI.enabled = true;
-                useCustomFont.boolValue = HeatUIEditorHandler.DrawToggle(useCustomFont.boolValue, customSkin, "Use Custom Font");
+                useCustomFont.boolValue =
+                    HeatUIEditorHandler.DrawToggle(useCustomFont.boolValue, customSkin, "Use Custom Font");
             }
 
-            else { EditorGUILayout.HelpBox("UI Manager should be assigned.", MessageType.Error); }
+            else
+            {
+                EditorGUILayout.HelpBox("UI Manager should be assigned.", MessageType.Error);
+            }
 
             serializedObject.ApplyModifiedProperties();
         }

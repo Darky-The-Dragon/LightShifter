@@ -5,26 +5,21 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/UI Manager/UI Manager Color Changer")]
     public class UIManagerColorChanger : MonoBehaviour
     {
-        [Header("Resources")]
-        public UIManager targetUIManager;
+        [Header("Resources")] public UIManager targetUIManager;
 
-        [Header("Colors")]
-        public Color accent = new Color32(0, 200, 255, 255);
+        [Header("Colors")] public Color accent = new Color32(0, 200, 255, 255);
+
         public Color accentMatch = new Color32(25, 35, 45, 255);
         public Color primary = new Color32(255, 255, 255, 255);
         public Color secondary = new Color32(255, 255, 255, 255);
         public Color negative = new Color32(255, 75, 75, 255);
         public Color background = new Color32(25, 35, 45, 255);
 
-        [Header("Settings")]
-        [SerializeField] private bool applyOnStart;
+        [Header("Settings")] [SerializeField] private bool applyOnStart;
 
-        void Start()
+        private void Start()
         {
-            if (applyOnStart == true)
-            {
-                ApplyColors();
-            }
+            if (applyOnStart) ApplyColors();
         }
 
         public void ApplyColors()
@@ -49,7 +44,7 @@ namespace Michsky.UI.Heat
             }
         }
 
-        void DisableDynamicUpdate()
+        private void DisableDynamicUpdate()
         {
             targetUIManager.enableDynamicUpdate = false;
         }

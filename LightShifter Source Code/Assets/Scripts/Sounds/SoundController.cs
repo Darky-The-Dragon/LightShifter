@@ -1,13 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Sounds
 {
-
-
     public class SoundController : MonoBehaviour
     {
         public AudioSource audioSource;
@@ -21,13 +15,9 @@ namespace Sounds
         }
 
         // Update is called once per frame
-        void Update()
+        private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                audioSource.Play();
-            }
-                
+            if (Input.GetKeyDown(KeyCode.Space)) audioSource.Play();
         }
     }
 }

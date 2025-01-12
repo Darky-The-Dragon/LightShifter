@@ -6,10 +6,10 @@ using UnityEngine.UI;
 namespace UnityEngine.InputSystem.Samples.RebindUI
 {
     /// <summary>
-    /// This is an example for how to override the default display behavior of bindings. The component
-    /// hooks into <see cref="RebindActionUI.updateBindingUIEvent"/> which is triggered when UI display
-    /// of a binding should be refreshed. It then checks whether we have an icon for the current binding
-    /// and if so, replaces the default text display with an icon.
+    ///     This is an example for how to override the default display behavior of bindings. The component
+    ///     hooks into <see cref="RebindActionUI.updateBindingUIEvent" /> which is triggered when UI display
+    ///     of a binding should be refreshed. It then checks whether we have an icon for the current binding
+    ///     and if so, replaces the default text display with an icon.
     /// </summary>
     public class GamepadIconsExample : MonoBehaviour
     {
@@ -27,7 +27,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             }
         }
 
-        protected void OnUpdateBindingDisplay(RebindActionUI component, string bindingDisplayString, string deviceLayoutName, string controlPath)
+        protected void OnUpdateBindingDisplay(RebindActionUI component, string bindingDisplayString,
+            string deviceLayoutName, string controlPath)
         {
             if (string.IsNullOrEmpty(deviceLayoutName) || string.IsNullOrEmpty(controlPath))
                 return;
@@ -106,6 +107,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                     case "leftStickPress": return leftStickPress;
                     case "rightStickPress": return rightStickPress;
                 }
+
                 return null;
             }
         }

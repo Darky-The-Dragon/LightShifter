@@ -8,14 +8,6 @@ namespace Michsky.UI.Heat
     [RequireComponent(typeof(Image))]
     public class GradientFilter : MonoBehaviour
     {
-        // Settings
-        public Filter selectedFilter = Filter.Dawn;
-        [Range(0.1f, 0.9f)] public float opacity = 0.5f;
-
-        // Helpers
-        Image bgImage;
-        public List<Sprite> filters = new List<Sprite>();
-
         public enum Filter
         {
             Aqua,
@@ -34,20 +26,29 @@ namespace Michsky.UI.Heat
             Random
         }
 
-        void Awake()
+        // Settings
+        public Filter selectedFilter = Filter.Dawn;
+        [Range(0.1f, 0.9f)] public float opacity = 0.5f;
+        public List<Sprite> filters = new();
+
+        // Helpers
+        private Image bgImage;
+
+        private void Awake()
         {
             bgImage = GetComponent<Image>();
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             UpdateFilter();
         }
 
         public void UpdateFilter()
         {
-            if (selectedFilter == Filter.Random && Application.isPlaying) { bgImage.sprite = filters[Random.Range(0, filters.Count - 1)]; }
-            else if (filters.Count >= (int)selectedFilter + 1) { bgImage.sprite = filters[(int)selectedFilter]; }
+            if (selectedFilter == Filter.Random && Application.isPlaying)
+                bgImage.sprite = filters[Random.Range(0, filters.Count - 1)];
+            else if (filters.Count >= (int)selectedFilter + 1) bgImage.sprite = filters[(int)selectedFilter];
 
             bgImage.color = new Color(bgImage.color.r, bgImage.color.g, bgImage.color.g, opacity);
         }

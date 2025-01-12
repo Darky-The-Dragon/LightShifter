@@ -7,37 +7,48 @@ namespace Michsky.UI.Heat
     [RequireComponent(typeof(CanvasGroup))]
     public class SettingsSubElement : MonoBehaviour
     {
-        [Header("Settings")]
-        [SerializeField][Range(0, 1)] private float disabledOpacity = 0.5f;
-        [SerializeField][Range(1, 10)] private float animSpeed = 4;
-        public DefaultState defaultState = DefaultState.Active;
-
-        [Header("Resources")]
-        [SerializeField] private CanvasGroup targetCG;
-
-        public enum DefaultState { None, Active, Disabled }
-
-        void Awake()
+        public enum DefaultState
         {
-            if (targetCG == null)
-            {
-                targetCG = GetComponent<CanvasGroup>();
-            }
+            None,
+            Active,
+            Disabled
         }
 
-        void OnEnable()
+        [Header("Settings")] [SerializeField] [Range(0, 1)]
+        private float disabledOpacity = 0.5f;
+
+        [SerializeField] [Range(1, 10)] private float animSpeed = 4;
+        public DefaultState defaultState = DefaultState.Active;
+
+        [Header("Resources")] [SerializeField] private CanvasGroup targetCG;
+
+        private void Awake()
         {
-            if (defaultState == DefaultState.Active) { SetState(true); }
-            else if (defaultState == DefaultState.Disabled) { SetState(false); }
+            if (targetCG == null) targetCG = GetComponent<CanvasGroup>();
+        }
+
+        private void OnEnable()
+        {
+            if (defaultState == DefaultState.Active)
+                SetState(true);
+            else if (defaultState == DefaultState.Disabled) SetState(false);
         }
 
         public void SetState(bool value)
         {
-            if (value == true) { StartCoroutine("GroupIn"); defaultState = DefaultState.Active; }
-            else { StartCoroutine("GroupOut"); defaultState = DefaultState.Disabled; }
+            if (value)
+            {
+                StartCoroutine("GroupIn");
+                defaultState = DefaultState.Active;
+            }
+            else
+            {
+                StartCoroutine("GroupOut");
+                defaultState = DefaultState.Disabled;
+            }
         }
 
-        IEnumerator GroupIn()
+        private IEnumerator GroupIn()
         {
             StopCoroutine("GroupOut");
 
@@ -53,7 +64,7 @@ namespace Michsky.UI.Heat
             targetCG.alpha = 1;
         }
 
-        IEnumerator GroupOut()
+        private IEnumerator GroupOut()
         {
             StopCoroutine("GroupIn");
 

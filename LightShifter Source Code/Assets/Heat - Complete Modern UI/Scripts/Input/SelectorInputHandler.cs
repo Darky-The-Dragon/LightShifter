@@ -7,37 +7,42 @@ namespace Michsky.UI.Heat
 {
     public class SelectorInputHandler : MonoBehaviour
     {
-        [Header("Resources")]
-        [SerializeField] private HorizontalSelector selectorObject;
+        [Header("Resources")] [SerializeField] private HorizontalSelector selectorObject;
+
         [SerializeField] private GameObject indicator;
 
-        [Header("Settings")]
-        public float selectorCooldown = 0.4f;
+        [Header("Settings")] public float selectorCooldown = 0.4f;
+
         [SerializeField] private bool optimizeUpdates = true;
         public bool requireSelecting = true;
 
         // Helpers
-        bool isInCooldown = false;
+        private bool isInCooldown;
 
-        void OnEnable()
+        private void Update()
         {
-            if (ControllerManager.instance == null || selectorObject == null) { Destroy(this); }
-            if (indicator == null)
+            if (Gamepad.current == null || ControllerManager.instance == null)
             {
-                indicator = new GameObject();
-                indicator.name = "[Generated Indicator]";
-                indicator.transform.SetParent(transform);
+                indicator.SetActive(false);
+                return;
             }
 
-            indicator.SetActive(false);
-        }
+            if (requireSelecting && EventSystem.current.currentSelectedGameObject != gameObject)
+            {
+                indicator.SetActive(false);
+                return;
+            }
 
-        void Update()
-        {
-            if (Gamepad.current == null || ControllerManager.instance == null) { indicator.SetActive(false); return; }
-            else if (requireSelecting && EventSystem.current.currentSelectedGameObject != gameObject) { indicator.SetActive(false); return; }
-            else if (optimizeUpdates && ControllerManager.instance != null && !ControllerManager.instance.gamepadEnabled) { indicator.SetActive(false); return; }
-            else if (isInCooldown) { return; }
+            if (optimizeUpdates && ControllerManager.instance != null && !ControllerManager.instance.gamepadEnabled)
+            {
+                indicator.SetActive(false);
+                return;
+            }
+
+            if (isInCooldown)
+            {
+                return;
+            }
 
             indicator.SetActive(true);
 
@@ -60,7 +65,20 @@ namespace Michsky.UI.Heat
             }
         }
 
-        IEnumerator CooldownTimer()
+        private void OnEnable()
+        {
+            if (ControllerManager.instance == null || selectorObject == null) Destroy(this);
+            if (indicator == null)
+            {
+                indicator = new GameObject();
+                indicator.name = "[Generated Indicator]";
+                indicator.transform.SetParent(transform);
+            }
+
+            indicator.SetActive(false);
+        }
+
+        private IEnumerator CooldownTimer()
         {
             yield return new WaitForSecondsRealtime(selectorCooldown);
             isInCooldown = false;

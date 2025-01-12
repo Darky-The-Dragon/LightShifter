@@ -7,7 +7,8 @@ using UnityEngine.UI;
 namespace Michsky.UI.Heat
 {
     [DisallowMultipleComponent]
-    public class SettingsElement : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler, ISubmitHandler
+    public class SettingsElement : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler,
+        ISelectHandler, IDeselectHandler, ISubmitHandler
     {
         // Resources
         [SerializeField] private CanvasGroup highlightCG;
@@ -16,26 +17,26 @@ namespace Michsky.UI.Heat
         public bool isInteractable = true;
         public bool useSounds = true;
         [Range(1, 15)] public float fadingMultiplier = 8;
-        public bool useUINavigation = false;
+        public bool useUINavigation;
         public Navigation.Mode navigationMode = Navigation.Mode.Automatic;
         public GameObject selectOnUp;
         public GameObject selectOnDown;
         public GameObject selectOnLeft;
         public GameObject selectOnRight;
-        public bool wrapAround = false;
+        public bool wrapAround;
 
         // Events
-        public UnityEvent onClick = new UnityEvent();
-        public UnityEvent onHover = new UnityEvent();
-        public UnityEvent onLeave = new UnityEvent();
+        public UnityEvent onClick = new();
+        public UnityEvent onHover = new();
+        public UnityEvent onLeave = new();
 
         // Helpers
-        Button targetButton;
+        private Button targetButton;
 
-        void Start()
+        private void Start()
         {
-            if (ControllerManager.instance != null) { ControllerManager.instance.settingsElements.Add(this); }
-            if (UIManagerAudio.instance == null) { useSounds = false; }      
+            if (ControllerManager.instance != null) ControllerManager.instance.settingsElements.Add(this);
+            if (UIManagerAudio.instance == null) useSounds = false;
             if (highlightCG == null)
             {
                 highlightCG = new GameObject().AddComponent<CanvasGroup>();
@@ -43,79 +44,56 @@ namespace Michsky.UI.Heat
                 highlightCG.transform.SetParent(transform);
                 highlightCG.gameObject.name = "Highlight";
             }
+
             if (GetComponent<Image>() == null)
             {
-                Image raycastImg = gameObject.AddComponent<Image>();
+                var raycastImg = gameObject.AddComponent<Image>();
                 raycastImg.color = new Color(0, 0, 0, 0);
                 raycastImg.raycastTarget = true;
             }
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
-            if (highlightCG != null) { highlightCG.alpha = 0; }
-            if (Application.isPlaying && useUINavigation) { AddUINavigation(); }
+            if (highlightCG != null) highlightCG.alpha = 0;
+            if (Application.isPlaying && useUINavigation)
+            {
+                AddUINavigation();
+            }
             else if (Application.isPlaying && !useUINavigation && targetButton == null)
             {
-                if (gameObject.GetComponent<Button>() == null) { targetButton = gameObject.AddComponent<Button>(); }
-                else { targetButton = GetComponent<Button>(); }
+                if (gameObject.GetComponent<Button>() == null)
+                    targetButton = gameObject.AddComponent<Button>();
+                else
+                    targetButton = GetComponent<Button>();
 
                 targetButton.transition = Selectable.Transition.None;
             }
         }
 
-        public void Interactable(bool value)
+        public void OnDeselect(BaseEventData eventData)
         {
-            isInteractable = value;
-            if (!gameObject.activeInHierarchy) { return; }
-            StartCoroutine("SetNormal");
-        }
-
-        public void AddUINavigation()
-        {
-            if (targetButton == null)
-            {
-                if (gameObject.GetComponent<Button>() == null) { targetButton = gameObject.AddComponent<Button>(); }
-                else { targetButton = GetComponent<Button>(); }
-
-                targetButton.transition = Selectable.Transition.None;
-            }
-
-            if (targetButton.navigation.mode == navigationMode)
+            if (!isInteractable || highlightCG == null)
                 return;
 
-            Navigation customNav = new Navigation();
-            customNav.mode = navigationMode;
-
-            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal) { customNav.wrapAround = wrapAround; }
-            else if (navigationMode == Navigation.Mode.Explicit) { StartCoroutine("InitUINavigation", customNav); return; }
-
-            targetButton.navigation = customNav;
-        }
-
-        public void DisableUINavigation()
-        {
-            if (targetButton != null)
-            {
-                Navigation customNav = new Navigation();
-                Navigation.Mode navMode = Navigation.Mode.None;
-                customNav.mode = navMode;
-                targetButton.navigation = customNav;
-            }
+            onLeave.Invoke();
+            StartCoroutine("SetNormal");
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (isInteractable == false || eventData.button != PointerEventData.InputButton.Left) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
+            if (isInteractable == false || eventData.button != PointerEventData.InputButton.Left) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
 
             onClick.Invoke();
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
 
             onHover.Invoke();
             StartCoroutine("SetHighlight");
@@ -132,31 +110,73 @@ namespace Michsky.UI.Heat
 
         public void OnSelect(BaseEventData eventData)
         {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
 
             onHover.Invoke();
             StartCoroutine("SetHighlight");
         }
 
-        public void OnDeselect(BaseEventData eventData)
-        {
-            if (!isInteractable || highlightCG == null)
-                return;
-
-            onLeave.Invoke();
-            StartCoroutine("SetNormal");
-        }
-
         public void OnSubmit(BaseEventData eventData)
         {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
 
             onClick.Invoke();
         }
 
-        IEnumerator SetNormal()
+        public void Interactable(bool value)
+        {
+            isInteractable = value;
+            if (!gameObject.activeInHierarchy) return;
+            StartCoroutine("SetNormal");
+        }
+
+        public void AddUINavigation()
+        {
+            if (targetButton == null)
+            {
+                if (gameObject.GetComponent<Button>() == null)
+                    targetButton = gameObject.AddComponent<Button>();
+                else
+                    targetButton = GetComponent<Button>();
+
+                targetButton.transition = Selectable.Transition.None;
+            }
+
+            if (targetButton.navigation.mode == navigationMode)
+                return;
+
+            var customNav = new Navigation();
+            customNav.mode = navigationMode;
+
+            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal)
+            {
+                customNav.wrapAround = wrapAround;
+            }
+            else if (navigationMode == Navigation.Mode.Explicit)
+            {
+                StartCoroutine("InitUINavigation", customNav);
+                return;
+            }
+
+            targetButton.navigation = customNav;
+        }
+
+        public void DisableUINavigation()
+        {
+            if (targetButton != null)
+            {
+                var customNav = new Navigation();
+                var navMode = Navigation.Mode.None;
+                customNav.mode = navMode;
+                targetButton.navigation = customNav;
+            }
+        }
+
+        private IEnumerator SetNormal()
         {
             StopCoroutine("SetHighlight");
 
@@ -169,7 +189,7 @@ namespace Michsky.UI.Heat
             highlightCG.alpha = 0;
         }
 
-        IEnumerator SetHighlight()
+        private IEnumerator SetHighlight()
         {
             StopCoroutine("SetNormal");
 
@@ -182,13 +202,13 @@ namespace Michsky.UI.Heat
             highlightCG.alpha = 1;
         }
 
-        IEnumerator InitUINavigation(Navigation nav)
+        private IEnumerator InitUINavigation(Navigation nav)
         {
             yield return new WaitForSecondsRealtime(0.1f);
-            if (selectOnUp != null) { nav.selectOnUp = selectOnUp.GetComponent<Selectable>(); }
-            if (selectOnDown != null) { nav.selectOnDown = selectOnDown.GetComponent<Selectable>(); }
-            if (selectOnLeft != null) { nav.selectOnLeft = selectOnLeft.GetComponent<Selectable>(); }
-            if (selectOnRight != null) { nav.selectOnRight = selectOnRight.GetComponent<Selectable>(); }
+            if (selectOnUp != null) nav.selectOnUp = selectOnUp.GetComponent<Selectable>();
+            if (selectOnDown != null) nav.selectOnDown = selectOnDown.GetComponent<Selectable>();
+            if (selectOnLeft != null) nav.selectOnLeft = selectOnLeft.GetComponent<Selectable>();
+            if (selectOnRight != null) nav.selectOnRight = selectOnRight.GetComponent<Selectable>();
             targetButton.navigation = nav;
         }
     }

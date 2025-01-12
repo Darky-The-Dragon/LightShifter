@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -8,23 +8,25 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(NewsSlider))]
     public class NewsSliderEditor : Editor
     {
-        private NewsSlider nsTarget;
-        private GUISkin customSkin;
         private int currentTab;
+        private GUISkin customSkin;
+        private NewsSlider nsTarget;
 
         private void OnEnable()
         {
             nsTarget = (NewsSlider)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "News Slider Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -71,15 +73,17 @@ namespace Michsky.UI.Heat
 
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    allowUpdate.boolValue = HeatUIEditorHandler.DrawToggle(allowUpdate.boolValue, customSkin, "Allow Update", "Pause or unpause the slider.");
-                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization", "Bypasses localization functions when disabled.");
+                    allowUpdate.boolValue = HeatUIEditorHandler.DrawToggle(allowUpdate.boolValue, customSkin,
+                        "Allow Update", "Pause or unpause the slider.");
+                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin,
+                        "Use Localization", "Bypasses localization functions when disabled.");
                     HeatUIEditorHandler.DrawProperty(sliderTimer, customSkin, "Slider Timer");
                     HeatUIEditorHandler.DrawProperty(updateMode, customSkin, "Update Mode");
                     break;
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

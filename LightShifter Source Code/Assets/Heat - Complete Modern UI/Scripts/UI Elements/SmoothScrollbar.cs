@@ -7,12 +7,15 @@ namespace Michsky.UI.Heat
     [RequireComponent(typeof(Scrollbar))]
     public class SmoothScrollbar : MonoBehaviour
     {
-        [Header("Settings")]
-        [SerializeField] [Range(0.3f, 5)] private float curveSpeed = 1.5f;
-        [SerializeField] private AnimationCurve animationCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+        [Header("Settings")] [SerializeField] [Range(0.3f, 5)]
+        private float curveSpeed = 1.5f;
+
+        [SerializeField]
+        private AnimationCurve animationCurve = new(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+
         private Scrollbar scrollbar;
 
-        void Awake()
+        private void Awake()
         {
             scrollbar = GetComponent<Scrollbar>();
         }
@@ -31,9 +34,9 @@ namespace Michsky.UI.Heat
             StartCoroutine("GoBottom");
         }
 
-        IEnumerator GoTop()
+        private IEnumerator GoTop()
         {
-            float startingPoint = scrollbar.value;
+            var startingPoint = scrollbar.value;
             float elapsedTime = 0;
 
             while (scrollbar.value < 0.999f)
@@ -46,9 +49,9 @@ namespace Michsky.UI.Heat
             scrollbar.value = 1;
         }
 
-        IEnumerator GoBottom()
+        private IEnumerator GoBottom()
         {
-            float startingPoint = scrollbar.value;
+            var startingPoint = scrollbar.value;
             float elapsedTime = 0;
 
             while (scrollbar.value > 0.001f)

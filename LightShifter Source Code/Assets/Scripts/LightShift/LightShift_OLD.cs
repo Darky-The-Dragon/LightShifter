@@ -5,19 +5,27 @@ namespace LightShift
 {
     public class LightShift_OLD : MonoBehaviour
     {
-        [SerializeField] private UnityEngine.Camera mainCamera;
+        public static LightShift_OLD Instance;
+        [SerializeField] private Camera mainCamera;
         [SerializeField] private Color newBackgroundColor;
         [SerializeField] private bool useColoredBackground;
         [SerializeField] private GameObject gridLight;
         [SerializeField] private GameObject gridDark;
         [SerializeField] private GameObject grid;
         [SerializeField] private GameObject environment;
-        private bool _isChanged;
-        [SerializeField] GameObject lightBackground, darkBackground;
+        [SerializeField] private GameObject lightBackground, darkBackground;
 
         public bool _canChange;
 
         [SerializeField] private GameObject center;
+
+        // CheckCollision to solve LightShift bug
+        [SerializeField] private GameObject player;
+
+
+        [SerializeField] private Tilemap lightTilemap;
+        [SerializeField] private Tilemap darkTilemap;
+        private bool _isChanged;
         private Color _originalBackgroundColor;
 
         private Vector3Int _playerTilePosition;
@@ -25,19 +33,12 @@ namespace LightShift
         private int _playerX;
         private int _playerY;
 
-        public static LightShift_OLD Instance;
-
         private void Awake()
         {
             if (Instance == null)
                 Instance = this;
             else
                 Destroy(gameObject);
-        }
-
-        public void CanChange(bool canChange)
-        {
-            this._canChange = canChange;
         }
 
         private void Start()
@@ -52,10 +53,12 @@ namespace LightShift
         private void Update()
         {
             // Check for 'E' key press once per frame
-            if (Input.GetKeyDown(KeyCode.LeftShift) && _canChange)
-            {
-                ToggleEnvironment();
-            }
+            if (Input.GetKeyDown(KeyCode.LeftShift) && _canChange) ToggleEnvironment();
+        }
+
+        public void CanChange(bool canChange)
+        {
+            _canChange = canChange;
         }
 
         private void ToggleEnvironment()
@@ -113,21 +116,13 @@ namespace LightShift
                 }
         }
 
-        // CheckCollision to solve LightShift bug
-        [SerializeField] GameObject player;
-
-
-        [SerializeField] private Tilemap lightTilemap;
-        [SerializeField] private Tilemap darkTilemap;
-
         private bool CheckCollisions(Vector3Int playerTilePosition)
         {
-            Tilemap lightTileMap = gridLight.GetComponentInChildren<Tilemap>(true);
+            var lightTileMap = gridLight.GetComponentInChildren<Tilemap>(true);
 
             if (lightTileMap.HasTile(playerTilePosition))
                 return true;
             return false;
         }
     }
-
 }

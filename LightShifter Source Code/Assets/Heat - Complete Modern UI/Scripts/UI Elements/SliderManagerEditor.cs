@@ -1,31 +1,34 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
-using UnityEngine.UI;
 using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(SliderManager))]
     public class SliderManagerEditor : Editor
     {
+        private int currentTab;
         private GUISkin customSkin;
         private SliderManager sTarget;
-        private int currentTab;
 
         private void OnEnable()
         {
             sTarget = (SliderManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Slider Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -66,67 +69,93 @@ namespace Michsky.UI.Heat
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
 
-                        float tempValue = sTarget.mainSlider.value;
-                        EditorGUILayout.LabelField(new GUIContent("Current Value"), customSkin.FindStyle("Text"), GUILayout.Width(120));
-                        sTarget.mainSlider.value = EditorGUILayout.Slider(sTarget.mainSlider.value, sTarget.mainSlider.minValue, sTarget.mainSlider.maxValue);
-                        if (tempValue != sTarget.mainSlider.value) { Undo.RegisterCompleteObjectUndo(sTarget.mainSlider, sTarget.name); }
+                        var tempValue = sTarget.mainSlider.value;
+                        EditorGUILayout.LabelField(new GUIContent("Current Value"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(120));
+                        sTarget.mainSlider.value = EditorGUILayout.Slider(sTarget.mainSlider.value,
+                            sTarget.mainSlider.minValue, sTarget.mainSlider.maxValue);
+                        if (tempValue != sTarget.mainSlider.value)
+                            Undo.RegisterCompleteObjectUndo(sTarget.mainSlider, sTarget.name);
 
                         GUILayout.EndHorizontal();
                         GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-                        float tempMinValue = sTarget.mainSlider.minValue;
+                        var tempMinValue = sTarget.mainSlider.minValue;
 
-                        if (sTarget.mainSlider.wholeNumbers == false) { tempMinValue = EditorGUILayout.FloatField(new GUIContent("Min Value"), sTarget.mainSlider.minValue); }
-                        else { tempMinValue = EditorGUILayout.IntField(new GUIContent("Min Value"), (int)sTarget.mainSlider.minValue); }
+                        if (sTarget.mainSlider.wholeNumbers == false)
+                            tempMinValue = EditorGUILayout.FloatField(new GUIContent("Min Value"),
+                                sTarget.mainSlider.minValue);
+                        else
+                            tempMinValue = EditorGUILayout.IntField(new GUIContent("Min Value"),
+                                (int)sTarget.mainSlider.minValue);
 
-                        if (tempMinValue < sTarget.mainSlider.maxValue && tempMinValue != sTarget.mainSlider.minValue) 
+                        if (tempMinValue < sTarget.mainSlider.maxValue && tempMinValue != sTarget.mainSlider.minValue)
                         {
                             sTarget.mainSlider.minValue = tempMinValue;
                             EditorUtility.SetDirty(sTarget.mainSlider);
-                            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         }
-                        else { tempMinValue = sTarget.mainSlider.minValue; }
+                        else
+                        {
+                            tempMinValue = sTarget.mainSlider.minValue;
+                        }
 
                         GUILayout.EndHorizontal();
                         GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-                        float tempMaxValue = sTarget.mainSlider.maxValue;
+                        var tempMaxValue = sTarget.mainSlider.maxValue;
 
-                        if (sTarget.mainSlider.wholeNumbers == false) { tempMaxValue = EditorGUILayout.FloatField(new GUIContent("Max Value"), sTarget.mainSlider.maxValue); }
-                        else { tempMaxValue = EditorGUILayout.IntField(new GUIContent("Max Value"), (int)sTarget.mainSlider.maxValue); }
+                        if (sTarget.mainSlider.wholeNumbers == false)
+                            tempMaxValue = EditorGUILayout.FloatField(new GUIContent("Max Value"),
+                                sTarget.mainSlider.maxValue);
+                        else
+                            tempMaxValue = EditorGUILayout.IntField(new GUIContent("Max Value"),
+                                (int)sTarget.mainSlider.maxValue);
 
-                        if (tempMaxValue > sTarget.mainSlider.minValue && tempMaxValue != sTarget.mainSlider.maxValue) 
+                        if (tempMaxValue > sTarget.mainSlider.minValue && tempMaxValue != sTarget.mainSlider.maxValue)
                         {
                             sTarget.mainSlider.maxValue = tempMaxValue;
                             EditorUtility.SetDirty(sTarget.mainSlider);
-                            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                         }
-                        else { tempMaxValue = sTarget.mainSlider.maxValue; }
+                        else
+                        {
+                            tempMaxValue = sTarget.mainSlider.maxValue;
+                        }
 
                         GUILayout.EndHorizontal();
                         GUILayout.EndVertical();
 
                         GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-                        bool tempWN = sTarget.mainSlider.wholeNumbers;
-                        sTarget.mainSlider.wholeNumbers = GUILayout.Toggle(sTarget.mainSlider.wholeNumbers, new GUIContent("Use Whole Numbers"), customSkin.FindStyle("Toggle"));
-                        sTarget.mainSlider.wholeNumbers = GUILayout.Toggle(sTarget.mainSlider.wholeNumbers, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
-                        if (tempWN != sTarget.mainSlider.wholeNumbers) { EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene()); }
+                        var tempWN = sTarget.mainSlider.wholeNumbers;
+                        sTarget.mainSlider.wholeNumbers = GUILayout.Toggle(sTarget.mainSlider.wholeNumbers,
+                            new GUIContent("Use Whole Numbers"), customSkin.FindStyle("Toggle"));
+                        sTarget.mainSlider.wholeNumbers = GUILayout.Toggle(sTarget.mainSlider.wholeNumbers,
+                            new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
+                        if (tempWN != sTarget.mainSlider.wholeNumbers)
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 
                         GUILayout.EndHorizontal();
                         GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-                        bool tempInt = sTarget.mainSlider.interactable;
-                        sTarget.mainSlider.interactable = GUILayout.Toggle(sTarget.mainSlider.interactable, new GUIContent("Is Interactable"), customSkin.FindStyle("Toggle"));
-                        sTarget.mainSlider.interactable = GUILayout.Toggle(sTarget.mainSlider.interactable, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
-                        if (tempInt != sTarget.mainSlider.interactable) { EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene()); }
+                        var tempInt = sTarget.mainSlider.interactable;
+                        sTarget.mainSlider.interactable = GUILayout.Toggle(sTarget.mainSlider.interactable,
+                            new GUIContent("Is Interactable"), customSkin.FindStyle("Toggle"));
+                        sTarget.mainSlider.interactable = GUILayout.Toggle(sTarget.mainSlider.interactable,
+                            new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
+                        if (tempInt != sTarget.mainSlider.interactable)
+                            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
 
                         GUILayout.EndHorizontal();
 
-                        if (Application.isPlaying == false) { sTarget.UpdateUI(); }
+                        if (Application.isPlaying == false) sTarget.UpdateUI();
                     }
 
-                    else { sTarget.mainSlider = sTarget.GetComponent<Slider>(); }
+                    else
+                    {
+                        sTarget.mainSlider = sTarget.GetComponent<Slider>();
+                    }
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Events Header", 10);
                     EditorGUILayout.PropertyField(onValueChanged, new GUIContent("On Value Changed"), true);
@@ -135,24 +164,29 @@ namespace Michsky.UI.Heat
                 case 1:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Core Header", 6);
                     HeatUIEditorHandler.DrawProperty(sliderObject, customSkin, "Slider Source");
-                    if (showValue.boolValue == true) { HeatUIEditorHandler.DrawProperty(valueText, customSkin, "Label Text"); }
+                    if (showValue.boolValue) HeatUIEditorHandler.DrawProperty(valueText, customSkin, "Label Text");
                     HeatUIEditorHandler.DrawProperty(highlightCG, customSkin, "Highlight CG");
                     break;
 
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    usePercent.boolValue = HeatUIEditorHandler.DrawToggle(usePercent.boolValue, customSkin, "Use Percent");
+                    usePercent.boolValue =
+                        HeatUIEditorHandler.DrawToggle(usePercent.boolValue, customSkin, "Use Percent");
                     showValue.boolValue = HeatUIEditorHandler.DrawToggle(showValue.boolValue, customSkin, "Show Label");
-                    showPopupValue.boolValue = HeatUIEditorHandler.DrawToggle(showPopupValue.boolValue, customSkin, "Show Popup Label");
-                    useRoundValue.boolValue = HeatUIEditorHandler.DrawToggle(useRoundValue.boolValue, customSkin, "Use Round Value");
-                    invokeOnAwake.boolValue = HeatUIEditorHandler.DrawToggle(invokeOnAwake.boolValue, customSkin, "Invoke On Awake", "Process events on awake.");
+                    showPopupValue.boolValue =
+                        HeatUIEditorHandler.DrawToggle(showPopupValue.boolValue, customSkin, "Show Popup Label");
+                    useRoundValue.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useRoundValue.boolValue, customSkin, "Use Round Value");
+                    invokeOnAwake.boolValue = HeatUIEditorHandler.DrawToggle(invokeOnAwake.boolValue, customSkin,
+                        "Invoke On Awake", "Process events on awake.");
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    saveValue.boolValue = HeatUIEditorHandler.DrawTogglePlain(saveValue.boolValue, customSkin, "Save Value");
+                    saveValue.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(saveValue.boolValue, customSkin, "Save Value");
                     GUILayout.Space(3);
 
-                    if (saveValue.boolValue == true)
+                    if (saveValue.boolValue)
                     {
                         HeatUIEditorHandler.DrawPropertyCW(saveKey, customSkin, "Save Key:", 66);
                         EditorGUILayout.HelpBox("You must set a unique save key for each slider.", MessageType.Info);
@@ -165,7 +199,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

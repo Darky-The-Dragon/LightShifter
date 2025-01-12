@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using TarodevController;
+using UnityEngine;
 
 namespace StoryIntroCutscene
 {
@@ -78,7 +78,7 @@ namespace StoryIntroCutscene
         public bool Active { get; private set; } = true;
         public Vector2 Up { get; private set; }
         public Vector2 Right { get; private set; }
-        public bool Crouching { get; private set; }
+        public bool Crouching { get; }
         public Vector2 Input => _frameInput.Move;
         public Vector2 GroundNormal { get; private set; }
         public Vector2 Velocity { get; private set; }
@@ -224,10 +224,11 @@ namespace StoryIntroCutscene
 
         private FrameInput _frameInput;
         [SerializeField] private CutsceneManager cutsceneManager;
+
         private void GatherInput()
         {
             _frameInput = cutsceneManager.GetFrameInput();
-            
+
             if (_frameInput.JumpDown)
             {
                 _jumpToConsume = true;
@@ -578,7 +579,7 @@ namespace StoryIntroCutscene
 
         private void CalculateJump()
         {
-            if ((_jumpToConsume || HasBufferedJump) /*&& CanStand*/)
+            if (_jumpToConsume || HasBufferedJump /*&& CanStand*/)
             {
                 if (CanWallJump) ExecuteJump(JumpType.WallJump);
                 else if (_grounded || ClimbingLadder) ExecuteJump(JumpType.Jump);

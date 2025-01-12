@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +18,11 @@ namespace TarodevController
         [SerializeField] private Transform trailRenderer;
         [SerializeField] private SpriteRenderer sprite;
         [SerializeField] private TrailRenderer trail;
-        
+
         public AudioMixerGroup musicAudioMixerGroup;
         public AudioMixerGroup sfxAudioMixerGroup;
         public AudioSource musicAudioSource;
         public AudioSource sfxAudioSource;
-
-        private void Start()
-        {
-            musicAudioSource.outputAudioMixerGroup = musicAudioMixerGroup;
-            sfxAudioSource.outputAudioMixerGroup = sfxAudioMixerGroup;
-        }
 
 
         [Header("Particles")] [SerializeField] private ParticleSystem jumpParticles;
@@ -38,36 +31,37 @@ namespace TarodevController
         [SerializeField] private ParticleSystem landParticles;
 
         [SerializeField] private ParticleSystem doubleJumpParticles;
+        [SerializeField] private AudioClip[] doubleJumpClip;
 
-        private float _originalTrailTime;
+        [SerializeField] private AudioClip[] jumpClips;
+        [SerializeField] private AudioClip[] landClip;
+
+        [SerializeField] private AudioClip[] runClip;
+        // [SerializeField] private AudioClip[] slideClips;
+        // [SerializeField] private AudioClip wallGrabClip;
+
+
+        [SerializeField] private AudioSource source;
+
+        private bool _isCheckpointUpdating;
         //[SerializeField] private ParticleSystem _dashParticles;
         //[SerializeField] private ParticleSystem _dashRingParticles;
         //[SerializeField] private Transform _dashRingTransform;
 
 
+        [Header("Audio Clips")] private bool _isMovementSoundPlaying;
 
-        [Header("Audio Clips")] 
-        private bool _isMovementSoundPlaying;
-        [SerializeField] private AudioClip[] doubleJumpClip;
-        
-        [SerializeField] private AudioClip[] jumpClips;
-        [SerializeField] private AudioClip[] landClip;
-        [SerializeField] private AudioClip[] runClip;
-        // [SerializeField] private AudioClip[] slideClips;
-        // [SerializeField] private AudioClip wallGrabClip;
-        
-
-
-        [SerializeField] private AudioSource source;
+        private float _originalTrailTime;
         private IPlayerController _player;
-        
+
         private Vector2 _playerPosition;
-        private bool _isCheckpointUpdating;
 
         //private Vector2 _defaultSpriteSize;
         //private GeneratedCharacterSize _character;
         private Vector3 _trailOffset;
         private Vector2 _trailVel;
+
+        private bool _update;
 
         private void Awake()
         {
@@ -80,6 +74,12 @@ namespace TarodevController
             _trailOffset = trailRenderer.localPosition;
             trailRenderer.SetParent(null);
             _originalTrailTime = trail.time;
+        }
+
+        private void Start()
+        {
+            musicAudioSource.outputAudioMixerGroup = musicAudioMixerGroup;
+            sfxAudioSource.outputAudioMixerGroup = sfxAudioMixerGroup;
         }
 
         private void Update()
@@ -97,8 +97,17 @@ namespace TarodevController
             HandleMovementAnimation(xInput, yInput);
 
             HandleWallSlideEffects();
-            
+
             PlayMovementSound(xInput, yInput);
+        }
+
+        private void FixedUpdate()
+        {
+            if (_grounded && !_isCheckpointUpdating && !_update)
+            {
+                _isCheckpointUpdating = true;
+                StartCoroutine(CheckpointUpdate(2f));
+            }
         }
 
         private void LateUpdate()
@@ -117,7 +126,6 @@ namespace TarodevController
             _player.ToggledPlayer += PlayerOnToggledPlayer;
 
             moveParticles.Play();
-            
         }
 
         private void OnDisable()
@@ -145,12 +153,28 @@ namespace TarodevController
             }
         }
         */
-        
+
         private void PlayerOnToggledPlayer(bool on)
         {
             effectsParent.SetActive(on);
         }
-        
+
+        private IEnumerator CheckpointUpdate(float waitTime)
+        {
+            yield return new WaitForSeconds(waitTime);
+            if (_grounded && !_update)
+            {
+                _playerPosition = _player.State.Position;
+                Debug.Log("Updated " + _playerPosition);
+            }
+
+            if (_playerPosition.x != 0 && _playerPosition.y != 0)
+            {
+                RespawnPlatform.Instance.NewUpdateCheckpoint(_playerPosition);
+                _isCheckpointUpdating = false;
+            }
+        }
+
         #region Walls & Ladders
 
         [Header("Walls & Ladders")] [SerializeField]
@@ -167,7 +191,9 @@ namespace TarodevController
         private float _slidingVolumeGoal;
         private float _slideAudioVel;
         private bool _ascendingLadder;
+
         private float _lastClimbSoundY;
+
         //private int _wallClimbAudioIndex = 0;
         private int _ladderClimbAudioIndex;
 
@@ -193,9 +219,10 @@ namespace TarodevController
             }
 
             SetParticleColor(new Vector2(_player.WallDirection, 0), _wallSlideParticles);
-            _wallSlideParticles.transform.localPosition = new Vector3(_wallSlideParticleOffset * _player.WallDirection, 0, 0);
+            _wallSlideParticles.transform.localPosition =
+                new Vector3(_wallSlideParticleOffset * _player.WallDirection, 0, 0);
 
-            var requiredAudio = _isSliding || _player.ClimbingLadder && _player.Velocity.y < 0;
+            var requiredAudio = _isSliding || (_player.ClimbingLadder && _player.Velocity.y < 0);
             var point = requiredAudio ? Mathf.InverseLerp(0, -_player.Stats.LadderSlideSpeed, _player.Velocity.y) : 0;
             //_wallSlideSource.volume = Mathf.SmoothDamp(_wallSlideSource.volume, Mathf.Lerp(0, _maxWallSlideVolume, point), ref _slideAudioVel, 0.2f);
 
@@ -209,10 +236,8 @@ namespace TarodevController
                 }
 
                 if (transform.position.y >= _lastClimbSoundY + _distancePerClimbSound)
-                {
                     _lastClimbSoundY = transform.position.y;
-                    //Play();
-                }
+                //Play();
             }
             else
             {
@@ -262,19 +287,15 @@ namespace TarodevController
             moveParticles.transform.localScale = Vector3.MoveTowards(moveParticles.transform.localScale,
                 Vector3.one * xInputStrength, 2 * Time.deltaTime);
         }
+
         private void PlayMovementSound(float xInput, float yInput)
         {
             // Check if the player is moving
-            bool isMoving = Mathf.Abs(xInput) > 0.1f || Mathf.Abs(yInput) > 0.1f;
+            var isMoving = Mathf.Abs(xInput) > 0.1f || Mathf.Abs(yInput) > 0.1f;
 
             if (isMoving && _grounded)
-            {
                 if (!source.isPlaying)
-                {
                     PlayRandomSound(runClip, 0.4f);
-                }
-            }
-
         }
 
         private void HandleSpriteFlip(float xInput)
@@ -309,7 +330,7 @@ namespace TarodevController
                 _sprite.size = Vector2.SmoothDamp(_sprite.size, new Vector2(1, _crouching ? _character.Height * percentage : _character.Height), ref _currentCrouchSizeVelocity, 0.03f);
             }
         }
-        
+
         #endregion
         */
 
@@ -394,13 +415,9 @@ namespace TarodevController
             var ray = Physics2D.Raycast(transform.position, detectionDir, 2);
             if (ray.collider == null) return;
             if (ray.collider.tag == "MovingPlatform" || ray.collider.tag == "BlockShift")
-            {
                 _update = true;
-            }
             else
-            {
                 _update = false;
-            }
 
             // Attempt to handle Tilemap colors
             if (ray.transform.TryGetComponent(out Tilemap tilemap))
@@ -472,7 +489,7 @@ namespace TarodevController
             main.startColor = _currentGradient;
         }
 
-        
+
         private void PlayRandomSound(IReadOnlyList<AudioClip> clips, float volume)
         {
             PlaySound(clips[Random.Range(0, clips.Count)], volume);
@@ -482,7 +499,6 @@ namespace TarodevController
         {
             source.PlayOneShot(clip, volume);
         }
-        
 
         #endregion
 
@@ -495,31 +511,5 @@ namespace TarodevController
         private static readonly int JumpKey = Animator.StringToHash("Jump");
 
         #endregion
-
-        private bool _update;
-        private IEnumerator CheckpointUpdate(float waitTime)
-        {
-            yield return new WaitForSeconds(waitTime);
-            if (_grounded && !_update)
-            {
-                _playerPosition = _player.State.Position;
-                Debug.Log("Updated " + _playerPosition);
-            }
-
-            if (_playerPosition.x != 0 && _playerPosition.y != 0)
-            {
-                RespawnPlatform.Instance.NewUpdateCheckpoint(_playerPosition);
-                _isCheckpointUpdating = false;
-            }
-        }
-        
-        private void FixedUpdate()
-        {
-            if (_grounded && !_isCheckpointUpdating && !_update)
-            {
-                _isCheckpointUpdating = true;
-                StartCoroutine(CheckpointUpdate(2f));
-            }
-        }
     }
 }

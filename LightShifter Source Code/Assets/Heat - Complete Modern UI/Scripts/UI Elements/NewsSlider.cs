@@ -1,17 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
     public class NewsSlider : MonoBehaviour
     {
+        public enum UpdateMode
+        {
+            DeltaTime,
+            UnscaledTime
+        }
+
         // Content
-        public List<Item> items = new List<Item>();
-        private List<Animator> timers = new List<Animator>();
+        public List<Item> items = new();
 
         // Resources
         [SerializeField] private GameObject itemPreset;
@@ -24,40 +30,18 @@ namespace Michsky.UI.Heat
         public bool useLocalization = true;
         [Range(1, 30)] public float sliderTimer = 4;
         [SerializeField] private UpdateMode updateMode = UpdateMode.DeltaTime;
+        private Image currentIndicatorBar;
+        private Animator currentIndicatorObject;
 
         // Helpers
-        Animator currentItemObject;
-        Animator currentIndicatorObject;
-        Image currentIndicatorBar;
-        int currentSliderIndex;
-        float sliderTimerBar;
-        bool isInitialized;
-        LocalizedObject localizedObject;
+        private Animator currentItemObject;
+        private int currentSliderIndex;
+        private bool isInitialized;
+        private LocalizedObject localizedObject;
+        private float sliderTimerBar;
+        private readonly List<Animator> timers = new();
 
-        public enum UpdateMode { DeltaTime, UnscaledTime }
-
-        [System.Serializable]
-        public class Item
-        {
-            public string title = "News title";
-            [TextArea] public string description = "News description";
-            public Sprite background;
-            public string buttonText = "Show More";
-            public UnityEvent onButtonClick = new UnityEvent();
-
-            [Header("Localization")]
-            public string titleKey = "TitleKey";
-            public string descriptionKey = "DescriptionKey";
-            public string buttonTextKey = "ButtonTextKey";
-        }
-
-        void OnEnable()
-        {
-            if (!isInitialized) { Initialize(); }
-            else { StartCoroutine(PrepareSlider()); }
-        }
-
-        void Update()
+        private void Update()
         {
             if (!isInitialized || !allowUpdate)
                 return;
@@ -65,12 +49,22 @@ namespace Michsky.UI.Heat
             CheckForTimer();
         }
 
-        void CheckForTimer()
+        private void OnEnable()
+        {
+            if (!isInitialized)
+                Initialize();
+            else
+                StartCoroutine(PrepareSlider());
+        }
+
+        private void CheckForTimer()
         {
             if (sliderTimerBar <= sliderTimer && currentIndicatorBar != null)
             {
-                if (updateMode == UpdateMode.UnscaledTime) { sliderTimerBar += Time.unscaledDeltaTime; }
-                else { sliderTimerBar += Time.deltaTime; }
+                if (updateMode == UpdateMode.UnscaledTime)
+                    sliderTimerBar += Time.unscaledDeltaTime;
+                else
+                    sliderTimerBar += Time.deltaTime;
 
                 currentIndicatorBar.fillAmount = sliderTimerBar / sliderTimer;
             }
@@ -81,59 +75,74 @@ namespace Michsky.UI.Heat
             if (useLocalization)
             {
                 localizedObject = gameObject.GetComponent<LocalizedObject>();
-                if (localizedObject == null || !localizedObject.CheckLocalizationStatus()) { useLocalization = false; }
+                if (localizedObject == null || !localizedObject.CheckLocalizationStatus()) useLocalization = false;
             }
 
-            foreach (Transform child in itemParent) { Destroy(child.gameObject); }
-            foreach (Transform child in timerParent) { Destroy(child.gameObject); }
-            for (int i = 0; i < items.Count; ++i)
+            foreach (Transform child in itemParent) Destroy(child.gameObject);
+            foreach (Transform child in timerParent) Destroy(child.gameObject);
+            for (var i = 0; i < items.Count; ++i)
             {
-                int tempIndex = i;
+                var tempIndex = i;
 
-                GameObject itemGO = Instantiate(itemPreset, new Vector3(0, 0, 0), Quaternion.identity);
+                var itemGO = Instantiate(itemPreset, new Vector3(0, 0, 0), Quaternion.identity);
                 itemGO.transform.SetParent(itemParent, false);
                 itemGO.gameObject.name = items[i].title;
 
-                TextMeshProUGUI itemTitle = itemGO.transform.Find("Title").GetComponent<TextMeshProUGUI>();
-                if (!useLocalization || string.IsNullOrEmpty(items[i].titleKey)) { itemTitle.text = items[i].title; }
+                var itemTitle = itemGO.transform.Find("Title").GetComponent<TextMeshProUGUI>();
+                if (!useLocalization || string.IsNullOrEmpty(items[i].titleKey))
+                {
+                    itemTitle.text = items[i].title;
+                }
                 else
                 {
-                    LocalizedObject tempLoc = itemTitle.GetComponent<LocalizedObject>();
+                    var tempLoc = itemTitle.GetComponent<LocalizedObject>();
                     if (tempLoc != null)
                     {
                         tempLoc.tableIndex = localizedObject.tableIndex;
                         tempLoc.localizationKey = items[i].titleKey;
-                        tempLoc.onLanguageChanged.AddListener(delegate { itemTitle.text = tempLoc.GetKeyOutput(tempLoc.localizationKey); });
+                        tempLoc.onLanguageChanged.AddListener(delegate
+                        {
+                            itemTitle.text = tempLoc.GetKeyOutput(tempLoc.localizationKey);
+                        });
                         tempLoc.InitializeItem();
                         tempLoc.UpdateItem();
                     }
                 }
 
-                TextMeshProUGUI itemDescription = itemGO.transform.Find("Description").GetComponent<TextMeshProUGUI>();
-                if (!useLocalization || string.IsNullOrEmpty(items[i].descriptionKey)) { itemDescription.text = items[i].description; }
+                var itemDescription = itemGO.transform.Find("Description").GetComponent<TextMeshProUGUI>();
+                if (!useLocalization || string.IsNullOrEmpty(items[i].descriptionKey))
+                {
+                    itemDescription.text = items[i].description;
+                }
                 else
                 {
-                    LocalizedObject tempLoc = itemDescription.GetComponent<LocalizedObject>();
+                    var tempLoc = itemDescription.GetComponent<LocalizedObject>();
                     if (tempLoc != null)
                     {
                         tempLoc.tableIndex = localizedObject.tableIndex;
                         tempLoc.localizationKey = items[i].descriptionKey;
-                        tempLoc.onLanguageChanged.AddListener(delegate { itemDescription.text = tempLoc.GetKeyOutput(tempLoc.localizationKey); });
+                        tempLoc.onLanguageChanged.AddListener(delegate
+                        {
+                            itemDescription.text = tempLoc.GetKeyOutput(tempLoc.localizationKey);
+                        });
                         tempLoc.InitializeItem();
                         tempLoc.UpdateItem();
                     }
                 }
 
-                Image background = itemGO.transform.Find("Background").GetComponent<Image>();
+                var background = itemGO.transform.Find("Background").GetComponent<Image>();
                 background.sprite = items[i].background;
 
-                ButtonManager libraryItemButton = itemGO.GetComponentInChildren<ButtonManager>();
+                var libraryItemButton = itemGO.GetComponentInChildren<ButtonManager>();
                 if (libraryItemButton != null)
                 {
-                    if (!useLocalization) { libraryItemButton.buttonText = items[i].buttonText; }
+                    if (!useLocalization)
+                    {
+                        libraryItemButton.buttonText = items[i].buttonText;
+                    }
                     else
                     {
-                        LocalizedObject tempLoc = libraryItemButton.GetComponent<LocalizedObject>();
+                        var tempLoc = libraryItemButton.GetComponent<LocalizedObject>();
                         if (tempLoc != null)
                         {
                             tempLoc.tableIndex = localizedObject.tableIndex;
@@ -147,17 +156,19 @@ namespace Michsky.UI.Heat
                             tempLoc.UpdateItem();
                         }
                     }
+
                     libraryItemButton.UpdateUI();
                     libraryItemButton.onClick.AddListener(delegate { items[tempIndex].onButtonClick.Invoke(); });
-                    if (string.IsNullOrEmpty(libraryItemButton.buttonText)) { libraryItemButton.gameObject.SetActive(false); }
+                    if (string.IsNullOrEmpty(libraryItemButton.buttonText))
+                        libraryItemButton.gameObject.SetActive(false);
                 }
 
-                GameObject timerGO = Instantiate(timerPreset, new Vector3(0, 0, 0), Quaternion.identity);
+                var timerGO = Instantiate(timerPreset, new Vector3(0, 0, 0), Quaternion.identity);
                 timerGO.transform.SetParent(timerParent, false);
                 timerGO.gameObject.name = items[i].title;
                 timers.Add(timerGO.GetComponent<Animator>());
 
-                Button timerButton = timerGO.transform.Find("Dot").GetComponent<Button>();
+                var timerButton = timerGO.transform.Find("Dot").GetComponent<Button>();
                 timerButton.onClick.AddListener(delegate
                 {
                     StopCoroutine("WaitForSliderTimer");
@@ -202,14 +213,18 @@ namespace Michsky.UI.Heat
             if (!gameObject.activeInHierarchy)
                 return;
 
-            if (!allowUpdate) { StopCoroutine("WaitForSliderTimer"); }
-            else { StartCoroutine("WaitForSliderTimer"); }
+            if (!allowUpdate)
+                StopCoroutine("WaitForSliderTimer");
+            else
+                StartCoroutine("WaitForSliderTimer");
         }
 
-        IEnumerator PrepareSlider()
+        private IEnumerator PrepareSlider()
         {
-            if (updateMode == UpdateMode.UnscaledTime) { yield return new WaitForSecondsRealtime(0.02f); }
-            else { yield return new WaitForSeconds(0.02f); }
+            if (updateMode == UpdateMode.UnscaledTime)
+                yield return new WaitForSecondsRealtime(0.02f);
+            else
+                yield return new WaitForSeconds(0.02f);
 
             sliderTimerBar = 0;
 
@@ -230,10 +245,12 @@ namespace Michsky.UI.Heat
             StartCoroutine("DisableItemAnimators");
         }
 
-        IEnumerator WaitForSliderTimer()
+        private IEnumerator WaitForSliderTimer()
         {
-            if (updateMode == UpdateMode.UnscaledTime) { yield return new WaitForSecondsRealtime(sliderTimer); }
-            else { yield return new WaitForSeconds(sliderTimer); }
+            if (updateMode == UpdateMode.UnscaledTime)
+                yield return new WaitForSecondsRealtime(sliderTimer);
+            else
+                yield return new WaitForSeconds(sliderTimer);
 
             if (!allowUpdate)
             {
@@ -247,8 +264,10 @@ namespace Michsky.UI.Heat
             currentItemObject.Play("Out");
             currentIndicatorObject.Play("Out");
 
-            if (currentSliderIndex == items.Count - 1) { currentSliderIndex = 0; }
-            else { currentSliderIndex++; }
+            if (currentSliderIndex == items.Count - 1)
+                currentSliderIndex = 0;
+            else
+                currentSliderIndex++;
 
             sliderTimerBar = 0;
 
@@ -268,17 +287,34 @@ namespace Michsky.UI.Heat
             StartCoroutine("WaitForSliderTimer");
         }
 
-        IEnumerator DisableItemAnimators()
+        private IEnumerator DisableItemAnimators()
         {
-            if (updateMode == UpdateMode.UnscaledTime) { yield return new WaitForSecondsRealtime(0.6f); }
-            else { yield return new WaitForSeconds(0.6f); }
+            if (updateMode == UpdateMode.UnscaledTime)
+                yield return new WaitForSecondsRealtime(0.6f);
+            else
+                yield return new WaitForSeconds(0.6f);
 
-            for (int i = 0; i < items.Count; i++)
+            for (var i = 0; i < items.Count; i++)
             {
-                if (i != currentSliderIndex) { itemParent.GetChild(i).gameObject.SetActive(false); }
+                if (i != currentSliderIndex) itemParent.GetChild(i).gameObject.SetActive(false);
                 itemParent.GetChild(i).GetComponent<Animator>().enabled = false;
                 timers[i].enabled = false;
             }
+        }
+
+        [Serializable]
+        public class Item
+        {
+            public string title = "News title";
+            [TextArea] public string description = "News description";
+            public Sprite background;
+            public string buttonText = "Show More";
+            public UnityEvent onButtonClick = new();
+
+            [Header("Localization")] public string titleKey = "TitleKey";
+
+            public string descriptionKey = "DescriptionKey";
+            public string buttonTextKey = "ButtonTextKey";
         }
     }
 }

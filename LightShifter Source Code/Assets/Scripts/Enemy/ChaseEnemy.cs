@@ -1,10 +1,9 @@
-using Player;
 using UnityEngine;
 
 public class EnemyChasePlayerMovement : MonoBehaviour
 {
-    [Tooltip("Transform of the player to chase")]
-    [SerializeField] private Transform playerTransform;
+    [Tooltip("Transform of the player to chase")] [SerializeField]
+    private Transform playerTransform;
 
     [SerializeField] private float speed = 4f;
     private Rigidbody2D _rb;

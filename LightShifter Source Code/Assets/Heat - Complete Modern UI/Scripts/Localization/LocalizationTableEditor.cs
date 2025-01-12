@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -14,8 +14,10 @@ namespace Michsky.UI.Heat
         {
             ltTarget = (LocalizationTable)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -23,8 +25,9 @@ namespace Michsky.UI.Heat
             if (customSkin == null)
             {
                 EditorGUILayout.HelpBox("Editor variables are missing. You can manually fix this by deleting " +
-                    "Heat UI > Resources folder and then re-import the package. \n\nIf you're still seeing this " +
-                    "dialog even after the re-import, contact me with this ID: " + UIManager.buildID, MessageType.Error);
+                                        "Heat UI > Resources folder and then re-import the package. \n\nIf you're still seeing this " +
+                                        "dialog even after the re-import, contact me with this ID: " +
+                                        UIManager.buildID, MessageType.Error);
                 return;
             }
 
@@ -40,14 +43,13 @@ namespace Michsky.UI.Heat
 
             GUI.enabled = true;
 
-            if (ltTarget.localizationSettings != null && ltTarget.localizationSettings.languages.Count != 0 && GUILayout.Button("Edit Table", customSkin.button))
-            {
-                for (int i = 0; i < ltTarget.localizationSettings.languages[0].localizationLanguage.tableList.Count; i++)
-                {
+            if (ltTarget.localizationSettings != null && ltTarget.localizationSettings.languages.Count != 0 &&
+                GUILayout.Button("Edit Table", customSkin.button))
+                for (var i = 0;
+                     i < ltTarget.localizationSettings.languages[0].localizationLanguage.tableList.Count;
+                     i++)
                     if (ltTarget.localizationSettings.languages[0].localizationLanguage.tableList[i].table == ltTarget)
                         LocalizationTableWindow.ShowWindow(ltTarget.localizationSettings, ltTarget, i);
-                }
-            }
         }
     }
 }

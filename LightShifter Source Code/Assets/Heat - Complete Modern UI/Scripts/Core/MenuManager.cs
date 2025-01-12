@@ -7,6 +7,8 @@ namespace Michsky.UI.Heat
     [DisallowMultipleComponent]
     public class MenuManager : MonoBehaviour
     {
+        public static bool bypassSplashScreen;
+
         // Resources
         public UIManager UIManagerAsset;
         public Animator splashScreen;
@@ -14,24 +16,23 @@ namespace Michsky.UI.Heat
         [SerializeField] private ImageFading initPanel;
 
         // Helpers
-        float splashInTime;
-        float splashOutTime;
-        public static bool bypassSplashScreen;
+        private float splashInTime;
+        private float splashOutTime;
 
-        void Awake()
+        private void Awake()
         {
             Time.timeScale = 1;
 
-            if (initPanel != null) { initPanel.gameObject.SetActive(true); }
-            if (splashScreen != null) { splashScreen.gameObject.SetActive(false); }
+            if (initPanel != null) initPanel.gameObject.SetActive(true);
+            if (splashScreen != null) splashScreen.gameObject.SetActive(false);
         }
 
-        void Start()
+        private void Start()
         {
             StartCoroutine("StartInitialize");
         }
 
-        public void DisableSplashScreen() 
+        public void DisableSplashScreen()
         {
             StopCoroutine("DisableSplashScreenAnimator");
             StartCoroutine("FinalizeSplashScreen");
@@ -40,7 +41,7 @@ namespace Michsky.UI.Heat
             splashScreen.Play("Out");
         }
 
-        void Initialize()
+        private void Initialize()
         {
             if (UIManagerAsset == null || mainContent == null)
             {
@@ -54,12 +55,14 @@ namespace Michsky.UI.Heat
             {
                 if (splashScreen == null)
                 {
-                    Debug.LogError("<b>[Heat UI]</b> Splash Screen is enabled but its resource is missing. Please assign the correct variable for 'Splash Screen'.", this);
+                    Debug.LogError(
+                        "<b>[Heat UI]</b> Splash Screen is enabled but its resource is missing. Please assign the correct variable for 'Splash Screen'.",
+                        this);
                     return;
                 }
 
                 // Getting in and out animation length
-                AnimationClip[] clips = splashScreen.runtimeAnimatorController.animationClips;
+                var clips = splashScreen.runtimeAnimatorController.animationClips;
                 splashInTime = clips[0].length;
                 splashOutTime = clips[1].length;
 
@@ -67,47 +70,43 @@ namespace Michsky.UI.Heat
                 splashScreen.gameObject.SetActive(true);
                 StartCoroutine("DisableSplashScreenAnimator");
 
-                if (UIManagerAsset.showSplashScreenOnce)
-                {
-                    bypassSplashScreen = true;
-                }
+                if (UIManagerAsset.showSplashScreenOnce) bypassSplashScreen = true;
             }
 
             else
             {
                 if (mainContent == null)
                 {
-                    Debug.LogError("<b>[Heat UI]</b> 'Main Panels' is missing. Please assign the correct variable for 'Main Panels'.", this);
+                    Debug.LogError(
+                        "<b>[Heat UI]</b> 'Main Panels' is missing. Please assign the correct variable for 'Main Panels'.",
+                        this);
                     return;
                 }
 
-                if (splashScreen != null) { splashScreen.gameObject.SetActive(false); }
+                if (splashScreen != null) splashScreen.gameObject.SetActive(false);
                 mainContent.gameObject.SetActive(false);
                 StartCoroutine("FinalizeSplashScreen");
             }
         }
 
-        IEnumerator StartInitialize()
+        private IEnumerator StartInitialize()
         {
             yield return new WaitForSeconds(0.5f);
-            if (initPanel != null) { initPanel.FadeOut(); }
+            if (initPanel != null) initPanel.FadeOut();
             Initialize();
         }
 
-        IEnumerator DisableSplashScreenAnimator()
+        private IEnumerator DisableSplashScreenAnimator()
         {
             yield return new WaitForSeconds(splashInTime + 0.1f);
             splashScreen.enabled = false;
         }
 
-        IEnumerator FinalizeSplashScreen()
+        private IEnumerator FinalizeSplashScreen()
         {
             yield return new WaitForSeconds(splashOutTime + 0.1f);
-           
-            if (UIManagerAsset != null && UIManagerAsset.enableSplashScreen) 
-            {
-                splashScreen.gameObject.SetActive(false); 
-            }
+
+            if (UIManagerAsset != null && UIManagerAsset.enableSplashScreen) splashScreen.gameObject.SetActive(false);
 
             mainContent.gameObject.SetActive(true);
 
@@ -115,9 +114,7 @@ namespace Michsky.UI.Heat
                 && ControllerManager.instance.gamepadEnabled
                 && ControllerManager.instance.firstSelected != null
                 && ControllerManager.instance.firstSelected.activeInHierarchy)
-            {
                 EventSystem.current.SetSelectedGameObject(ControllerManager.instance.firstSelected);
-            }
         }
     }
 }

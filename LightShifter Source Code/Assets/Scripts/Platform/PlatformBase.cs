@@ -2,11 +2,14 @@ using UnityEngine;
 
 namespace TarodevController.Demo
 {
-    public abstract class PlatformBase : MonoBehaviour, IPhysicsObject, IPhysicsMover 
+    public abstract class PlatformBase : MonoBehaviour, IPhysicsObject, IPhysicsMover
     {
         [SerializeField] private bool _requireGrounding;
         [SerializeField] private BoxCollider2D _boundingEffector;
         [SerializeField] private bool _useTakeOffVelocity;
+        [SerializeField] public bool _freezeMovement;
+        private bool _OriginalFreezeMovement;
+        private Vector3 _startingPosition;
 
         [HideInInspector] protected Rigidbody2D Rb;
 
@@ -19,6 +22,12 @@ namespace TarodevController.Demo
             Rb.interpolation = RigidbodyInterpolation2D.Interpolate;
 
             PhysicsSimulator.Instance.AddPlatform(this);
+        }
+
+        public virtual void Reset()
+        {
+            _freezeMovement = _OriginalFreezeMovement;
+            transform.position = _startingPosition;
         }
 
         public void Start()
@@ -42,30 +51,18 @@ namespace TarodevController.Demo
         public Vector2 FramePosition => Rb.position;
         public Vector2 Velocity => Rb.velocity;
         public Vector2 TakeOffVelocity => _useTakeOffVelocity ? Velocity : Vector2.zero;
-        [SerializeField] public bool _freezeMovement = false;
-        private bool _OriginalFreezeMovement = false;
-        private Vector3 _startingPosition;
-        public void EnableMovement(bool enable)
-        {
-            _freezeMovement = !enable;
-
-        }
-
-        public virtual void Reset()
-        {
-            _freezeMovement = _OriginalFreezeMovement;
-            transform.position = _startingPosition;
-        }
 
 
         public void TickFixedUpdate(float delta)
         {
             var newPos = Evaluate(delta);
             // if _freezeMovement is true, we don't want to update the position
-            if(_freezeMovement) {
+            if (_freezeMovement)
+            {
                 Rb.gravityScale = 0;
                 newPos = Rb.position;
             }
+
             // Position
             var positionDifference = newPos - Rb.position;
 
@@ -80,13 +77,16 @@ namespace TarodevController.Demo
                 FramePositionDelta = Vector3.zero;
                 Rb.velocity = Vector3.zero;
             }
-            
-
         }
 
         public void TickUpdate(float delta, float time)
         {
             Time = time;
+        }
+
+        public void EnableMovement(bool enable)
+        {
+            _freezeMovement = !enable;
         }
 
         protected abstract Vector2 Evaluate(float delta);

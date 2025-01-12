@@ -1,29 +1,31 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(SwitchManager))]
     public class SwitchManagerEditor : Editor
     {
+        private int currentTab;
         private GUISkin customSkin;
         private SwitchManager switchTarget;
-        private int currentTab;
 
         private void OnEnable()
         {
             switchTarget = (SwitchManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Switch Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -63,10 +65,11 @@ namespace Michsky.UI.Heat
                     isOn.boolValue = HeatUIEditorHandler.DrawToggle(isOn.boolValue, customSkin, "Is On");
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    saveValue.boolValue = HeatUIEditorHandler.DrawTogglePlain(saveValue.boolValue, customSkin, "Save Value");
+                    saveValue.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(saveValue.boolValue, customSkin, "Save Value");
                     GUILayout.Space(3);
 
-                    if (saveValue.boolValue == true)
+                    if (saveValue.boolValue)
                     {
                         HeatUIEditorHandler.DrawPropertyPlainCW(saveKey, customSkin, "Save Key:", 70);
                         EditorGUILayout.HelpBox("Each switch should has its own unique key.", MessageType.Info);
@@ -89,17 +92,22 @@ namespace Michsky.UI.Heat
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
                     isOn.boolValue = HeatUIEditorHandler.DrawToggle(isOn.boolValue, customSkin, "Is On");
-                    isInteractable.boolValue = HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
-                    invokeOnEnable.boolValue = HeatUIEditorHandler.DrawToggle(invokeOnEnable.boolValue, customSkin, "Invoke On Enable", "Process events on enable.");
-                    useSounds.boolValue = HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Switch Sounds");
-                    useUINavigation.boolValue = HeatUIEditorHandler.DrawToggle(useUINavigation.boolValue, customSkin, "Use UI Navigation", "Enables controller navigation.");
+                    isInteractable.boolValue =
+                        HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
+                    invokeOnEnable.boolValue = HeatUIEditorHandler.DrawToggle(invokeOnEnable.boolValue, customSkin,
+                        "Invoke On Enable", "Process events on enable.");
+                    useSounds.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Switch Sounds");
+                    useUINavigation.boolValue = HeatUIEditorHandler.DrawToggle(useUINavigation.boolValue, customSkin,
+                        "Use UI Navigation", "Enables controller navigation.");
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    saveValue.boolValue = HeatUIEditorHandler.DrawTogglePlain(saveValue.boolValue, customSkin, "Save Value");
+                    saveValue.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(saveValue.boolValue, customSkin, "Save Value");
                     GUILayout.Space(3);
 
-                    if (saveValue.boolValue == true)
+                    if (saveValue.boolValue)
                     {
                         HeatUIEditorHandler.DrawPropertyPlainCW(saveKey, customSkin, "Save Key:", 70);
                         EditorGUILayout.HelpBox("Each switch should has its own unique key.", MessageType.Info);
@@ -112,7 +120,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

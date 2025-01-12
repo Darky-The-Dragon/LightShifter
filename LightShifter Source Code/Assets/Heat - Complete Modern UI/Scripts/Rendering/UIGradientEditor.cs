@@ -1,19 +1,21 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(UIGradient))]
     public class UIGradientEditor : Editor
     {
-        private GUISkin customSkin;
         private int currentTab;
+        private GUISkin customSkin;
 
         private void OnEnable()
         {
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -29,7 +31,8 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawPropertyCW(_gradientType, customSkin, "Type", 100);
             HeatUIEditorHandler.DrawPropertyCW(_offset, customSkin, "Offset", 100);
             HeatUIEditorHandler.DrawPropertyCW(_zoom, customSkin, "Zoom", 100);
-            _modifyVertices.boolValue = HeatUIEditorHandler.DrawToggle(_modifyVertices.boolValue, customSkin, "Complex Gradient");
+            _modifyVertices.boolValue =
+                HeatUIEditorHandler.DrawToggle(_modifyVertices.boolValue, customSkin, "Complex Gradient");
 
             serializedObject.ApplyModifiedProperties();
         }

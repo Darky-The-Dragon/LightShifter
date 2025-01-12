@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -15,8 +15,10 @@ namespace Michsky.UI.Heat
         {
             bfTarget = (ButtonFrame)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -32,8 +34,10 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
             GUILayout.BeginVertical(EditorStyles.helpBox);
             HeatUIEditorHandler.DrawPropertyPlain(buttonType, customSkin, "Animator");
-            if (buttonType.enumValueIndex == 0) { HeatUIEditorHandler.DrawProperty(buttonManager, customSkin, "Button Manager"); }
-            else if (buttonType.enumValueIndex == 1) { HeatUIEditorHandler.DrawProperty(panelButton, customSkin, "Panel Button"); }
+            if (buttonType.enumValueIndex == 0)
+                HeatUIEditorHandler.DrawProperty(buttonManager, customSkin, "Button Manager");
+            else if (buttonType.enumValueIndex == 1)
+                HeatUIEditorHandler.DrawProperty(panelButton, customSkin, "Panel Button");
             GUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();

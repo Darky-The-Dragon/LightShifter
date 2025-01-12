@@ -7,12 +7,32 @@ using UnityEditor;
 namespace UnityEngine.InputSystem.Samples.RebindUI
 {
     /// <summary>
-    /// A custom inspector for <see cref="RebindActionUI"/> which provides a more convenient way for
-    /// picking the binding which to rebind.
+    ///     A custom inspector for <see cref="RebindActionUI" /> which provides a more convenient way for
+    ///     picking the binding which to rebind.
     /// </summary>
     [CustomEditor(typeof(RebindActionUI))]
     public class RebindActionUIEditor : UnityEditor.Editor
     {
+        private SerializedProperty m_ActionLabelProperty;
+
+        private SerializedProperty m_ActionProperty;
+        private SerializedProperty m_BindingIdProperty;
+
+        private readonly GUIContent m_BindingLabel = new("Binding");
+        private GUIContent[] m_BindingOptions;
+        private string[] m_BindingOptionValues;
+        private SerializedProperty m_BindingTextProperty;
+        private readonly GUIContent m_DisplayOptionsLabel = new("Display Options");
+        private SerializedProperty m_DisplayStringOptionsProperty;
+        private readonly GUIContent m_EventsLabel = new("Events");
+        private SerializedProperty m_RebindOverlayProperty;
+        private SerializedProperty m_RebindStartEventProperty;
+        private SerializedProperty m_RebindStopEventProperty;
+        private SerializedProperty m_RebindTextProperty;
+        private int m_SelectedBindingOption;
+        private readonly GUIContent m_UILabel = new("UI");
+        private SerializedProperty m_UpdateBindingUIEventProperty;
+
         protected void OnEnable()
         {
             m_ActionProperty = serializedObject.FindProperty("m_Action");
@@ -39,7 +59,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             {
                 EditorGUILayout.PropertyField(m_ActionProperty);
 
-                var newSelectedBinding = EditorGUILayout.Popup(m_BindingLabel, m_SelectedBindingOption, m_BindingOptions);
+                var newSelectedBinding =
+                    EditorGUILayout.Popup(m_BindingLabel, m_SelectedBindingOption, m_BindingOptions);
                 if (newSelectedBinding != m_SelectedBindingOption)
                 {
                     var bindingId = m_BindingOptionValues[newSelectedBinding];
@@ -48,7 +69,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 }
 
                 var optionsOld = (InputBinding.DisplayStringOptions)m_DisplayStringOptionsProperty.intValue;
-                var optionsNew = (InputBinding.DisplayStringOptions)EditorGUILayout.EnumFlagsField(m_DisplayOptionsLabel, optionsOld);
+                var optionsNew =
+                    (InputBinding.DisplayStringOptions)EditorGUILayout.EnumFlagsField(m_DisplayOptionsLabel,
+                        optionsOld);
                 if (optionsOld != optionsNew)
                     m_DisplayStringOptionsProperty.intValue = (int)optionsNew;
             }
@@ -112,7 +135,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 // there are two bindings with the display string "A", the user can see that one is for the keyboard
                 // and the other for the gamepad.
                 var displayOptions =
-                    InputBinding.DisplayStringOptions.DontUseShortDisplayNames | InputBinding.DisplayStringOptions.IgnoreBindingOverrides;
+                    InputBinding.DisplayStringOptions.DontUseShortDisplayNames |
+                    InputBinding.DisplayStringOptions.IgnoreBindingOverrides;
                 if (!haveBindingGroups)
                     displayOptions |= InputBinding.DisplayStringOptions.DontOmitDevice;
 
@@ -149,28 +173,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             }
         }
 
-        private SerializedProperty m_ActionProperty;
-        private SerializedProperty m_BindingIdProperty;
-        private SerializedProperty m_ActionLabelProperty;
-        private SerializedProperty m_BindingTextProperty;
-        private SerializedProperty m_RebindOverlayProperty;
-        private SerializedProperty m_RebindTextProperty;
-        private SerializedProperty m_RebindStartEventProperty;
-        private SerializedProperty m_RebindStopEventProperty;
-        private SerializedProperty m_UpdateBindingUIEventProperty;
-        private SerializedProperty m_DisplayStringOptionsProperty;
-
-        private GUIContent m_BindingLabel = new GUIContent("Binding");
-        private GUIContent m_DisplayOptionsLabel = new GUIContent("Display Options");
-        private GUIContent m_UILabel = new GUIContent("UI");
-        private GUIContent m_EventsLabel = new GUIContent("Events");
-        private GUIContent[] m_BindingOptions;
-        private string[] m_BindingOptionValues;
-        private int m_SelectedBindingOption;
-
         private static class Styles
         {
-            public static GUIStyle boldLabel = new GUIStyle("MiniBoldLabel");
+            public static readonly GUIStyle boldLabel = new("MiniBoldLabel");
         }
     }
 }

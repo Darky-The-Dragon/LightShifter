@@ -41,7 +41,7 @@ namespace TarodevController
         }
 
         #endregion
-        
+
         private void SaveCharacterState()
         {
             State = new ControllerState
@@ -74,12 +74,12 @@ namespace TarodevController
         public event Action<bool> WallGrabChanged;
         public event Action<Vector2> Repositioned;
         public event Action<bool> ToggledPlayer;
-        public event Action<string, GamepadBrand> OnControlSchemeChanged; 
+        public event Action<string, GamepadBrand> OnControlSchemeChanged;
 
         public bool Active { get; private set; } = true;
         public Vector2 Up { get; private set; }
         public Vector2 Right { get; private set; }
-        public bool Crouching { get; private set; }
+        public bool Crouching { get; }
         public Vector2 Input => _frameInput.Move;
         public Vector2 GroundNormal { get; private set; }
         public Vector2 Velocity { get; private set; }
@@ -127,16 +127,14 @@ namespace TarodevController
             if (!TryGetComponent(out _playerInput)) _playerInput = gameObject.AddComponent<TarodevPlayerInput>();
             if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
             if (!TryGetComponent(out _unityPlayerInput)) _unityPlayerInput = gameObject.AddComponent<PlayerInput>();
-            
-            if (!_unityPlayerInput) {
-                Debug.LogWarning("No Unity PlayerInput attached. Device detection won't work.");
-            }
-            
+
+            if (!_unityPlayerInput) Debug.LogWarning("No Unity PlayerInput attached. Device detection won't work.");
+
             SetupCharacter();
 
             PhysicsSimulator.Instance.AddPlayer(this);
         }
-        
+
         private void OnDestroy()
         {
             PhysicsSimulator.Instance.RemovePlayer(this);
@@ -233,8 +231,8 @@ namespace TarodevController
         private void GatherInput()
         {
             _frameInput = _playerInput.Gather();
-            
-            
+
+
             if (_frameInput.JumpDown)
             {
                 _jumpToConsume = true;
@@ -243,7 +241,7 @@ namespace TarodevController
 
             //if (_frameInput.DashDown) _dashToConsume = true;
         }
-        
+
         #endregion
 
         #region Frame Data
@@ -585,7 +583,7 @@ namespace TarodevController
 
         private void CalculateJump()
         {
-            if ((_jumpToConsume || HasBufferedJump) /*&& CanStand*/)
+            if (_jumpToConsume || HasBufferedJump /*&& CanStand*/)
             {
                 if (CanWallJump) ExecuteJump(JumpType.WallJump);
                 else if (_grounded || ClimbingLadder) ExecuteJump(JumpType.Jump);

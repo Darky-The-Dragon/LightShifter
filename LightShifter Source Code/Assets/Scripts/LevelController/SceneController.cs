@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 namespace LevelController
 {
     public class SceneController : MonoBehaviour
@@ -9,9 +10,13 @@ namespace LevelController
         public static SceneController Instance;
         [SerializeField] private GameObject player;
         [SerializeField] private Animator transitionAnim;
+        [SerializeField] private bool respawnDeveloper;
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip backgroundMusic;
+        [SerializeField] private float volume = 0.5f;
+        private readonly List<ResetObject> _resetObjects = new();
         private Vector2 _startPosition;
-        private List<ResetObject> _resetObjects = new List<ResetObject>();
-        [SerializeField] private bool respawnDeveloper = false;
+
         private void Awake()
         {
             if (Instance == null)
@@ -21,14 +26,20 @@ namespace LevelController
 
             _resetObjects.AddRange(FindObjectsOfType<ResetObject>());
         }
-        [SerializeField] private AudioSource audioSource;
-        [SerializeField] private AudioClip backgroundMusic;
-        [SerializeField] private float volume = 0.5f;
+
+        private void Reset()
+        {
+            foreach (var resetObject in _resetObjects)
+            {
+                Debug.Log("Resetted game object: " + resetObject.gameObject.name);
+                resetObject.Reset();
+            }
+        }
 
         private void Start()
         {
             _startPosition = player.transform.position;
-            
+
             //Sounds
             if (audioSource == null)
             {
@@ -65,17 +76,7 @@ namespace LevelController
 
         private void RespawnDevelopers()
         {
-
             if (Input.GetKeyDown(KeyCode.R) && respawnDeveloper) player.transform.position = _startPosition;
-        }
-
-        private void Reset()
-        {
-            foreach (ResetObject resetObject in _resetObjects)
-            {
-                Debug.Log("Resetted game object: " + resetObject.gameObject.name);
-                resetObject.Reset();
-            }
         }
 
 

@@ -1,10 +1,24 @@
-using System.Reflection;
 using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     public class GraphicsManager : MonoBehaviour
     {
+        public enum AnisotropicOption
+        {
+            None,
+            PerTexture,
+            ForcedOn
+        }
+
+        public enum TextureOption
+        {
+            FullRes,
+            HalfRes,
+            QuarterRes,
+            EighthResh
+        }
+
         // Resources
         [SerializeField] private Dropdown resolutionDropdown;
 
@@ -12,17 +26,11 @@ namespace Michsky.UI.Heat
         [SerializeField] private bool initializeResolutions = true;
 
         // Helpers
-        Resolution[] resolutions;
+        private Resolution[] resolutions;
 
-        public enum TextureOption { FullRes, HalfRes, QuarterRes, EighthResh }
-        public enum AnisotropicOption { None, PerTexture, ForcedOn }
-
-        void Awake()
+        private void Awake()
         {
-            if (initializeResolutions == true && resolutionDropdown != null)
-            {
-                InitializeResolutions();
-            }
+            if (initializeResolutions && resolutionDropdown != null) InitializeResolutions();
         }
 
         public void InitializeResolutions()
@@ -30,29 +38,29 @@ namespace Michsky.UI.Heat
             resolutions = Screen.resolutions;
             resolutionDropdown.items.Clear();
 
-            int currentResolutionIndex = 0;
+            var currentResolutionIndex = 0;
 
-            for (int i = 0; i < resolutions.Length; i++)
+            for (var i = 0; i < resolutions.Length; i++)
             {
-                int index = i;
-                string option = resolutions[i].width + "x" + resolutions[i].height;
+                var index = i;
+                var option = resolutions[i].width + "x" + resolutions[i].height;
 
                 resolutionDropdown.CreateNewItem(option, false);
                 resolutionDropdown.items[i].onItemSelection.AddListener(delegate { SetResolution(index); });
 
 #if UNITY_2022_2_OR_NEWER
 #if !UNITY_EDITOR
-                if (resolutions[i].refreshRateRatio.numerator != Screen.currentResolution.refreshRateRatio.numerator) { resolutionDropdown.items[i].isInvisible = true; }
+                if (resolutions[i].refreshRateRatio.numerator != Screen.currentResolution.refreshRateRatio.numerator) { resolutionDropdown.items[i].isInvisible
+ = true; }
 #endif
                 if (resolutions[i].width == Screen.currentResolution.width
                     && resolutions[i].height == Screen.currentResolution.height
                     && resolutions[i].refreshRateRatio.numerator == Screen.currentResolution.refreshRateRatio.numerator)
-                {
                     currentResolutionIndex = index;
-                }
 #else
 #if !UNITY_EDITOR
-                if (resolutions[i].refreshRate != Screen.currentResolution.refreshRate) { resolutionDropdown.items[i].isInvisible = true; }
+                if (resolutions[i].refreshRate != Screen.currentResolution.refreshRate) { resolutionDropdown.items[i].isInvisible
+ = true; }
 #endif
                 if (resolutions[i].width == Screen.currentResolution.width
                     && resolutions[i].height == Screen.currentResolution.height
@@ -76,8 +84,10 @@ namespace Michsky.UI.Heat
 
         public void SetVSync(bool value)
         {
-            if (value == true) { QualitySettings.vSyncCount = 2; }
-            else { QualitySettings.vSyncCount = 0; }
+            if (value)
+                QualitySettings.vSyncCount = 2;
+            else
+                QualitySettings.vSyncCount = 0;
         }
 
         public void SetFrameRate(int value)
@@ -105,10 +115,13 @@ namespace Michsky.UI.Heat
         public void SetTextureQuality(TextureOption option)
         {
 #if UNITY_2022_2_OR_NEWER
-            if (option == TextureOption.FullRes) { QualitySettings.globalTextureMipmapLimit = 0; }
-            else if (option == TextureOption.HalfRes) { QualitySettings.globalTextureMipmapLimit = 1; }
-            else if (option == TextureOption.QuarterRes) { QualitySettings.globalTextureMipmapLimit = 2; }
-            else if (option == TextureOption.EighthResh) { QualitySettings.globalTextureMipmapLimit = 3; }
+            if (option == TextureOption.FullRes)
+                QualitySettings.globalTextureMipmapLimit = 0;
+            else if (option == TextureOption.HalfRes)
+                QualitySettings.globalTextureMipmapLimit = 1;
+            else if (option == TextureOption.QuarterRes)
+                QualitySettings.globalTextureMipmapLimit = 2;
+            else if (option == TextureOption.EighthResh) QualitySettings.globalTextureMipmapLimit = 3;
 #else
             if (option == TextureOption.FullRes) { QualitySettings.masterTextureLimit = 0; }
             else if (option == TextureOption.HalfRes) { QualitySettings.masterTextureLimit = 1; }
@@ -119,24 +132,32 @@ namespace Michsky.UI.Heat
 
         public void SetTextureQuality(int index)
         {
-            if (index == 0) { SetTextureQuality(TextureOption.FullRes); }
-            else if (index == 1) { SetTextureQuality(TextureOption.HalfRes); }
-            else if (index == 2) { SetTextureQuality(TextureOption.QuarterRes); }
-            else if (index == 3) { SetTextureQuality(TextureOption.EighthResh); }
+            if (index == 0)
+                SetTextureQuality(TextureOption.FullRes);
+            else if (index == 1)
+                SetTextureQuality(TextureOption.HalfRes);
+            else if (index == 2)
+                SetTextureQuality(TextureOption.QuarterRes);
+            else if (index == 3) SetTextureQuality(TextureOption.EighthResh);
         }
 
         public void SetAnisotropicFiltering(AnisotropicOption option)
         {
-            if (option == AnisotropicOption.ForcedOn) { QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable; }
-            else if (option == AnisotropicOption.PerTexture) { QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable; }
-            else if (option == AnisotropicOption.None) { QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable; }
+            if (option == AnisotropicOption.ForcedOn)
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.ForceEnable;
+            else if (option == AnisotropicOption.PerTexture)
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Enable;
+            else if (option == AnisotropicOption.None)
+                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
         }
 
         public void SetAnisotropicFiltering(int index)
         {
-            if (index == 2) { SetAnisotropicFiltering(AnisotropicOption.ForcedOn); }
-            else if (index == 1) { SetAnisotropicFiltering(AnisotropicOption.PerTexture); }
-            else if (index == 0) { SetAnisotropicFiltering(AnisotropicOption.None); }
+            if (index == 2)
+                SetAnisotropicFiltering(AnisotropicOption.ForcedOn);
+            else if (index == 1)
+                SetAnisotropicFiltering(AnisotropicOption.PerTexture);
+            else if (index == 0) SetAnisotropicFiltering(AnisotropicOption.None);
         }
     }
 }

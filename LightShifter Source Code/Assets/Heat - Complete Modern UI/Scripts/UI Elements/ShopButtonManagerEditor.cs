@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
@@ -15,20 +16,23 @@ namespace Michsky.UI.Heat
         {
             buttonTarget = (ShopButtonManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Button Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
 
-            buttonTarget.latestTabIndex = HeatUIEditorHandler.DrawTabs(buttonTarget.latestTabIndex, toolbarTabs, customSkin);
+            buttonTarget.latestTabIndex =
+                HeatUIEditorHandler.DrawTabs(buttonTarget.latestTabIndex, toolbarTabs, customSkin);
 
             if (GUILayout.Button(new GUIContent("Content", "Content"), customSkin.FindStyle("Tab Content")))
                 buttonTarget.latestTabIndex = 0;
@@ -96,14 +100,13 @@ namespace Michsky.UI.Heat
                             GUILayout.BeginVertical(EditorStyles.helpBox);
                             GUILayout.Space(-3);
 
-                            enableIcon.boolValue = HeatUIEditorHandler.DrawTogglePlain(enableIcon.boolValue, customSkin, "Enable Icon");
+                            enableIcon.boolValue =
+                                HeatUIEditorHandler.DrawTogglePlain(enableIcon.boolValue, customSkin, "Enable Icon");
 
                             GUILayout.Space(4);
 
-                            if (enableIcon.boolValue == true)
-                            {
+                            if (enableIcon.boolValue)
                                 HeatUIEditorHandler.DrawPropertyCW(buttonIcon, customSkin, "Button Icon", 110);
-                            }
 
                             GUILayout.EndVertical();
                         }
@@ -113,14 +116,17 @@ namespace Michsky.UI.Heat
                             GUILayout.BeginVertical(EditorStyles.helpBox);
                             GUILayout.Space(-3);
 
-                            enableTitle.boolValue = HeatUIEditorHandler.DrawTogglePlain(enableTitle.boolValue, customSkin, "Enable Title");
+                            enableTitle.boolValue =
+                                HeatUIEditorHandler.DrawTogglePlain(enableTitle.boolValue, customSkin, "Enable Title");
 
                             GUILayout.Space(4);
 
-                            if (enableTitle.boolValue == true)
+                            if (enableTitle.boolValue)
                             {
                                 HeatUIEditorHandler.DrawPropertyCW(buttonTitle, customSkin, "Button Text", 110);
-                                if (useLocalization.boolValue == true) { HeatUIEditorHandler.DrawPropertyCW(titleLocalizationKey, customSkin, "Localization Key", 110); }
+                                if (useLocalization.boolValue)
+                                    HeatUIEditorHandler.DrawPropertyCW(titleLocalizationKey, customSkin,
+                                        "Localization Key", 110);
                             }
 
                             GUILayout.EndVertical();
@@ -131,14 +137,18 @@ namespace Michsky.UI.Heat
                             GUILayout.BeginVertical(EditorStyles.helpBox);
                             GUILayout.Space(-3);
 
-                            enableDescription.boolValue = HeatUIEditorHandler.DrawTogglePlain(enableDescription.boolValue, customSkin, "Enable Description");
+                            enableDescription.boolValue =
+                                HeatUIEditorHandler.DrawTogglePlain(enableDescription.boolValue, customSkin,
+                                    "Enable Description");
 
                             GUILayout.Space(4);
 
-                            if (enableDescription.boolValue == true)
+                            if (enableDescription.boolValue)
                             {
                                 HeatUIEditorHandler.DrawPropertyCW(buttonDescription, customSkin, "Description", 110);
-                                if (useLocalization.boolValue == true) { HeatUIEditorHandler.DrawPropertyCW(descriptionLocalizationKey, customSkin, "Localization Key", 110); }
+                                if (useLocalization.boolValue)
+                                    HeatUIEditorHandler.DrawPropertyCW(descriptionLocalizationKey, customSkin,
+                                        "Localization Key", 110);
                             }
 
                             GUILayout.EndVertical();
@@ -149,11 +159,12 @@ namespace Michsky.UI.Heat
                             GUILayout.BeginVertical(EditorStyles.helpBox);
                             GUILayout.Space(-3);
 
-                            enablePrice.boolValue = HeatUIEditorHandler.DrawTogglePlain(enablePrice.boolValue, customSkin, "Enable Price");
+                            enablePrice.boolValue =
+                                HeatUIEditorHandler.DrawTogglePlain(enablePrice.boolValue, customSkin, "Enable Price");
 
                             GUILayout.Space(4);
 
-                            if (enablePrice.boolValue == true)
+                            if (enablePrice.boolValue)
                             {
                                 HeatUIEditorHandler.DrawPropertyCW(priceIcon, customSkin, "Price Icon", 110);
                                 HeatUIEditorHandler.DrawPropertyCW(priceText, customSkin, "Price Text", 110);
@@ -167,14 +178,14 @@ namespace Michsky.UI.Heat
                             GUILayout.BeginVertical(EditorStyles.helpBox);
                             GUILayout.Space(-3);
 
-                            enableFilter.boolValue = HeatUIEditorHandler.DrawTogglePlain(enableFilter.boolValue, customSkin, "Enable Hover Filter");
+                            enableFilter.boolValue = HeatUIEditorHandler.DrawTogglePlain(enableFilter.boolValue,
+                                customSkin, "Enable Hover Filter");
 
                             GUILayout.Space(4);
 
-                            if (enableFilter.boolValue == true)
-                            {
-                                HeatUIEditorHandler.DrawPropertyCW(backgroundFilter, customSkin, "Background Filter", 110);
-                            }
+                            if (enableFilter.boolValue)
+                                HeatUIEditorHandler.DrawPropertyCW(backgroundFilter, customSkin, "Background Filter",
+                                    110);
 
                             GUILayout.EndVertical();
                         }
@@ -182,25 +193,30 @@ namespace Michsky.UI.Heat
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.Space(-3);
 
-                        useModalWindow.boolValue = HeatUIEditorHandler.DrawTogglePlain(useModalWindow.boolValue, customSkin, "Use Modal Window");
+                        useModalWindow.boolValue = HeatUIEditorHandler.DrawTogglePlain(useModalWindow.boolValue,
+                            customSkin, "Use Modal Window");
 
                         GUILayout.Space(4);
 
-                        if (useModalWindow.boolValue == true)
-                        {
+                        if (useModalWindow.boolValue)
                             HeatUIEditorHandler.DrawPropertyCW(purchaseModal, customSkin, "Purchase Window", 110);
-                        }
 
                         GUILayout.EndVertical();
 
-                        if (Application.isPlaying == false) { buttonTarget.UpdateUI(); }
+                        if (Application.isPlaying == false) buttonTarget.UpdateUI();
                     }
 
-                    else { EditorGUILayout.HelpBox("'Use Custom Content' is enabled. Content is now managed manually.", MessageType.Info); }
+                    else
+                    {
+                        EditorGUILayout.HelpBox("'Use Custom Content' is enabled. Content is now managed manually.",
+                            MessageType.Info);
+                    }
 
-                    isInteractable.boolValue = HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
+                    isInteractable.boolValue =
+                        HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
 
-                    if (Application.isPlaying == true && GUILayout.Button("Update UI", customSkin.button)) { buttonTarget.UpdateUI(); }
+                    if (Application.isPlaying && GUILayout.Button("Update UI", customSkin.button))
+                        buttonTarget.UpdateUI();
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Events Header", 10);
                     EditorGUILayout.PropertyField(onClick, new GUIContent("On Click"), true);
@@ -224,36 +240,43 @@ namespace Michsky.UI.Heat
 
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    isInteractable.boolValue = HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
-                    useCustomContent.boolValue = HeatUIEditorHandler.DrawToggle(useCustomContent.boolValue, customSkin, "Use Custom Content", "Bypasses inspector values and allows manual editing.");
-                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization", "Bypasses localization functions when disabled.");
+                    isInteractable.boolValue =
+                        HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
+                    useCustomContent.boolValue = HeatUIEditorHandler.DrawToggle(useCustomContent.boolValue, customSkin,
+                        "Use Custom Content", "Bypasses inspector values and allows manual editing.");
+                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin,
+                        "Use Localization", "Bypasses localization functions when disabled.");
                     GUI.enabled = true;
-                    useSounds.boolValue = HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Button Sounds");
+                    useSounds.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Button Sounds");
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
 
-                    useUINavigation.boolValue = HeatUIEditorHandler.DrawTogglePlain(useUINavigation.boolValue, customSkin, "Use UI Navigation", "Enables controller navigation.");
+                    useUINavigation.boolValue = HeatUIEditorHandler.DrawTogglePlain(useUINavigation.boolValue,
+                        customSkin, "Use UI Navigation", "Enables controller navigation.");
 
                     GUILayout.Space(4);
 
-                    if (useUINavigation.boolValue == true)
+                    if (useUINavigation.boolValue)
                     {
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         HeatUIEditorHandler.DrawPropertyPlain(navigationMode, customSkin, "Navigation Mode");
 
-                        if (buttonTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Horizontal)
+                        if (buttonTarget.navigationMode == Navigation.Mode.Horizontal)
                         {
                             EditorGUI.indentLevel = 1;
-                            wrapAround.boolValue = HeatUIEditorHandler.DrawToggle(wrapAround.boolValue, customSkin, "Wrap Around");
+                            wrapAround.boolValue =
+                                HeatUIEditorHandler.DrawToggle(wrapAround.boolValue, customSkin, "Wrap Around");
                             EditorGUI.indentLevel = 0;
                         }
 
-                        else if (buttonTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Vertical)
+                        else if (buttonTarget.navigationMode == Navigation.Mode.Vertical)
                         {
-                            wrapAround.boolValue = HeatUIEditorHandler.DrawTogglePlain(wrapAround.boolValue, customSkin, "Wrap Around");
+                            wrapAround.boolValue =
+                                HeatUIEditorHandler.DrawTogglePlain(wrapAround.boolValue, customSkin, "Wrap Around");
                         }
 
-                        else if (buttonTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Explicit)
+                        else if (buttonTarget.navigationMode == Navigation.Mode.Explicit)
                         {
                             EditorGUI.indentLevel = 1;
                             HeatUIEditorHandler.DrawPropertyPlain(selectOnUp, customSkin, "Select On Up");
@@ -272,7 +295,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

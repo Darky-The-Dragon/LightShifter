@@ -9,14 +9,14 @@ namespace Michsky.UI.Heat
         [HideInInspector] public BoxContainer container;
 
         // Helpers
-        CanvasGroup cg;
+        private CanvasGroup cg;
 
-        void Awake()
+        private void Awake()
         {
             cg = GetComponent<CanvasGroup>();
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             if (container.playOnce && container.isPlayedOnce)
             {
@@ -39,20 +39,22 @@ namespace Michsky.UI.Heat
             StartCoroutine("ProcessBoxScale", time);
         }
 
-        IEnumerator ProcessBoxScale(float time)
+        private IEnumerator ProcessBoxScale(float time)
         {
             transform.localScale = new Vector3(0, 0, 0);
 
-            if (container.updateMode == BoxContainer.UpdateMode.DeltaTime) { yield return new WaitForSeconds(time); }
-            else { yield return new WaitForSecondsRealtime(time); }
+            if (container.updateMode == BoxContainer.UpdateMode.DeltaTime)
+                yield return new WaitForSeconds(time);
+            else
+                yield return new WaitForSecondsRealtime(time);
 
             float elapsedTime = 0;
             float startingPoint = 0;
-            bool fadeStarted = false;
+            var fadeStarted = false;
 
             while (elapsedTime < 1)
             {
-                float lerpValue = Mathf.Lerp(startingPoint, 1, container.animationCurve.Evaluate(elapsedTime));
+                var lerpValue = Mathf.Lerp(startingPoint, 1, container.animationCurve.Evaluate(elapsedTime));
                 transform.localScale = new Vector3(lerpValue, lerpValue, lerpValue);
 
                 if (transform.localScale.x > container.fadeAfterScale && !fadeStarted)
@@ -61,8 +63,10 @@ namespace Michsky.UI.Heat
                     StartCoroutine("ProcessBoxFade");
                 }
 
-                if (container.updateMode == BoxContainer.UpdateMode.DeltaTime) { elapsedTime += Time.deltaTime * container.curveSpeed; }
-                else { elapsedTime += Time.unscaledDeltaTime * container.curveSpeed; }
+                if (container.updateMode == BoxContainer.UpdateMode.DeltaTime)
+                    elapsedTime += Time.deltaTime * container.curveSpeed;
+                else
+                    elapsedTime += Time.unscaledDeltaTime * container.curveSpeed;
 
                 yield return null;
             }
@@ -70,14 +74,16 @@ namespace Michsky.UI.Heat
             transform.localScale = new Vector3(1, 1, 1);
         }
 
-        IEnumerator ProcessBoxFade()
+        private IEnumerator ProcessBoxFade()
         {
             cg.alpha = 0;
 
             while (cg.alpha < 0.99f)
             {
-                if (container.updateMode == BoxContainer.UpdateMode.DeltaTime) { cg.alpha += Time.deltaTime * container.fadeSpeed; }
-                else { cg.alpha += Time.unscaledDeltaTime * container.fadeSpeed; }
+                if (container.updateMode == BoxContainer.UpdateMode.DeltaTime)
+                    cg.alpha += Time.deltaTime * container.fadeSpeed;
+                else
+                    cg.alpha += Time.unscaledDeltaTime * container.fadeSpeed;
 
                 yield return null;
             }

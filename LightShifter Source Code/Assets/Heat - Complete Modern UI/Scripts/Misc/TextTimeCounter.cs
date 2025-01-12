@@ -1,6 +1,6 @@
 using System.Collections;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
@@ -9,16 +9,15 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/Misc/Text Time Counter")]
     public class TextTimeCounter : MonoBehaviour
     {
-        TextMeshProUGUI tmpText;
-        RectTransform tmpRect;
+        private int minutes;
+        private float seconds;
+        private RectTransform tmpRect;
+        private TextMeshProUGUI tmpText;
 
-        int minutes;
-        float seconds;
-
-        void OnEnable()
+        private void OnEnable()
         {
-            if (tmpText == null) { tmpText = GetComponent<TextMeshProUGUI>(); }
-            if (tmpRect == null) { tmpRect = tmpText.GetComponent<RectTransform>(); }
+            if (tmpText == null) tmpText = GetComponent<TextMeshProUGUI>();
+            if (tmpRect == null) tmpRect = tmpText.GetComponent<RectTransform>();
 
             ResetTimer();
         }
@@ -33,7 +32,7 @@ namespace Michsky.UI.Heat
             StartCoroutine("Count");
         }
 
-        IEnumerator Count()
+        private IEnumerator Count()
         {
             while (true)
             {
@@ -43,8 +42,10 @@ namespace Michsky.UI.Heat
                     minutes++;
                 }
 
-                if (seconds < 10) { tmpText.text = minutes.ToString() + ":0" + seconds.ToString("F0"); }
-                else { tmpText.text = minutes.ToString() + ":" + seconds.ToString("F0"); }
+                if (seconds < 10)
+                    tmpText.text = minutes + ":0" + seconds.ToString("F0");
+                else
+                    tmpText.text = minutes + ":" + seconds.ToString("F0");
 
                 LayoutRebuilder.ForceRebuildLayoutImmediate(tmpRect);
                 seconds++;

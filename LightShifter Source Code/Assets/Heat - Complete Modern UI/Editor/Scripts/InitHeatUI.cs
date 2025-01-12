@@ -1,6 +1,6 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -13,8 +13,8 @@ namespace Michsky.UI.Heat
             {
                 if (!EditorPrefs.HasKey("HeatUI.HasCustomEditorData"))
                 {
-                    string darkPath = AssetDatabase.GetAssetPath(Resources.Load("HeatUIEditor-Dark"));
-                    string lightPath = AssetDatabase.GetAssetPath(Resources.Load("HeatUIEditor-Light"));
+                    var darkPath = AssetDatabase.GetAssetPath(Resources.Load("HeatUIEditor-Dark"));
+                    var lightPath = AssetDatabase.GetAssetPath(Resources.Load("HeatUIEditor-Light"));
 
                     EditorPrefs.SetString("HeatUI.CustomEditorDark", darkPath);
                     EditorPrefs.SetString("HeatUI.CustomEditorLight", lightPath);

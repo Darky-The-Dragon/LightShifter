@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using UnityEngine;
 
 namespace Michsky.UI.Heat
@@ -9,6 +8,18 @@ namespace Michsky.UI.Heat
     [RequireComponent(typeof(CanvasGroup))]
     public class NavigationBar : MonoBehaviour
     {
+        public enum BarDirection
+        {
+            Top,
+            Bottom
+        }
+
+        public enum UpdateMode
+        {
+            DeltaTime,
+            UnscaledTime
+        }
+
         // Resources
         [SerializeField] private Animator animator;
         [SerializeField] private CanvasGroup canvasGroup;
@@ -16,26 +27,23 @@ namespace Michsky.UI.Heat
         // Settings
         [SerializeField] private UpdateMode updateMode = UpdateMode.DeltaTime;
         [SerializeField] private BarDirection barDirection = BarDirection.Top;
-        [SerializeField] private bool fadeButtons = false;
+        [SerializeField] private bool fadeButtons;
         [SerializeField] private Transform buttonParent;
+        private readonly List<PanelButton> buttons = new();
 
         // Helpers
-        float cachedStateLength = 0.4f;
-        List<PanelButton> buttons = new List<PanelButton>();
+        private float cachedStateLength = 0.4f;
 
-        public enum UpdateMode { DeltaTime, UnscaledTime }
-        public enum BarDirection { Top, Bottom }
-
-        void Awake()
+        private void Awake()
         {
-            if (animator == null) { GetComponent<Animator>(); }
-            if (canvasGroup == null) { GetComponent<CanvasGroup>(); }
-            if (fadeButtons && buttonParent != null) { FetchButtons(); }
+            if (animator == null) GetComponent<Animator>();
+            if (canvasGroup == null) GetComponent<CanvasGroup>();
+            if (fadeButtons && buttonParent != null) FetchButtons();
 
             cachedStateLength = HeatUIInternalTools.GetAnimatorClipLength(animator, "NavigationBar_TopShow") + 0.02f;
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
             Show();
         }
@@ -44,20 +52,18 @@ namespace Michsky.UI.Heat
         {
             buttons.Clear();
 
-            foreach (Transform child in buttonParent) 
-            {
+            foreach (Transform child in buttonParent)
                 if (child.GetComponent<PanelButton>() != null)
                 {
-                    PanelButton btn = child.GetComponent<PanelButton>();
+                    var btn = child.GetComponent<PanelButton>();
                     btn.navbar = this;
                     buttons.Add(btn);
                 }
-            }
         }
 
         public void LitButtons(PanelButton source = null)
         {
-            foreach (PanelButton btn in buttons)
+            foreach (var btn in buttons)
             {
                 if (btn.isSelected || (source != null && btn == source))
                     continue;
@@ -68,7 +74,7 @@ namespace Michsky.UI.Heat
 
         public void DimButtons(PanelButton source)
         {
-            foreach (PanelButton btn in buttons)
+            foreach (var btn in buttons)
             {
                 if (btn.isSelected || btn == source)
                     continue;
@@ -84,8 +90,9 @@ namespace Michsky.UI.Heat
             StopCoroutine("DisableAnimator");
             StartCoroutine("DisableAnimator");
 
-            if (barDirection == BarDirection.Top) { animator.Play("Top Show"); }
-            else if (barDirection == BarDirection.Bottom) { animator.Play("Bottom Show"); }
+            if (barDirection == BarDirection.Top)
+                animator.Play("Top Show");
+            else if (barDirection == BarDirection.Bottom) animator.Play("Bottom Show");
         }
 
         public void Hide()
@@ -95,14 +102,17 @@ namespace Michsky.UI.Heat
             StopCoroutine("DisableAnimator");
             StartCoroutine("DisableAnimator");
 
-            if (barDirection == BarDirection.Top) { animator.Play("Top Hide"); }
-            else if (barDirection == BarDirection.Bottom) { animator.Play("Bottom Hide"); }
+            if (barDirection == BarDirection.Top)
+                animator.Play("Top Hide");
+            else if (barDirection == BarDirection.Bottom) animator.Play("Bottom Hide");
         }
 
-        IEnumerator DisableAnimator()
+        private IEnumerator DisableAnimator()
         {
-            if (updateMode == UpdateMode.DeltaTime) { yield return new WaitForSeconds(cachedStateLength); }
-            else { yield return new WaitForSecondsRealtime(cachedStateLength); }
+            if (updateMode == UpdateMode.DeltaTime)
+                yield return new WaitForSeconds(cachedStateLength);
+            else
+                yield return new WaitForSecondsRealtime(cachedStateLength);
 
             animator.enabled = false;
         }

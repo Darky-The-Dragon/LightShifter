@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
@@ -9,35 +9,41 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/Animation/Image Fading")]
     public class ImageFading : MonoBehaviour
     {
-        [Header("Settings")]
-        [SerializeField] private bool doPingPong = false;
+        public enum EnableBehaviour
+        {
+            None,
+            FadeIn,
+            FadeOut
+        }
+
+        [Header("Settings")] [SerializeField] private bool doPingPong;
+
         [SerializeField] [Range(0.5f, 12)] private float fadeSpeed = 2f;
-        [SerializeField] private AnimationCurve fadeCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+        [SerializeField] private AnimationCurve fadeCurve = new(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
         [SerializeField] private EnableBehaviour enableBehaviour;
 
-        [Header("Events")]
-        public UnityEvent onFadeIn;
+        [Header("Events")] public UnityEvent onFadeIn;
+
         public UnityEvent onFadeInEnd;
         public UnityEvent onFadeOut;
         public UnityEvent onFadeOutEnd;
 
         // Helpers
-        Image targetImg;
+        private Image targetImg;
 
-        public enum EnableBehaviour { None, FadeIn, FadeOut }
-
-        void OnEnable()
+        private void OnEnable()
         {
-            if (enableBehaviour == EnableBehaviour.FadeIn) { FadeIn(); }
-            else if (enableBehaviour == EnableBehaviour.FadeOut) { FadeOut(); }
+            if (enableBehaviour == EnableBehaviour.FadeIn)
+                FadeIn();
+            else if (enableBehaviour == EnableBehaviour.FadeOut) FadeOut();
         }
 
         public void FadeIn()
         {
-            if (gameObject.activeSelf == false) { gameObject.SetActive(true); }
-            if (targetImg == null) { targetImg = GetComponent<Image>(); }
+            if (gameObject.activeSelf == false) gameObject.SetActive(true);
+            if (targetImg == null) targetImg = GetComponent<Image>();
 
-            targetImg.color = new Color(targetImg.color.r, targetImg.color.g, targetImg.color.b, 0);      
+            targetImg.color = new Color(targetImg.color.r, targetImg.color.g, targetImg.color.b, 0);
             onFadeIn.Invoke();
 
             StopCoroutine("DoFadeIn");
@@ -47,8 +53,8 @@ namespace Michsky.UI.Heat
 
         public void FadeOut()
         {
-            if (gameObject.activeSelf == false) { gameObject.SetActive(true); }
-            if (targetImg == null) { targetImg = GetComponent<Image>(); }
+            if (gameObject.activeSelf == false) gameObject.SetActive(true);
+            if (targetImg == null) targetImg = GetComponent<Image>();
 
             targetImg.color = new Color(targetImg.color.r, targetImg.color.g, targetImg.color.b, 1);
             onFadeOut.Invoke();
@@ -58,32 +64,38 @@ namespace Michsky.UI.Heat
             StartCoroutine("DoFadeOut");
         }
 
-        IEnumerator DoFadeIn()
+        private IEnumerator DoFadeIn()
         {
-            Color startingPoint = new Color(targetImg.color.r, targetImg.color.g, targetImg.color.b, 0);
+            var startingPoint = new Color(targetImg.color.r, targetImg.color.g, targetImg.color.b, 0);
             float elapsedTime = 0;
 
             while (targetImg.color.a < 0.99f)
             {
                 elapsedTime += Time.unscaledDeltaTime;
-                targetImg.color = Color.Lerp(startingPoint, new Color(startingPoint.r, startingPoint.g, startingPoint.b, 1), fadeCurve.Evaluate(elapsedTime * fadeSpeed)); ;
+                targetImg.color = Color.Lerp(startingPoint,
+                    new Color(startingPoint.r, startingPoint.g, startingPoint.b, 1),
+                    fadeCurve.Evaluate(elapsedTime * fadeSpeed));
+                ;
                 yield return null;
             }
 
             targetImg.color = new Color(targetImg.color.r, targetImg.color.g, targetImg.color.b, 1);
             onFadeInEnd.Invoke();
-            if (doPingPong == true) { StartCoroutine("DoFadeOut"); }
+            if (doPingPong) StartCoroutine("DoFadeOut");
         }
 
-        IEnumerator DoFadeOut()
+        private IEnumerator DoFadeOut()
         {
-            Color startingPoint = targetImg.color;
+            var startingPoint = targetImg.color;
             float elapsedTime = 0;
 
             while (targetImg.color.a > 0.01f)
             {
                 elapsedTime += Time.unscaledDeltaTime;
-                targetImg.color = Color.Lerp(startingPoint, new Color(startingPoint.r, startingPoint.g, startingPoint.b, 0), fadeCurve.Evaluate(elapsedTime * fadeSpeed)); ;
+                targetImg.color = Color.Lerp(startingPoint,
+                    new Color(startingPoint.r, startingPoint.g, startingPoint.b, 0),
+                    fadeCurve.Evaluate(elapsedTime * fadeSpeed));
+                ;
                 yield return null;
             }
 

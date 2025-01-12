@@ -1,29 +1,31 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(HorizontalSelector))]
     public class HorizontalSelectorEditor : Editor
     {
+        private int currentTab;
         private GUISkin customSkin;
         private HorizontalSelector hsTarget;
-        private int currentTab;
 
         private void OnEnable()
         {
             hsTarget = (HorizontalSelector)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Horizontal Selector Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -71,32 +73,37 @@ namespace Michsky.UI.Heat
 
                     if (Application.isPlaying == false && hsTarget.items.Count != 0)
                     {
-                        if (hsTarget.defaultIndex >= hsTarget.items.Count) { hsTarget.defaultIndex = 0; }
+                        if (hsTarget.defaultIndex >= hsTarget.items.Count) hsTarget.defaultIndex = 0;
 
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
 
                         GUI.enabled = false;
-                        EditorGUILayout.LabelField(new GUIContent("Default Item:"), customSkin.FindStyle("Text"), GUILayout.Width(74));
+                        EditorGUILayout.LabelField(new GUIContent("Default Item:"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(74));
                         GUI.enabled = true;
-                        EditorGUILayout.LabelField(new GUIContent(hsTarget.items[defaultIndex.intValue].itemTitle), customSkin.FindStyle("Text"));
+                        EditorGUILayout.LabelField(new GUIContent(hsTarget.items[defaultIndex.intValue].itemTitle),
+                            customSkin.FindStyle("Text"));
 
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2);
 
-                        defaultIndex.intValue = EditorGUILayout.IntSlider(defaultIndex.intValue, 0, hsTarget.items.Count - 1);
+                        defaultIndex.intValue =
+                            EditorGUILayout.IntSlider(defaultIndex.intValue, 0, hsTarget.items.Count - 1);
 
                         GUILayout.EndVertical();
                     }
 
-                    else if (Application.isPlaying == true && hsTarget.items.Count != 0)
+                    else if (Application.isPlaying && hsTarget.items.Count != 0)
                     {
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
                         GUI.enabled = false;
 
-                        EditorGUILayout.LabelField(new GUIContent("Current Item:"), customSkin.FindStyle("Text"), GUILayout.Width(74));
-                        EditorGUILayout.LabelField(new GUIContent(hsTarget.items[hsTarget.index].itemTitle), customSkin.FindStyle("Text"));
+                        EditorGUILayout.LabelField(new GUIContent("Current Item:"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(74));
+                        EditorGUILayout.LabelField(new GUIContent(hsTarget.items[hsTarget.index].itemTitle),
+                            customSkin.FindStyle("Text"));
 
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2);
@@ -104,10 +111,13 @@ namespace Michsky.UI.Heat
                         EditorGUILayout.IntSlider(hsTarget.index, 0, hsTarget.items.Count - 1);
 
                         GUI.enabled = true;
-                        GUILayout.EndVertical();              
+                        GUILayout.EndVertical();
                     }
 
-                    else { EditorGUILayout.HelpBox("There is no item in the list.", MessageType.Warning); }
+                    else
+                    {
+                        EditorGUILayout.HelpBox("There is no item in the list.", MessageType.Warning);
+                    }
 
                     GUILayout.BeginVertical();
                     EditorGUI.indentLevel = 1;
@@ -135,59 +145,77 @@ namespace Michsky.UI.Heat
                     break;
 
                 case 2:
-                    HeatUIEditorHandler.DrawHeader(customSkin, "Customization Header", 6);     
-                    
+                    HeatUIEditorHandler.DrawHeader(customSkin, "Customization Header", 6);
+
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    enableIndicator.boolValue = HeatUIEditorHandler.DrawTogglePlain(enableIndicator.boolValue, customSkin, "Enable Indicators");
+                    enableIndicator.boolValue = HeatUIEditorHandler.DrawTogglePlain(enableIndicator.boolValue,
+                        customSkin, "Enable Indicators");
                     GUILayout.Space(3);
                     GUILayout.BeginHorizontal();
 
-                    if (enableIndicator.boolValue == true)
+                    if (enableIndicator.boolValue)
                     {
-                        if (hsTarget.indicatorObject == null) { EditorGUILayout.HelpBox("'Enable Indicator' is enabled but 'Indicator Object' is not assigned. Go to Resources tab and assign the correct variable.", MessageType.Error); }
-                        if (hsTarget.indicatorParent == null) { EditorGUILayout.HelpBox("'Enable Indicator' is enabled but 'Indicator Parent' is not assigned. Go to Resources tab and assign the correct variable.", MessageType.Error); }
-                        else { hsTarget.indicatorParent.gameObject.SetActive(true); }
+                        if (hsTarget.indicatorObject == null)
+                            EditorGUILayout.HelpBox(
+                                "'Enable Indicator' is enabled but 'Indicator Object' is not assigned. Go to Resources tab and assign the correct variable.",
+                                MessageType.Error);
+                        if (hsTarget.indicatorParent == null)
+                            EditorGUILayout.HelpBox(
+                                "'Enable Indicator' is enabled but 'Indicator Parent' is not assigned. Go to Resources tab and assign the correct variable.",
+                                MessageType.Error);
+                        else
+                            hsTarget.indicatorParent.gameObject.SetActive(true);
                     }
 
                     else if (enableIndicator.boolValue == false && hsTarget.indicatorParent != null)
+                    {
                         hsTarget.indicatorParent.gameObject.SetActive(false);
+                    }
 
                     GUILayout.EndHorizontal();
                     GUILayout.EndVertical();
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    enableIcon.boolValue = HeatUIEditorHandler.DrawTogglePlain(enableIcon.boolValue, customSkin, "Enable Icon");
+                    enableIcon.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(enableIcon.boolValue, customSkin, "Enable Icon");
                     GUILayout.Space(3);
 
-                    if (enableIcon.boolValue == true && hsTarget.labelIcon == null)
-                        EditorGUILayout.HelpBox("'Enable Icon' is enabled but 'Label Icon' is not assigned. Go to Resources tab and assign the correct variable.", MessageType.Error);
-                    else if (enableIcon.boolValue == true && hsTarget.labelIcon != null)
+                    if (enableIcon.boolValue && hsTarget.labelIcon == null)
+                        EditorGUILayout.HelpBox(
+                            "'Enable Icon' is enabled but 'Label Icon' is not assigned. Go to Resources tab and assign the correct variable.",
+                            MessageType.Error);
+                    else if (enableIcon.boolValue && hsTarget.labelIcon != null)
                         hsTarget.labelIcon.gameObject.SetActive(true);
                     else if (enableIcon.boolValue == false && hsTarget.labelIcon != null)
                         hsTarget.labelIcon.gameObject.SetActive(false);
 
                     GUILayout.EndVertical();
 
-                    if (enableIcon.boolValue == false) { GUI.enabled = false; }
+                    if (enableIcon.boolValue == false) GUI.enabled = false;
                     HeatUIEditorHandler.DrawProperty(iconScale, customSkin, "Icon Scale");
                     HeatUIEditorHandler.DrawProperty(contentSpacing, customSkin, "Content Spacing");
                     GUI.enabled = true;
                     hsTarget.UpdateContentLayout();
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-                    invokeOnAwake.boolValue = HeatUIEditorHandler.DrawToggle(invokeOnAwake.boolValue, customSkin, "Invoke On Awake", "Process events on awake.");
-                    invertAnimation.boolValue = HeatUIEditorHandler.DrawToggle(invertAnimation.boolValue, customSkin, "Invert Animation");
-                    loopSelection.boolValue = HeatUIEditorHandler.DrawToggle(loopSelection.boolValue, customSkin, "Loop Selection");
-                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization");
+                    invokeOnAwake.boolValue = HeatUIEditorHandler.DrawToggle(invokeOnAwake.boolValue, customSkin,
+                        "Invoke On Awake", "Process events on awake.");
+                    invertAnimation.boolValue =
+                        HeatUIEditorHandler.DrawToggle(invertAnimation.boolValue, customSkin, "Invert Animation");
+                    loopSelection.boolValue =
+                        HeatUIEditorHandler.DrawToggle(loopSelection.boolValue, customSkin, "Loop Selection");
+                    useLocalization.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization");
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    saveSelected.boolValue = HeatUIEditorHandler.DrawTogglePlain(saveSelected.boolValue, customSkin, "Save Selected");
+                    saveSelected.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(saveSelected.boolValue, customSkin, "Save Selected");
                     GUILayout.Space(3);
 
-                    if (saveSelected.boolValue == true)
+                    if (saveSelected.boolValue)
                     {
                         HeatUIEditorHandler.DrawPropertyCW(saveKey, customSkin, "Save Key:", 66);
                         EditorGUILayout.HelpBox("You must set a unique save key for each selector.", MessageType.Info);
@@ -198,7 +226,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

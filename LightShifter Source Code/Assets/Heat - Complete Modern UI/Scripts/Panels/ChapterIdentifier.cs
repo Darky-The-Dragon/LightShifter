@@ -1,13 +1,13 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Michsky.UI.Heat
 {
     public class ChapterIdentifier : MonoBehaviour
     {
-        [Header("Resources")]
-        public Animator animator;
+        [Header("Resources")] public Animator animator;
+
         [SerializeField] private RectTransform backgroundRect;
         public Image backgroundImage;
         public TextMeshProUGUI titleObject;
@@ -23,8 +23,8 @@ namespace Michsky.UI.Heat
         [HideInInspector] public bool isLocked;
         [HideInInspector] public bool isCurrent;
 
-        public void UpdateBackgroundRect() 
-        { 
+        public void UpdateBackgroundRect()
+        {
             chapterManager.currentBackgroundRect = backgroundRect;
             chapterManager.DoStretch();
         }

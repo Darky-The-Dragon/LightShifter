@@ -1,29 +1,31 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(PanelManager))]
     public class PanelManagerEditor : Editor
     {
+        private int currentTab;
         private GUISkin customSkin;
         private PanelManager pmTarget;
-        private int currentTab;
 
         private void OnEnable()
         {
             pmTarget = (PanelManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Panel Manager Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[2];
+            var toolbarTabs = new GUIContent[2];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Settings");
 
@@ -38,7 +40,7 @@ namespace Michsky.UI.Heat
 
             var panels = serializedObject.FindProperty("panels");
             var currentPanelIndex = serializedObject.FindProperty("currentPanelIndex");
-            
+
             var cullPanels = serializedObject.FindProperty("cullPanels");
             var onPanelChanged = serializedObject.FindProperty("onPanelChanged");
             var initializeButtons = serializedObject.FindProperty("initializeButtons");
@@ -53,49 +55,56 @@ namespace Michsky.UI.Heat
                 case 0:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Content Header", 6);
 
-                    if (pmTarget.currentPanelIndex > pmTarget.panels.Count - 1) { pmTarget.currentPanelIndex = 0; }
+                    if (pmTarget.currentPanelIndex > pmTarget.panels.Count - 1) pmTarget.currentPanelIndex = 0;
                     if (pmTarget.panels.Count != 0)
                     {
                         GUILayout.BeginVertical(EditorStyles.helpBox);
                         GUILayout.BeginHorizontal();
 
                         GUI.enabled = false;
-                        EditorGUILayout.LabelField(new GUIContent("Current Panel:"), customSkin.FindStyle("Text"), GUILayout.Width(82));
+                        EditorGUILayout.LabelField(new GUIContent("Current Panel:"), customSkin.FindStyle("Text"),
+                            GUILayout.Width(82));
                         GUI.enabled = true;
-                        EditorGUILayout.LabelField(new GUIContent(pmTarget.panels[currentPanelIndex.intValue].panelName), customSkin.FindStyle("Text"));
+                        EditorGUILayout.LabelField(
+                            new GUIContent(pmTarget.panels[currentPanelIndex.intValue].panelName),
+                            customSkin.FindStyle("Text"));
 
                         GUILayout.EndHorizontal();
                         GUILayout.Space(2);
 
-                        if (Application.isPlaying == true) { GUI.enabled = false; }
+                        if (Application.isPlaying) GUI.enabled = false;
 
-                        currentPanelIndex.intValue = EditorGUILayout.IntSlider(currentPanelIndex.intValue, 0, pmTarget.panels.Count - 1);
+                        currentPanelIndex.intValue =
+                            EditorGUILayout.IntSlider(currentPanelIndex.intValue, 0, pmTarget.panels.Count - 1);
 
-                        if (Application.isPlaying == false && pmTarget.panels[currentPanelIndex.intValue].panelObject != null)
-                        {
-                            for (int i = 0; i < pmTarget.panels.Count; i++)
-                            {
+                        if (Application.isPlaying == false &&
+                            pmTarget.panels[currentPanelIndex.intValue].panelObject != null)
+                            for (var i = 0; i < pmTarget.panels.Count; i++)
                                 if (i == currentPanelIndex.intValue)
                                 {
-                                    var tempCG = pmTarget.panels[currentPanelIndex.intValue].panelObject.GetComponent<CanvasGroup>();
-                                    if (tempCG != null) { tempCG.alpha = 1; }
+                                    var tempCG = pmTarget.panels[currentPanelIndex.intValue].panelObject
+                                        .GetComponent<CanvasGroup>();
+                                    if (tempCG != null) tempCG.alpha = 1;
                                 }
 
                                 else if (pmTarget.panels[i].panelObject != null)
                                 {
                                     var tempCG = pmTarget.panels[i].panelObject.GetComponent<CanvasGroup>();
-                                    if (tempCG != null) { tempCG.alpha = 0; }
+                                    if (tempCG != null) tempCG.alpha = 0;
                                 }
-                            }
-                        }
 
-                        if (pmTarget.panels[pmTarget.currentPanelIndex].panelObject != null && GUILayout.Button("Select Current Panel", customSkin.button)) { Selection.activeObject = pmTarget.panels[pmTarget.currentPanelIndex].panelObject; }
+                        if (pmTarget.panels[pmTarget.currentPanelIndex].panelObject != null &&
+                            GUILayout.Button("Select Current Panel", customSkin.button))
+                            Selection.activeObject = pmTarget.panels[pmTarget.currentPanelIndex].panelObject;
                         GUI.enabled = true;
                         GUILayout.EndVertical();
-
                     }
 
-                    else { EditorGUILayout.HelpBox("Panel List is empty. Create a new item to see more options.", MessageType.Info); }
+                    else
+                    {
+                        EditorGUILayout.HelpBox("Panel List is empty. Create a new item to see more options.",
+                            MessageType.Info);
+                    }
 
                     GUILayout.BeginVertical();
                     EditorGUI.indentLevel = 1;
@@ -111,10 +120,16 @@ namespace Michsky.UI.Heat
 
                 case 1:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    cullPanels.boolValue = HeatUIEditorHandler.DrawToggle(cullPanels.boolValue, customSkin, "Cull Panels", "Disables unused panels.");
-                    initializeButtons.boolValue = HeatUIEditorHandler.DrawToggle(initializeButtons.boolValue, customSkin, "Initialize Buttons", "Automatically adds necessary events to buttons.");
-                    useCooldownForHotkeys.boolValue = HeatUIEditorHandler.DrawToggle(useCooldownForHotkeys.boolValue, customSkin, "Use Cooldown For Hotkeys", "Fixes input issues when switching panels via hotkeys.");
-                    bypassAnimationOnEnable.boolValue = HeatUIEditorHandler.DrawToggle(bypassAnimationOnEnable.boolValue, customSkin, "Bypass Animation On Enable");
+                    cullPanels.boolValue = HeatUIEditorHandler.DrawToggle(cullPanels.boolValue, customSkin,
+                        "Cull Panels", "Disables unused panels.");
+                    initializeButtons.boolValue = HeatUIEditorHandler.DrawToggle(initializeButtons.boolValue,
+                        customSkin, "Initialize Buttons", "Automatically adds necessary events to buttons.");
+                    useCooldownForHotkeys.boolValue = HeatUIEditorHandler.DrawToggle(useCooldownForHotkeys.boolValue,
+                        customSkin, "Use Cooldown For Hotkeys",
+                        "Fixes input issues when switching panels via hotkeys.");
+                    bypassAnimationOnEnable.boolValue =
+                        HeatUIEditorHandler.DrawToggle(bypassAnimationOnEnable.boolValue, customSkin,
+                            "Bypass Animation On Enable");
                     HeatUIEditorHandler.DrawProperty(updateMode, customSkin, "Update Mode");
                     HeatUIEditorHandler.DrawProperty(panelMode, customSkin, "Panel Mode");
                     HeatUIEditorHandler.DrawProperty(animationSpeed, customSkin, "Animation Speed");
@@ -122,7 +137,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

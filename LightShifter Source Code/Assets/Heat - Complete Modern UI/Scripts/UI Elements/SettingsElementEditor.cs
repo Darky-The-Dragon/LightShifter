@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
@@ -8,15 +9,17 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(SettingsElement))]
     public class SettingsElementEditor : Editor
     {
-        private SettingsElement seTarget;
         private GUISkin customSkin;
+        private SettingsElement seTarget;
 
         private void OnEnable()
         {
             seTarget = (SettingsElement)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -42,34 +45,38 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawProperty(highlightCG, customSkin, "Highlight CG");
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-            isInteractable.boolValue = HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
+            isInteractable.boolValue =
+                HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
             useSounds.boolValue = HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Sounds");
 
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(-3);
 
-            useUINavigation.boolValue = HeatUIEditorHandler.DrawTogglePlain(useUINavigation.boolValue, customSkin, "Use UI Navigation", "Enables controller navigation.");
+            useUINavigation.boolValue = HeatUIEditorHandler.DrawTogglePlain(useUINavigation.boolValue, customSkin,
+                "Use UI Navigation", "Enables controller navigation.");
 
             GUILayout.Space(4);
 
-            if (useUINavigation.boolValue == true)
+            if (useUINavigation.boolValue)
             {
                 GUILayout.BeginVertical(EditorStyles.helpBox);
                 HeatUIEditorHandler.DrawPropertyPlain(navigationMode, customSkin, "Navigation Mode");
 
-                if (seTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Horizontal)
+                if (seTarget.navigationMode == Navigation.Mode.Horizontal)
                 {
                     EditorGUI.indentLevel = 1;
-                    wrapAround.boolValue = HeatUIEditorHandler.DrawToggle(wrapAround.boolValue, customSkin, "Wrap Around");
+                    wrapAround.boolValue =
+                        HeatUIEditorHandler.DrawToggle(wrapAround.boolValue, customSkin, "Wrap Around");
                     EditorGUI.indentLevel = 0;
                 }
 
-                else if (seTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Vertical)
+                else if (seTarget.navigationMode == Navigation.Mode.Vertical)
                 {
-                    wrapAround.boolValue = HeatUIEditorHandler.DrawTogglePlain(wrapAround.boolValue, customSkin, "Wrap Around");
+                    wrapAround.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(wrapAround.boolValue, customSkin, "Wrap Around");
                 }
 
-                else if (seTarget.navigationMode == UnityEngine.UI.Navigation.Mode.Explicit)
+                else if (seTarget.navigationMode == Navigation.Mode.Explicit)
                 {
                     EditorGUI.indentLevel = 1;
                     HeatUIEditorHandler.DrawPropertyPlain(selectOnUp, customSkin, "Select On Up");
@@ -83,7 +90,8 @@ namespace Michsky.UI.Heat
             }
 
             GUILayout.EndVertical();
-            HeatUIEditorHandler.DrawProperty(fadingMultiplier, customSkin, "Fading Multiplier", "Set the animation fade multiplier.");
+            HeatUIEditorHandler.DrawProperty(fadingMultiplier, customSkin, "Fading Multiplier",
+                "Set the animation fade multiplier.");
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Events Header", 10);
             EditorGUILayout.PropertyField(onClick, new GUIContent("On Click"), true);
@@ -91,7 +99,7 @@ namespace Michsky.UI.Heat
             EditorGUILayout.PropertyField(onLeave, new GUIContent("On Leave"), true);
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

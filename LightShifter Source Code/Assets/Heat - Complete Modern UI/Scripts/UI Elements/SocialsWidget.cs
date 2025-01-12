@@ -1,17 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
     public class SocialsWidget : MonoBehaviour
     {
+        public enum UpdateMode
+        {
+            DeltaTime,
+            UnscaledTime
+        }
+
         // Content
-        public List<Item> socials = new List<Item>();
-        List<ButtonManager> buttons = new List<ButtonManager>();
+        public List<Item> socials = new();
 
         // Resources
         [SerializeField] private GameObject itemPreset;
@@ -25,48 +31,29 @@ namespace Michsky.UI.Heat
         public bool useLocalization = true;
         [Range(1, 30)] public float timer = 4;
         [Range(0.1f, 3)] public float tintSpeed = 0.5f;
-        [SerializeField] private AnimationCurve tintCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+        [SerializeField] private AnimationCurve tintCurve = new(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
         [SerializeField] private UpdateMode updateMode = UpdateMode.DeltaTime;
+        private readonly List<ButtonManager> buttons = new();
+        private Animator currentItemObject;
 
         // Helpers
-        int currentSliderIndex;
-        float timerCount = 0;
-        bool isInitialized;
-        bool updateTimer;
-        bool isTransitionInProgress;
-        Animator currentItemObject;
-        LocalizedObject localizedObject;
-        Image raycastImg;
+        private int currentSliderIndex;
+        private bool isInitialized;
+        private bool isTransitionInProgress;
+        private LocalizedObject localizedObject;
+        private Image raycastImg;
+        private float timerCount;
+        private bool updateTimer;
 
-        public enum UpdateMode { DeltaTime, UnscaledTime }
-
-        [System.Serializable]
-        public class Item
-        {
-            public string socialID = "News title";
-            public Sprite icon;
-            public Color backgroundTint = new Color(255, 255, 255, 255);
-            [TextArea] public string description = "News description";
-            public string link;
-            public UnityEvent onClick = new UnityEvent();
-
-            [Header("Localization")]
-            public string descriptionKey = "DescriptionKey";
-        }
-
-        void OnEnable()
-        {
-            if (!isInitialized) { InitializeItems(); }
-            else { StartCoroutine(InitCurrentItem()); }
-        }
-
-        void Update()
+        private void Update()
         {
             if (!isInitialized || !updateTimer || !allowTransition)
                 return;
 
-            if (updateMode == UpdateMode.UnscaledTime) { timerCount += Time.unscaledDeltaTime; }
-            else { timerCount += Time.deltaTime; }
+            if (updateMode == UpdateMode.UnscaledTime)
+                timerCount += Time.unscaledDeltaTime;
+            else
+                timerCount += Time.deltaTime;
 
             if (timerCount > timer)
             {
@@ -75,55 +62,69 @@ namespace Michsky.UI.Heat
             }
         }
 
+        private void OnEnable()
+        {
+            if (!isInitialized)
+                InitializeItems();
+            else
+                StartCoroutine(InitCurrentItem());
+        }
+
         public void InitializeItems()
         {
             if (useLocalization)
             {
                 localizedObject = gameObject.GetComponent<LocalizedObject>();
-                if (localizedObject == null || !localizedObject.CheckLocalizationStatus()) { useLocalization = false; }
+                if (localizedObject == null || !localizedObject.CheckLocalizationStatus()) useLocalization = false;
             }
 
-            foreach (Transform child in itemParent) { Destroy(child.gameObject); }
-            foreach (Transform child in buttonParent) { Destroy(child.gameObject); }
-            for (int i = 0; i < socials.Count; ++i)
+            foreach (Transform child in itemParent) Destroy(child.gameObject);
+            foreach (Transform child in buttonParent) Destroy(child.gameObject);
+            for (var i = 0; i < socials.Count; ++i)
             {
-                int tempIndex = i;
+                var tempIndex = i;
 
-                GameObject itemGO = Instantiate(itemPreset, new Vector3(0, 0, 0), Quaternion.identity);
+                var itemGO = Instantiate(itemPreset, new Vector3(0, 0, 0), Quaternion.identity);
                 itemGO.transform.SetParent(itemParent, false);
                 itemGO.gameObject.name = socials[i].socialID;
                 itemGO.SetActive(false);
 
-                TextMeshProUGUI itemDescription = itemGO.transform.GetComponentInChildren<TextMeshProUGUI>();
-                if (!useLocalization || string.IsNullOrEmpty(socials[i].descriptionKey)) { itemDescription.text = socials[i].description; }
+                var itemDescription = itemGO.transform.GetComponentInChildren<TextMeshProUGUI>();
+                if (!useLocalization || string.IsNullOrEmpty(socials[i].descriptionKey))
+                {
+                    itemDescription.text = socials[i].description;
+                }
                 else
                 {
-                    LocalizedObject tempLoc = itemDescription.GetComponent<LocalizedObject>();
+                    var tempLoc = itemDescription.GetComponent<LocalizedObject>();
                     if (tempLoc != null)
                     {
                         tempLoc.tableIndex = localizedObject.tableIndex;
                         tempLoc.localizationKey = socials[i].descriptionKey;
-                        tempLoc.onLanguageChanged.AddListener(delegate { itemDescription.text = tempLoc.GetKeyOutput(tempLoc.localizationKey); });
+                        tempLoc.onLanguageChanged.AddListener(delegate
+                        {
+                            itemDescription.text = tempLoc.GetKeyOutput(tempLoc.localizationKey);
+                        });
                         tempLoc.InitializeItem();
                         tempLoc.UpdateItem();
                     }
                 }
 
-                GameObject btnGO = Instantiate(buttonPreset, new Vector3(0, 0, 0), Quaternion.identity);
+                var btnGO = Instantiate(buttonPreset, new Vector3(0, 0, 0), Quaternion.identity);
                 btnGO.transform.SetParent(buttonParent, false);
                 btnGO.gameObject.name = socials[i].socialID;
 
-                ButtonManager btn = btnGO.GetComponent<ButtonManager>();
+                var btn = btnGO.GetComponent<ButtonManager>();
                 buttons.Add(btn);
                 btn.SetIcon(socials[i].icon);
                 btn.onClick.AddListener(delegate
                 {
                     socials[tempIndex].onClick.Invoke();
-                    if (!string.IsNullOrEmpty(socials[tempIndex].link)) { Application.OpenURL(socials[tempIndex].link); }
+                    if (!string.IsNullOrEmpty(socials[tempIndex].link)) Application.OpenURL(socials[tempIndex].link);
                 });
                 btn.onHover.AddListener(delegate
                 {
-                    foreach (ButtonManager tempBtn in buttons)
+                    foreach (var tempBtn in buttons)
                     {
                         if (tempBtn == btn)
                             continue;
@@ -138,7 +139,7 @@ namespace Michsky.UI.Heat
                 btn.onLeave.AddListener(delegate
                 {
                     updateTimer = true;
-                    foreach (ButtonManager tempBtn in buttons)
+                    foreach (var tempBtn in buttons)
                     {
                         if (tempBtn == btn)
                         {
@@ -152,7 +153,7 @@ namespace Michsky.UI.Heat
                 });
                 btn.onSelect.AddListener(delegate
                 {
-                    foreach (ButtonManager tempBtn in buttons)
+                    foreach (var tempBtn in buttons)
                     {
                         if (tempBtn == btn)
                             continue;
@@ -168,7 +169,7 @@ namespace Michsky.UI.Heat
                 btn.onDeselect.AddListener(delegate
                 {
                     updateTimer = true;
-                    foreach (ButtonManager tempBtn in buttons)
+                    foreach (var tempBtn in buttons)
                     {
                         if (tempBtn == btn)
                         {
@@ -202,8 +203,10 @@ namespace Michsky.UI.Heat
                 currentItemObject.Play("Out");
                 buttons[currentSliderIndex].UpdateState();
 
-                if (currentSliderIndex == socials.Count - 1) { currentSliderIndex = 0; }
-                else { currentSliderIndex++; }
+                if (currentSliderIndex == socials.Count - 1)
+                    currentSliderIndex = 0;
+                else
+                    currentSliderIndex++;
 
                 currentItemObject = itemParent.GetChild(currentSliderIndex).GetComponent<Animator>();
                 currentItemObject.gameObject.SetActive(true);
@@ -227,10 +230,12 @@ namespace Michsky.UI.Heat
             allowTransition = canSwitch;
         }
 
-        IEnumerator InitCurrentItem()
+        private IEnumerator InitCurrentItem()
         {
-            if (updateMode == UpdateMode.UnscaledTime) { yield return new WaitForSecondsRealtime(0.02f); }
-            else { yield return new WaitForSeconds(0.02f); }
+            if (updateMode == UpdateMode.UnscaledTime)
+                yield return new WaitForSecondsRealtime(0.02f);
+            else
+                yield return new WaitForSeconds(0.02f);
 
             currentItemObject = itemParent.GetChild(currentSliderIndex).GetComponent<Animator>();
             currentItemObject.gameObject.SetActive(true);
@@ -251,16 +256,18 @@ namespace Michsky.UI.Heat
             updateTimer = true;
         }
 
-        IEnumerator SetSocialByHover(int index)
+        private IEnumerator SetSocialByHover(int index)
         {
             updateTimer = false;
             timerCount = 0;
 
-            if (currentSliderIndex == index) { yield break; }
+            if (currentSliderIndex == index) yield break;
             if (isTransitionInProgress)
             {
-                if (updateMode == UpdateMode.UnscaledTime) { yield return new WaitForSecondsRealtime(0.15f); }
-                else { yield return new WaitForSeconds(0.15f); }
+                if (updateMode == UpdateMode.UnscaledTime)
+                    yield return new WaitForSecondsRealtime(0.15f);
+                else
+                    yield return new WaitForSeconds(0.15f);
 
                 isTransitionInProgress = false;
             }
@@ -287,32 +294,50 @@ namespace Michsky.UI.Heat
             }
         }
 
-        IEnumerator DoBackgroundColorLerp()
+        private IEnumerator DoBackgroundColorLerp()
         {
             float elapsedTime = 0;
 
             while (background.color != socials[currentSliderIndex].backgroundTint)
             {
-                if (updateMode == UpdateMode.UnscaledTime) { elapsedTime += Time.unscaledDeltaTime; }
-                else { elapsedTime += Time.deltaTime; }
+                if (updateMode == UpdateMode.UnscaledTime)
+                    elapsedTime += Time.unscaledDeltaTime;
+                else
+                    elapsedTime += Time.deltaTime;
 
-                background.color = Color.Lerp(background.color, socials[currentSliderIndex].backgroundTint, tintCurve.Evaluate(elapsedTime * tintSpeed));
+                background.color = Color.Lerp(background.color, socials[currentSliderIndex].backgroundTint,
+                    tintCurve.Evaluate(elapsedTime * tintSpeed));
                 yield return null;
             }
 
             background.color = socials[currentSliderIndex].backgroundTint;
         }
 
-        IEnumerator DisableItemAnimators()
+        private IEnumerator DisableItemAnimators()
         {
-            if (updateMode == UpdateMode.UnscaledTime) { yield return new WaitForSecondsRealtime(0.6f); }
-            else { yield return new WaitForSeconds(0.6f); }
+            if (updateMode == UpdateMode.UnscaledTime)
+                yield return new WaitForSecondsRealtime(0.6f);
+            else
+                yield return new WaitForSeconds(0.6f);
 
-            for (int i = 0; i < socials.Count; i++)
+            for (var i = 0; i < socials.Count; i++)
             {
-                if (i != currentSliderIndex) { itemParent.GetChild(i).gameObject.SetActive(false); }
+                if (i != currentSliderIndex) itemParent.GetChild(i).gameObject.SetActive(false);
                 itemParent.GetChild(i).GetComponent<Animator>().enabled = false;
             }
+        }
+
+        [Serializable]
+        public class Item
+        {
+            public string socialID = "News title";
+            public Sprite icon;
+            public Color backgroundTint = new(255, 255, 255, 255);
+            [TextArea] public string description = "News description";
+            public string link;
+            public UnityEvent onClick = new();
+
+            [Header("Localization")] public string descriptionKey = "DescriptionKey";
         }
     }
 }

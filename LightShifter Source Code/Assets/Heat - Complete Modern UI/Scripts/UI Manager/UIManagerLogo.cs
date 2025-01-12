@@ -8,38 +8,47 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/UI Manager/UI Manager Logo")]
     public class UIManagerLogo : MonoBehaviour
     {
+        public enum LogoType
+        {
+            GameLogo,
+            BrandLogo
+        }
+
         // Resources
         public UIManager UIManagerAsset;
-        private Image objImage;
 
         // Settings
         [SerializeField] private LogoType logoType = LogoType.GameLogo;
+        private Image objImage;
 
-        public enum LogoType { GameLogo, BrandLogo }
-
-        void Awake()
+        private void Awake()
         {
-            this.enabled = true;
+            enabled = true;
 
-            if (UIManagerAsset == null) { UIManagerAsset = Resources.Load<UIManager>("Heat UI Manager"); }
-            if (objImage == null) { objImage = GetComponent<Image>(); }
-            if (!UIManagerAsset.enableDynamicUpdate) { UpdateImage(); this.enabled = false; }
+            if (UIManagerAsset == null) UIManagerAsset = Resources.Load<UIManager>("Heat UI Manager");
+            if (objImage == null) objImage = GetComponent<Image>();
+            if (!UIManagerAsset.enableDynamicUpdate)
+            {
+                UpdateImage();
+                enabled = false;
+            }
         }
 
-        void Update()
+        private void Update()
         {
-            if (UIManagerAsset == null) { return; }
-            if (UIManagerAsset.enableDynamicUpdate) { UpdateImage(); }
+            if (UIManagerAsset == null) return;
+            if (UIManagerAsset.enableDynamicUpdate) UpdateImage();
         }
 
 
-        void UpdateImage()
+        private void UpdateImage()
         {
             if (objImage == null)
                 return;
 
-            if (logoType == LogoType.GameLogo) { objImage.sprite = UIManagerAsset.gameLogo; }
-            else if (logoType == LogoType.BrandLogo) { objImage.sprite = UIManagerAsset.brandLogo; }
+            if (logoType == LogoType.GameLogo)
+                objImage.sprite = UIManagerAsset.gameLogo;
+            else if (logoType == LogoType.BrandLogo) objImage.sprite = UIManagerAsset.brandLogo;
         }
     }
 }

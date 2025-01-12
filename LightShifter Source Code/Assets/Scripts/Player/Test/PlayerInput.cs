@@ -30,35 +30,26 @@ namespace TarodevController
             _actions.Enable();
 
             // If you have a PlayerInput component, subscribe to onControlsChanged
-            if (_playerInput != null)
-            {
-                _playerInput.onControlsChanged += OnControlsChanged;
-            }
+            if (_playerInput != null) _playerInput.onControlsChanged += OnControlsChanged;
         }
 
         private void OnDisable()
         {
             _actions.Disable();
 
-            if (_playerInput != null)
-            {
-                _playerInput.onControlsChanged -= OnControlsChanged;
-            }
+            if (_playerInput != null) _playerInput.onControlsChanged -= OnControlsChanged;
         }
 
-        private void OnControlsChanged(PlayerInput obj) 
+        private void OnControlsChanged(PlayerInput obj)
         {
             Debug.Log("Active scheme: " + obj.currentControlScheme);
 
             // 1. Check if it's keyboard/mouse or gamepad
-            bool isKeyboard = (obj.currentControlScheme == "Keyboard&Mouse");
+            var isKeyboard = obj.currentControlScheme == "Keyboard&Mouse";
 
             // 2. If it's gamepad, detect the brand
-            GamepadBrand brand = GamepadBrand.Unknown;
-            if (!isKeyboard)
-            {
-                brand = DetectGamepadBrand(Gamepad.current);
-            }
+            var brand = GamepadBrand.Unknown;
+            if (!isKeyboard) brand = DetectGamepadBrand(Gamepad.current);
 
             // 3. Finally, notify the TutorialManager
             TutorialManager.Instance.UpdateControlScheme(isKeyboard, brand);
@@ -68,9 +59,9 @@ namespace TarodevController
         {
             if (gp == null) return GamepadBrand.Unknown;
 
-            string product = gp.description.product?.ToLower() ?? "";
-            string manufacturer = gp.description.manufacturer?.ToLower() ?? "";
-            
+            var product = gp.description.product?.ToLower() ?? "";
+            var manufacturer = gp.description.manufacturer?.ToLower() ?? "";
+
             Debug.Log("Product: " + product);
             Debug.Log("Manufacturer: " + manufacturer);
 

@@ -4,10 +4,11 @@ namespace LightShift
 {
     public class BlockShiftDetection : MonoBehaviour
     {
-        private BoxCollider2D _boxCollider2D;
         [SerializeField] private LightShifter lightShift;
         [SerializeField] private float collider_xSize_in = 0.58f, collider_xSize_out = 1f;
-        void Awake()
+        private BoxCollider2D _boxCollider2D;
+
+        private void Awake()
         {
             _boxCollider2D = GetComponent<BoxCollider2D>();
         }

@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
@@ -20,59 +21,48 @@ namespace Michsky.UI.Heat
         [SerializeField] private Animator selectorAnimator;
         [SerializeField] private HorizontalLayoutGroup contentLayout;
         [SerializeField] private HorizontalLayoutGroup contentLayoutHelper;
-        private string newItemTitle;
 
         // Saving
-        public bool saveSelected = false;
+        public bool saveSelected;
         public string saveKey = "Horizontal Selector";
 
         // Settings
         public bool enableIndicator = true;
-        public bool enableIcon = false;
+        public bool enableIcon;
         public bool invokeOnAwake = true;
         public bool invertAnimation;
         public bool loopSelection;
         public bool useLocalization = true;
         [Range(0.25f, 2.5f)] public float iconScale = 1;
         [Range(1, 50)] public int contentSpacing = 15;
-        public int defaultIndex = 0;
-        [HideInInspector] public int index = 0;
+        public int defaultIndex;
+        [HideInInspector] public int index;
 
         // Items
-        public List<Item> items = new List<Item>();
+        public List<Item> items = new();
 
         // Events
-        public HorizontalSelectorEvent onValueChanged = new HorizontalSelectorEvent();
+        public HorizontalSelectorEvent onValueChanged = new();
+        private float cachedStateLength;
 
         // Helpers
-        LocalizedObject localizedObject;
-        float cachedStateLength;
+        private LocalizedObject localizedObject;
+        private string newItemTitle;
 
-        [System.Serializable]
-        public class Item
+        private void Awake()
         {
-            public string itemTitle = "Item Title";
-            public string localizationKey;
-            public Sprite itemIcon;
-            public UnityEvent onItemSelect = new UnityEvent();
-        }
-
-        [System.Serializable] 
-        public class HorizontalSelectorEvent : UnityEvent<int> { }
-
-        void Awake()
-        {
-            if (selectorAnimator == null) { selectorAnimator = gameObject.GetComponent<Animator>(); }
+            if (selectorAnimator == null) selectorAnimator = gameObject.GetComponent<Animator>();
             if (label == null || labelHelper == null)
             {
-                Debug.LogError("<b>[Horizontal Selector]</b> Cannot initalize the object due to missing resources.", this);
+                Debug.LogError("<b>[Horizontal Selector]</b> Cannot initalize the object due to missing resources.",
+                    this);
                 return;
             }
 
             InitializeSelector();
             UpdateContentLayout();
 
-            if (invokeOnAwake == true)
+            if (invokeOnAwake)
             {
                 items[index].onItemSelect.Invoke();
                 onValueChanged.Invoke(index);
@@ -81,13 +71,12 @@ namespace Michsky.UI.Heat
             cachedStateLength = HeatUIInternalTools.GetAnimatorClipLength(selectorAnimator, "HorizontalSelector_Next");
         }
 
-        void OnEnable()
+        private void OnEnable()
         {
-            if (gameObject.activeInHierarchy == true) { StartCoroutine("DisableAnimator"); }
-            if (useLocalization == true && !string.IsNullOrEmpty(items[index].localizationKey) && localizedObject.CheckLocalizationStatus() == true) 
-            { 
-                label.text = localizedObject.GetKeyOutput(items[index].localizationKey); 
-            }
+            if (gameObject.activeInHierarchy) StartCoroutine("DisableAnimator");
+            if (useLocalization && !string.IsNullOrEmpty(items[index].localizationKey) &&
+                localizedObject.CheckLocalizationStatus())
+                label.text = localizedObject.GetKeyOutput(items[index].localizationKey);
         }
 
         public void InitializeSelector()
@@ -95,16 +84,18 @@ namespace Michsky.UI.Heat
             if (items.Count == 0)
                 return;
 
-            if (saveSelected == true)
+            if (saveSelected)
             {
-                if (PlayerPrefs.HasKey("HorizontalSelector_" + saveKey) == true) { defaultIndex = PlayerPrefs.GetInt("HorizontalSelector_" + saveKey); }
-                else { PlayerPrefs.SetInt("HorizontalSelector_" + saveKey, defaultIndex); }
+                if (PlayerPrefs.HasKey("HorizontalSelector_" + saveKey))
+                    defaultIndex = PlayerPrefs.GetInt("HorizontalSelector_" + saveKey);
+                else
+                    PlayerPrefs.SetInt("HorizontalSelector_" + saveKey, defaultIndex);
             }
 
             label.text = items[defaultIndex].itemTitle;
             labelHelper.text = label.text;
 
-            if (labelIcon != null && enableIcon == true)
+            if (labelIcon != null && enableIcon)
             {
                 labelIcon.sprite = items[defaultIndex].itemIcon;
                 labelIconHelper.sprite = labelIcon.sprite;
@@ -112,27 +103,30 @@ namespace Michsky.UI.Heat
 
             else if (enableIcon == false)
             {
-                if (labelIcon != null) { labelIcon.gameObject.SetActive(false); }
-                if (labelIconHelper != null) { labelIconHelper.gameObject.SetActive(false); }
+                if (labelIcon != null) labelIcon.gameObject.SetActive(false);
+                if (labelIconHelper != null) labelIconHelper.gameObject.SetActive(false);
             }
 
             index = defaultIndex;
 
-            if (enableIndicator == true) { UpdateIndicators(); }
-            else { Destroy(indicatorParent.gameObject); }
+            if (enableIndicator)
+                UpdateIndicators();
+            else
+                Destroy(indicatorParent.gameObject);
 
-            if (useLocalization == true)
+            if (useLocalization)
             {
                 localizedObject = gameObject.GetComponent<LocalizedObject>();
 
-                if (localizedObject == null || localizedObject.CheckLocalizationStatus() == false) { useLocalization = false; }
-                else if (useLocalization == true) { localizedObject.onLanguageChanged.AddListener(delegate { UpdateUI(); }); }
+                if (localizedObject == null || localizedObject.CheckLocalizationStatus() == false)
+                    useLocalization = false;
+                else if (useLocalization) localizedObject.onLanguageChanged.AddListener(delegate { UpdateUI(); });
             }
         }
 
         public void PreviousItem()
         {
-            if (items.Count == 0) { return; }
+            if (items.Count == 0) return;
             StopCoroutine("DisableAnimator");
 
             selectorAnimator.enabled = true;
@@ -143,18 +137,22 @@ namespace Michsky.UI.Heat
                 {
                     // Change the label helper text
                     labelHelper.text = label.text;
-                    if (labelIcon != null && enableIcon == true) { labelIconHelper.sprite = labelIcon.sprite; }
+                    if (labelIcon != null && enableIcon) labelIconHelper.sprite = labelIcon.sprite;
 
                     // Change the index
-                    if (index == 0) { index = items.Count - 1; }
-                    else { index--; }
+                    if (index == 0)
+                        index = items.Count - 1;
+                    else
+                        index--;
 
                     // Check for localization and change the label
-                    if (useLocalization == true && !string.IsNullOrEmpty(items[index].localizationKey)) { label.text = localizedObject.GetKeyOutput(items[index].localizationKey); }
-                    else { label.text = items[index].itemTitle; }
+                    if (useLocalization && !string.IsNullOrEmpty(items[index].localizationKey))
+                        label.text = localizedObject.GetKeyOutput(items[index].localizationKey);
+                    else
+                        label.text = items[index].itemTitle;
 
                     // Change the label icon
-                    if (labelIcon != null && enableIcon == true) { labelIcon.sprite = items[index].itemIcon; }
+                    if (labelIcon != null && enableIcon) labelIcon.sprite = items[index].itemIcon;
 
                     // Invoke events
                     items[index].onItemSelect.Invoke();
@@ -165,8 +163,10 @@ namespace Michsky.UI.Heat
                     selectorAnimator.StopPlayback();
 
                     // Play the animation
-                    if (invertAnimation == true) { selectorAnimator.Play("Next"); }
-                    else { selectorAnimator.Play("Prev"); }
+                    if (invertAnimation)
+                        selectorAnimator.Play("Next");
+                    else
+                        selectorAnimator.Play("Prev");
                 }
             }
 
@@ -174,18 +174,22 @@ namespace Michsky.UI.Heat
             {
                 // Change the label helper text
                 labelHelper.text = label.text;
-                if (labelIcon != null && enableIcon == true) { labelIconHelper.sprite = labelIcon.sprite; }
+                if (labelIcon != null && enableIcon) labelIconHelper.sprite = labelIcon.sprite;
 
                 // Change the index
-                if (index == 0) { index = items.Count - 1; }
-                else { index--; }
+                if (index == 0)
+                    index = items.Count - 1;
+                else
+                    index--;
 
                 // Check for localization and change the label
-                if (useLocalization == true && !string.IsNullOrEmpty(items[index].localizationKey)) { label.text = localizedObject.GetKeyOutput(items[index].localizationKey); }
-                else { label.text = items[index].itemTitle; }
+                if (useLocalization && !string.IsNullOrEmpty(items[index].localizationKey))
+                    label.text = localizedObject.GetKeyOutput(items[index].localizationKey);
+                else
+                    label.text = items[index].itemTitle;
 
                 // Change the label icon
-                if (labelIcon != null && enableIcon == true) { labelIcon.sprite = items[index].itemIcon; }
+                if (labelIcon != null && enableIcon) labelIcon.sprite = items[index].itemIcon;
 
                 // Invoke events
                 items[index].onItemSelect.Invoke();
@@ -196,30 +200,38 @@ namespace Michsky.UI.Heat
                 selectorAnimator.StopPlayback();
 
                 // Play the animation
-                if (invertAnimation == true) { selectorAnimator.Play("Next"); }
-                else { selectorAnimator.Play("Prev"); }
+                if (invertAnimation)
+                    selectorAnimator.Play("Next");
+                else
+                    selectorAnimator.Play("Prev");
             }
 
-            if (saveSelected == true) { PlayerPrefs.SetInt("HorizontalSelector_" + saveKey, index); }
-            if (enableIndicator == true)
-            {
-                for (int i = 0; i < items.Count; ++i)
+            if (saveSelected) PlayerPrefs.SetInt("HorizontalSelector_" + saveKey, index);
+            if (enableIndicator)
+                for (var i = 0; i < items.Count; ++i)
                 {
-                    GameObject go = indicatorParent.GetChild(i).gameObject;
-                    Transform onObj = go.transform.Find("On");
-                    Transform offObj = go.transform.Find("Off");
+                    var go = indicatorParent.GetChild(i).gameObject;
+                    var onObj = go.transform.Find("On");
+                    var offObj = go.transform.Find("Off");
 
-                    if (i == index) { onObj.gameObject.SetActive(true); offObj.gameObject.SetActive(false); }
-                    else { onObj.gameObject.SetActive(false); offObj.gameObject.SetActive(true); }
+                    if (i == index)
+                    {
+                        onObj.gameObject.SetActive(true);
+                        offObj.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        onObj.gameObject.SetActive(false);
+                        offObj.gameObject.SetActive(true);
+                    }
                 }
-            }
 
-            if (gameObject.activeInHierarchy == true) { StartCoroutine("DisableAnimator"); }
+            if (gameObject.activeInHierarchy) StartCoroutine("DisableAnimator");
         }
 
         public void NextItem()
         {
-            if (items.Count == 0) { return; }
+            if (items.Count == 0) return;
             StopCoroutine("DisableAnimator");
 
             selectorAnimator.enabled = true;
@@ -230,18 +242,22 @@ namespace Michsky.UI.Heat
                 {
                     // Change the label helper text
                     labelHelper.text = label.text;
-                    if (labelIcon != null && enableIcon == true) { labelIconHelper.sprite = labelIcon.sprite; }
+                    if (labelIcon != null && enableIcon) labelIconHelper.sprite = labelIcon.sprite;
 
                     // Change the index
-                    if ((index + 1) >= items.Count) { index = 0; }
-                    else { index++; }
+                    if (index + 1 >= items.Count)
+                        index = 0;
+                    else
+                        index++;
 
                     // Check for localization and change the label
-                    if (useLocalization == true && !string.IsNullOrEmpty(items[index].localizationKey)) { label.text = localizedObject.GetKeyOutput(items[index].localizationKey); }
-                    else { label.text = items[index].itemTitle; }
+                    if (useLocalization && !string.IsNullOrEmpty(items[index].localizationKey))
+                        label.text = localizedObject.GetKeyOutput(items[index].localizationKey);
+                    else
+                        label.text = items[index].itemTitle;
 
                     // Change the label icon
-                    if (labelIcon != null && enableIcon == true) { labelIcon.sprite = items[index].itemIcon; }
+                    if (labelIcon != null && enableIcon) labelIcon.sprite = items[index].itemIcon;
 
                     // Invoke events
                     items[index].onItemSelect.Invoke();
@@ -252,8 +268,10 @@ namespace Michsky.UI.Heat
                     selectorAnimator.StopPlayback();
 
                     // Play the animation
-                    if (invertAnimation == true) { selectorAnimator.Play("Prev"); }
-                    else { selectorAnimator.Play("Next"); }
+                    if (invertAnimation)
+                        selectorAnimator.Play("Prev");
+                    else
+                        selectorAnimator.Play("Next");
                 }
             }
 
@@ -261,18 +279,22 @@ namespace Michsky.UI.Heat
             {
                 // Change the label helper text
                 labelHelper.text = label.text;
-                if (labelIcon != null && enableIcon == true) { labelIconHelper.sprite = labelIcon.sprite; }
+                if (labelIcon != null && enableIcon) labelIconHelper.sprite = labelIcon.sprite;
 
                 // Change the index
-                if ((index + 1) >= items.Count) { index = 0; }
-                else { index++; }
+                if (index + 1 >= items.Count)
+                    index = 0;
+                else
+                    index++;
 
                 // Check for localization and change the label
-                if (useLocalization == true && !string.IsNullOrEmpty(items[index].localizationKey)) { label.text = localizedObject.GetKeyOutput(items[index].localizationKey); }
-                else { label.text = items[index].itemTitle; }
+                if (useLocalization && !string.IsNullOrEmpty(items[index].localizationKey))
+                    label.text = localizedObject.GetKeyOutput(items[index].localizationKey);
+                else
+                    label.text = items[index].itemTitle;
 
                 // Change the label icon
-                if (labelIcon != null && enableIcon == true) { labelIcon.sprite = items[index].itemIcon; }
+                if (labelIcon != null && enableIcon) labelIcon.sprite = items[index].itemIcon;
 
                 // Invoke events
                 items[index].onItemSelect.Invoke();
@@ -283,40 +305,51 @@ namespace Michsky.UI.Heat
                 selectorAnimator.StopPlayback();
 
                 // Play the animation
-                if (invertAnimation == true) { selectorAnimator.Play("Prev"); }
-                else { selectorAnimator.Play("Next"); }
+                if (invertAnimation)
+                    selectorAnimator.Play("Prev");
+                else
+                    selectorAnimator.Play("Next");
             }
 
-            if (saveSelected == true) { PlayerPrefs.SetInt("HorizontalSelector_" + saveKey, index); }
-            if (enableIndicator == true)
-            {
-                for (int i = 0; i < items.Count; ++i)
+            if (saveSelected) PlayerPrefs.SetInt("HorizontalSelector_" + saveKey, index);
+            if (enableIndicator)
+                for (var i = 0; i < items.Count; ++i)
                 {
-                    GameObject go = indicatorParent.GetChild(i).gameObject;
-                    Transform onObj = go.transform.Find("On"); ;
-                    Transform offObj = go.transform.Find("Off");
+                    var go = indicatorParent.GetChild(i).gameObject;
+                    var onObj = go.transform.Find("On");
+                    ;
+                    var offObj = go.transform.Find("Off");
 
-                    if (i == index) { onObj.gameObject.SetActive(true); offObj.gameObject.SetActive(false); }
-                    else { onObj.gameObject.SetActive(false); offObj.gameObject.SetActive(true); }
+                    if (i == index)
+                    {
+                        onObj.gameObject.SetActive(true);
+                        offObj.gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        onObj.gameObject.SetActive(false);
+                        offObj.gameObject.SetActive(true);
+                    }
                 }
-            }
 
-            if (gameObject.activeInHierarchy == true) { StartCoroutine("DisableAnimator"); }
+            if (gameObject.activeInHierarchy) StartCoroutine("DisableAnimator");
         }
 
         public void UpdateUI()
         {
             selectorAnimator.enabled = true;
 
-            if (useLocalization == true && !string.IsNullOrEmpty(items[index].localizationKey)) { label.text = localizedObject.GetKeyOutput(items[index].localizationKey); }
-            else { label.text = items[index].itemTitle; }
+            if (useLocalization && !string.IsNullOrEmpty(items[index].localizationKey))
+                label.text = localizedObject.GetKeyOutput(items[index].localizationKey);
+            else
+                label.text = items[index].itemTitle;
 
-            if (labelIcon != null && enableIcon == true) { labelIcon.sprite = items[index].itemIcon; }
+            if (labelIcon != null && enableIcon) labelIcon.sprite = items[index].itemIcon;
 
             UpdateContentLayout();
             UpdateIndicators();
 
-            if (gameObject.activeInHierarchy == true) { StartCoroutine("DisableAnimator"); }
+            if (gameObject.activeInHierarchy) StartCoroutine("DisableAnimator");
         }
 
         public void UpdateIndicators()
@@ -324,25 +357,33 @@ namespace Michsky.UI.Heat
             if (enableIndicator == false)
                 return;
 
-            foreach (Transform child in indicatorParent) { Destroy(child.gameObject); }
-            for (int i = 0; i < items.Count; ++i)
+            foreach (Transform child in indicatorParent) Destroy(child.gameObject);
+            for (var i = 0; i < items.Count; ++i)
             {
-                GameObject go = Instantiate(indicatorObject, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                var go = Instantiate(indicatorObject, new Vector3(0, 0, 0), Quaternion.identity);
                 go.transform.SetParent(indicatorParent, false);
                 go.name = items[i].itemTitle;
 
-                Transform onObj = go.transform.Find("On");
-                Transform offObj = go.transform.Find("Off");
+                var onObj = go.transform.Find("On");
+                var offObj = go.transform.Find("Off");
 
-                if (i == index) { onObj.gameObject.SetActive(true); offObj.gameObject.SetActive(false); }
-                else { onObj.gameObject.SetActive(false); offObj.gameObject.SetActive(true); }
+                if (i == index)
+                {
+                    onObj.gameObject.SetActive(true);
+                    offObj.gameObject.SetActive(false);
+                }
+                else
+                {
+                    onObj.gameObject.SetActive(false);
+                    offObj.gameObject.SetActive(true);
+                }
             }
         }
 
         public void UpdateContentLayout()
         {
-            if (contentLayout != null) { contentLayout.spacing = contentSpacing; }
-            if (contentLayoutHelper != null) { contentLayoutHelper.spacing = contentSpacing; }
+            if (contentLayout != null) contentLayout.spacing = contentSpacing;
+            if (contentLayoutHelper != null) contentLayoutHelper.spacing = contentSpacing;
             if (labelIcon != null)
             {
                 labelIcon.transform.localScale = new Vector3(iconScale, iconScale, iconScale);
@@ -352,7 +393,7 @@ namespace Michsky.UI.Heat
             LayoutRebuilder.ForceRebuildLayoutImmediate(label.transform.parent.GetComponent<RectTransform>());
         }
 
-        IEnumerator DisableAnimator()
+        private IEnumerator DisableAnimator()
         {
             yield return new WaitForSeconds(cachedStateLength + 0.1f);
             selectorAnimator.enabled = false;
@@ -360,7 +401,7 @@ namespace Michsky.UI.Heat
 
         public void CreateNewItem(string title)
         {
-            Item item = new Item();
+            var item = new Item();
             newItemTitle = title;
             item.itemTitle = newItemTitle;
             items.Add(item);
@@ -375,8 +416,22 @@ namespace Michsky.UI.Heat
 
         public void AddNewItem()
         {
-            Item item = new Item();
+            var item = new Item();
             items.Add(item);
+        }
+
+        [Serializable]
+        public class Item
+        {
+            public string itemTitle = "Item Title";
+            public string localizationKey;
+            public Sprite itemIcon;
+            public UnityEvent onItemSelect = new();
+        }
+
+        [Serializable]
+        public class HorizontalSelectorEvent : UnityEvent<int>
+        {
         }
     }
 }

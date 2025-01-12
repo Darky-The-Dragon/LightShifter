@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,9 +9,9 @@ namespace Michsky.UI.Heat
     {
         public string tableID;
         public LocalizationSettings localizationSettings;
-        public List<TableContent> tableContent = new List<TableContent>();
+        public List<TableContent> tableContent = new();
 
-        [System.Serializable]
+        [Serializable]
         public class TableContent
         {
             public string key;

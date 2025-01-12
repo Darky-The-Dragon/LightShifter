@@ -10,73 +10,11 @@ namespace Michsky.UI.Heat
     [AddComponentMenu("Heat UI/Effects/UI Gradient")]
     public class UIGradient : BaseMeshEffect
     {
-        [SerializeField] Type _gradientType;
-        [SerializeField] Blend _blendMode = Blend.Multiply;
-        [SerializeField] bool _modifyVertices = true;
-        [SerializeField] [Range(-1, 1)] float _offset = 0f;
-        [SerializeField] [Range(0.1f, 10)] float _zoom = 1f;
-
-        [SerializeField]
-        UnityEngine.Gradient _effectGradient = new UnityEngine.Gradient() { colorKeys = new GradientColorKey[] { new GradientColorKey(Color.black, 0), new GradientColorKey(Color.white, 1) } };
-
-        public Blend BlendMode
+        public enum Blend
         {
-            get { return _blendMode; }
-            set
-            {
-                _blendMode = value;
-                graphic.SetVerticesDirty();
-            }
-        }
-
-        public UnityEngine.Gradient EffectGradient
-        {
-            get { return _effectGradient; }
-            set
-            {
-                _effectGradient = value;
-                graphic.SetVerticesDirty();
-            }
-        }
-
-        public Type GradientType
-        {
-            get { return _gradientType; }
-            set
-            {
-                _gradientType = value;
-                graphic.SetVerticesDirty();
-            }
-        }
-
-        public bool ModifyVertices
-        {
-            get { return _modifyVertices; }
-            set
-            {
-                _modifyVertices = value;
-                graphic.SetVerticesDirty();
-            }
-        }
-
-        public float Offset
-        {
-            get { return _offset; }
-            set
-            {
-                _offset = Mathf.Clamp(value, -1f, 1f);
-                graphic.SetVerticesDirty();
-            }
-        }
-
-        public float Zoom
-        {
-            get { return _zoom; }
-            set
-            {
-                _zoom = Mathf.Clamp(value, 0.1f, 10f);
-                graphic.SetVerticesDirty();
-            }
+            Override,
+            Add,
+            Multiply
         }
 
         public enum Type
@@ -86,11 +24,73 @@ namespace Michsky.UI.Heat
             Diamond
         }
 
-        public enum Blend
+        [SerializeField] private Type _gradientType;
+        [SerializeField] private Blend _blendMode = Blend.Multiply;
+        [SerializeField] private bool _modifyVertices = true;
+        [SerializeField] [Range(-1, 1)] private float _offset;
+        [SerializeField] [Range(0.1f, 10)] private float _zoom = 1f;
+
+        [SerializeField] private Gradient _effectGradient = new()
+            { colorKeys = new GradientColorKey[] { new(Color.black, 0), new(Color.white, 1) } };
+
+        public Blend BlendMode
         {
-            Override,
-            Add,
-            Multiply
+            get => _blendMode;
+            set
+            {
+                _blendMode = value;
+                graphic.SetVerticesDirty();
+            }
+        }
+
+        public Gradient EffectGradient
+        {
+            get => _effectGradient;
+            set
+            {
+                _effectGradient = value;
+                graphic.SetVerticesDirty();
+            }
+        }
+
+        public Type GradientType
+        {
+            get => _gradientType;
+            set
+            {
+                _gradientType = value;
+                graphic.SetVerticesDirty();
+            }
+        }
+
+        public bool ModifyVertices
+        {
+            get => _modifyVertices;
+            set
+            {
+                _modifyVertices = value;
+                graphic.SetVerticesDirty();
+            }
+        }
+
+        public float Offset
+        {
+            get => _offset;
+            set
+            {
+                _offset = Mathf.Clamp(value, -1f, 1f);
+                graphic.SetVerticesDirty();
+            }
+        }
+
+        public float Zoom
+        {
+            get => _zoom;
+            set
+            {
+                _zoom = Mathf.Clamp(value, 0.1f, 10f);
+                graphic.SetVerticesDirty();
+            }
         }
 
         public override void ModifyMesh(VertexHelper helper)
@@ -98,92 +98,93 @@ namespace Michsky.UI.Heat
             if (!IsActive() || helper.currentVertCount == 0)
                 return;
 
-            List<UIVertex> _vertexList = new List<UIVertex>();
+            var _vertexList = new List<UIVertex>();
             helper.GetUIVertexStream(_vertexList);
-            int nCount = _vertexList.Count;
+            var nCount = _vertexList.Count;
 
             switch (GradientType)
             {
                 case Type.Horizontal:
                 case Type.Vertical:
+                {
+                    var bounds = GetBounds(_vertexList);
+                    var min = bounds.xMin;
+                    var w = bounds.width;
+                    Func<UIVertex, float> GetPosition = v => v.position.x;
+
+                    if (GradientType == Type.Vertical)
                     {
-                        Rect bounds = GetBounds(_vertexList);
-                        float min = bounds.xMin;
-                        float w = bounds.width;
-                        Func<UIVertex, float> GetPosition = v => v.position.x;
-
-                        if (GradientType == Type.Vertical)
-                        {
-                            min = bounds.yMin;
-                            w = bounds.height;
-                            GetPosition = v => v.position.y;
-                        }
-
-                        float width = w == 0f ? 0f : 1f / w / Zoom;
-                        float zoomOffset = (1 - (1 / Zoom)) * 0.5f;
-                        float offset = (Offset * (1 - zoomOffset)) - zoomOffset;
-
-                        if (ModifyVertices)
-                            SplitTrianglesAtGradientStops(_vertexList, bounds, zoomOffset, helper);
-
-                        UIVertex vertex = new UIVertex();
-                        for (int i = 0; i < helper.currentVertCount; i++)
-                        {
-                            helper.PopulateUIVertex(ref vertex, i);
-                            vertex.color = BlendColor(vertex.color, EffectGradient.Evaluate((GetPosition(vertex) - min) * width - offset));
-                            helper.SetUIVertex(vertex, i);
-                        }
+                        min = bounds.yMin;
+                        w = bounds.height;
+                        GetPosition = v => v.position.y;
                     }
+
+                    var width = w == 0f ? 0f : 1f / w / Zoom;
+                    var zoomOffset = (1 - 1 / Zoom) * 0.5f;
+                    var offset = Offset * (1 - zoomOffset) - zoomOffset;
+
+                    if (ModifyVertices)
+                        SplitTrianglesAtGradientStops(_vertexList, bounds, zoomOffset, helper);
+
+                    var vertex = new UIVertex();
+                    for (var i = 0; i < helper.currentVertCount; i++)
+                    {
+                        helper.PopulateUIVertex(ref vertex, i);
+                        vertex.color = BlendColor(vertex.color,
+                            EffectGradient.Evaluate((GetPosition(vertex) - min) * width - offset));
+                        helper.SetUIVertex(vertex, i);
+                    }
+                }
                     break;
 
                 case Type.Diamond:
+                {
+                    var bounds = GetBounds(_vertexList);
+                    var height = bounds.height == 0f ? 0f : 1f / bounds.height / Zoom;
+                    var radius = bounds.center.y / 2f;
+                    var center = (Vector3.right + Vector3.up) * radius + Vector3.forward * _vertexList[0].position.z;
+
+                    if (ModifyVertices)
                     {
-                        Rect bounds = GetBounds(_vertexList);
-                        float height = bounds.height == 0f ? 0f : 1f / bounds.height / Zoom;
-                        float radius = bounds.center.y / 2f;
-                        Vector3 center = (Vector3.right + Vector3.up) * radius + Vector3.forward * _vertexList[0].position.z;
+                        helper.Clear();
+                        for (var i = 0; i < nCount; i++) helper.AddVert(_vertexList[i]);
 
-                        if (ModifyVertices)
-                        {
-                            helper.Clear();
-                            for (int i = 0; i < nCount; i++) helper.AddVert(_vertexList[i]);
+                        var centralVertex = new UIVertex();
+                        centralVertex.position = center;
+                        centralVertex.normal = _vertexList[0].normal;
+                        centralVertex.uv0 = new Vector2(0.5f, 0.5f);
+                        centralVertex.color = Color.white;
+                        helper.AddVert(centralVertex);
 
-                            UIVertex centralVertex = new UIVertex();
-                            centralVertex.position = center;
-                            centralVertex.normal = _vertexList[0].normal;
-                            centralVertex.uv0 = new Vector2(0.5f, 0.5f);
-                            centralVertex.color = Color.white;
-                            helper.AddVert(centralVertex);
-
-                            for (int i = 1; i < nCount; i++) helper.AddTriangle(i - 1, i, nCount);
-                            helper.AddTriangle(0, nCount - 1, nCount);
-                        }
-
-                        UIVertex vertex = new UIVertex();
-
-                        for (int i = 0; i < helper.currentVertCount; i++)
-                        {
-                            helper.PopulateUIVertex(ref vertex, i);
-                            vertex.color = BlendColor(vertex.color, EffectGradient.Evaluate(
-                                Vector3.Distance(vertex.position, center) * height - Offset));
-                            helper.SetUIVertex(vertex, i);
-                        }
+                        for (var i = 1; i < nCount; i++) helper.AddTriangle(i - 1, i, nCount);
+                        helper.AddTriangle(0, nCount - 1, nCount);
                     }
+
+                    var vertex = new UIVertex();
+
+                    for (var i = 0; i < helper.currentVertCount; i++)
+                    {
+                        helper.PopulateUIVertex(ref vertex, i);
+                        vertex.color = BlendColor(vertex.color, EffectGradient.Evaluate(
+                            Vector3.Distance(vertex.position, center) * height - Offset));
+                        helper.SetUIVertex(vertex, i);
+                    }
+                }
                     break;
             }
         }
 
-        Rect GetBounds(List<UIVertex> vertices)
+        private Rect GetBounds(List<UIVertex> vertices)
         {
-            float left = vertices[0].position.x;
-            float right = left;
-            float bottom = vertices[0].position.y;
-            float top = bottom;
+            var left = vertices[0].position.x;
+            var right = left;
+            var bottom = vertices[0].position.y;
+            var top = bottom;
 
-            for (int i = vertices.Count - 1; i >= 1; --i)
+            for (var i = vertices.Count - 1; i >= 1; --i)
             {
-                float x = vertices[i].position.x;
-                float y = vertices[i].position.y;
+                var x = vertices[i].position.x;
+                var y = vertices[i].position.y;
 
                 if (x > right)
                     right = x;
@@ -199,32 +200,32 @@ namespace Michsky.UI.Heat
             return new Rect(left, bottom, right - left, top - bottom);
         }
 
-        void SplitTrianglesAtGradientStops(List<UIVertex> _vertexList, Rect bounds, float zoomOffset, VertexHelper helper)
+        private void SplitTrianglesAtGradientStops(List<UIVertex> _vertexList, Rect bounds, float zoomOffset,
+            VertexHelper helper)
         {
-            List<float> stops = FindStops(zoomOffset, bounds);
+            var stops = FindStops(zoomOffset, bounds);
             if (stops.Count > 0)
             {
                 helper.Clear();
-                int nCount = _vertexList.Count;
+                var nCount = _vertexList.Count;
 
-                for (int i = 0; i < nCount; i += 3)
+                for (var i = 0; i < nCount; i += 3)
                 {
-                    float[] positions = GetPositions(_vertexList, i);
-                    List<int> originIndices = new List<int>(3);
-                    List<UIVertex> starts = new List<UIVertex>(3);
-                    List<UIVertex> ends = new List<UIVertex>(2);
+                    var positions = GetPositions(_vertexList, i);
+                    var originIndices = new List<int>(3);
+                    var starts = new List<UIVertex>(3);
+                    var ends = new List<UIVertex>(2);
 
-                    for (int s = 0; s < stops.Count; s++)
+                    for (var s = 0; s < stops.Count; s++)
                     {
-                        int initialCount = helper.currentVertCount;
-                        bool hadEnds = ends.Count > 0;
-                        bool earlyStart = false;
+                        var initialCount = helper.currentVertCount;
+                        var hadEnds = ends.Count > 0;
+                        var earlyStart = false;
 
-                        for (int p = 0; p < 3; p++)
-                        {
+                        for (var p = 0; p < 3; p++)
                             if (!originIndices.Contains(p) && positions[p] < stops[s])
                             {
-                                int p1 = (p + 1) % 3;
+                                var p1 = (p + 1) % 3;
                                 var start = _vertexList[p + i];
 
                                 if (positions[p1] > stops[s])
@@ -240,7 +241,6 @@ namespace Michsky.UI.Heat
                                     starts.Add(start);
                                 }
                             }
-                        }
 
                         if (originIndices.Count == 0)
                             continue;
@@ -251,19 +251,21 @@ namespace Michsky.UI.Heat
                             helper.AddVert(start);
 
                         ends.Clear();
-                        foreach (int index in originIndices)
+                        foreach (var index in originIndices)
                         {
-                            int oppositeIndex = (index + 1) % 3;
+                            var oppositeIndex = (index + 1) % 3;
 
                             if (positions[oppositeIndex] < stops[s])
                                 oppositeIndex = (oppositeIndex + 1) % 3;
-                            ends.Add(CreateSplitVertex(_vertexList[index + i], _vertexList[oppositeIndex + i], stops[s]));
+                            ends.Add(
+                                CreateSplitVertex(_vertexList[index + i], _vertexList[oppositeIndex + i], stops[s]));
                         }
 
                         if (ends.Count == 1)
                         {
-                            int oppositeIndex = (originIndices[0] + 2) % 3;
-                            ends.Add(CreateSplitVertex(_vertexList[originIndices[0] + i], _vertexList[oppositeIndex + i], stops[s]));
+                            var oppositeIndex = (originIndices[0] + 2) % 3;
+                            ends.Add(CreateSplitVertex(_vertexList[originIndices[0] + i],
+                                _vertexList[oppositeIndex + i], stops[s]));
                         }
 
                         foreach (var end in ends)
@@ -285,7 +287,7 @@ namespace Michsky.UI.Heat
 
                         else
                         {
-                            int vertexCount = helper.currentVertCount;
+                            var vertexCount = helper.currentVertCount;
                             helper.AddTriangle(initialCount, vertexCount - 2, vertexCount - 1);
 
                             if (starts.Count > 1)
@@ -298,26 +300,22 @@ namespace Michsky.UI.Heat
                     if (ends.Count > 0)
                     {
                         if (starts.Count == 0)
-                        {
-                            for (int p = 0; p < 3; p++)
-                            {
+                            for (var p = 0; p < 3; p++)
                                 if (!originIndices.Contains(p) && positions[p] > stops[stops.Count - 1])
                                 {
-                                    int p1 = (p + 1) % 3;
-                                    UIVertex end = _vertexList[p + i];
+                                    var p1 = (p + 1) % 3;
+                                    var end = _vertexList[p + i];
 
                                     if (positions[p1] > stops[stops.Count - 1])
                                         starts.Insert(0, end);
                                     else
                                         starts.Add(end);
                                 }
-                            }
-                        }
 
                         foreach (var start in starts)
                             helper.AddVert(start);
 
-                        int vertexCount = helper.currentVertCount;
+                        var vertexCount = helper.currentVertCount;
 
                         if (starts.Count > 1)
                         {
@@ -326,7 +324,9 @@ namespace Michsky.UI.Heat
                         }
 
                         else if (starts.Count > 0)
+                        {
                             helper.AddTriangle(vertexCount - 3, vertexCount - 1, vertexCount - 2);
+                        }
                     }
 
                     else
@@ -334,16 +334,16 @@ namespace Michsky.UI.Heat
                         helper.AddVert(_vertexList[i]);
                         helper.AddVert(_vertexList[i + 1]);
                         helper.AddVert(_vertexList[i + 2]);
-                        int vertexCount = helper.currentVertCount;
+                        var vertexCount = helper.currentVertCount;
                         helper.AddTriangle(vertexCount - 3, vertexCount - 2, vertexCount - 1);
                     }
                 }
             }
         }
 
-        float[] GetPositions(List<UIVertex> _vertexList, int index)
+        private float[] GetPositions(List<UIVertex> _vertexList, int index)
         {
-            float[] positions = new float[3];
+            var positions = new float[3];
 
             if (GradientType == Type.Horizontal)
             {
@@ -362,12 +362,12 @@ namespace Michsky.UI.Heat
             return positions;
         }
 
-        List<float> FindStops(float zoomOffset, Rect bounds)
+        private List<float> FindStops(float zoomOffset, Rect bounds)
         {
-            List<float> stops = new List<float>();
+            var stops = new List<float>();
             var offset = Offset * (1 - zoomOffset);
             var startBoundary = zoomOffset - offset;
-            var endBoundary = (1 - zoomOffset) - offset;
+            var endBoundary = 1 - zoomOffset - offset;
 
             foreach (var color in EffectGradient.colorKeys)
             {
@@ -387,8 +387,8 @@ namespace Michsky.UI.Heat
                     stops.Add((alpha.time - startBoundary) * Zoom);
             }
 
-            float min = bounds.xMin;
-            float size = bounds.width;
+            var min = bounds.xMin;
+            var size = bounds.width;
 
             if (GradientType == Type.Vertical)
             {
@@ -398,9 +398,9 @@ namespace Michsky.UI.Heat
 
             stops.Sort();
 
-            for (int i = 0; i < stops.Count; i++)
+            for (var i = 0; i < stops.Count; i++)
             {
-                stops[i] = (stops[i] * size) + min;
+                stops[i] = stops[i] * size + min;
 
                 if (i > 0 && Math.Abs(stops[i] - stops[i - 1]) < 2)
                 {
@@ -412,46 +412,46 @@ namespace Michsky.UI.Heat
             return stops;
         }
 
-        UIVertex CreateSplitVertex(UIVertex vertex1, UIVertex vertex2, float stop)
+        private UIVertex CreateSplitVertex(UIVertex vertex1, UIVertex vertex2, float stop)
         {
             if (GradientType == Type.Horizontal)
             {
-                float sx = vertex1.position.x - stop;
-                float dx = vertex1.position.x - vertex2.position.x;
-                float dy = vertex1.position.y - vertex2.position.y;
-                float uvx = vertex1.uv0.x - vertex2.uv0.x;
-                float uvy = vertex1.uv0.y - vertex2.uv0.y;
-                float ratio = sx / dx;
-                float splitY = vertex1.position.y - (dy * ratio);
+                var sx = vertex1.position.x - stop;
+                var dx = vertex1.position.x - vertex2.position.x;
+                var dy = vertex1.position.y - vertex2.position.y;
+                var uvx = vertex1.uv0.x - vertex2.uv0.x;
+                var uvy = vertex1.uv0.y - vertex2.uv0.y;
+                var ratio = sx / dx;
+                var splitY = vertex1.position.y - dy * ratio;
 
-                UIVertex splitVertex = new UIVertex();
+                var splitVertex = new UIVertex();
                 splitVertex.position = new Vector3(stop, splitY, vertex1.position.z);
                 splitVertex.normal = vertex1.normal;
-                splitVertex.uv0 = new Vector2(vertex1.uv0.x - (uvx * ratio), vertex1.uv0.y - (uvy * ratio));
+                splitVertex.uv0 = new Vector2(vertex1.uv0.x - uvx * ratio, vertex1.uv0.y - uvy * ratio);
                 splitVertex.color = Color.white;
                 return splitVertex;
             }
 
             else
             {
-                float sy = vertex1.position.y - stop;
-                float dy = vertex1.position.y - vertex2.position.y;
-                float dx = vertex1.position.x - vertex2.position.x;
-                float uvx = vertex1.uv0.x - vertex2.uv0.x;
-                float uvy = vertex1.uv0.y - vertex2.uv0.y;
-                float ratio = sy / dy;
-                float splitX = vertex1.position.x - (dx * ratio);
+                var sy = vertex1.position.y - stop;
+                var dy = vertex1.position.y - vertex2.position.y;
+                var dx = vertex1.position.x - vertex2.position.x;
+                var uvx = vertex1.uv0.x - vertex2.uv0.x;
+                var uvy = vertex1.uv0.y - vertex2.uv0.y;
+                var ratio = sy / dy;
+                var splitX = vertex1.position.x - dx * ratio;
 
-                UIVertex splitVertex = new UIVertex();
+                var splitVertex = new UIVertex();
                 splitVertex.position = new Vector3(splitX, stop, vertex1.position.z);
                 splitVertex.normal = vertex1.normal;
-                splitVertex.uv0 = new Vector2(vertex1.uv0.x - (uvx * ratio), vertex1.uv0.y - (uvy * ratio));
+                splitVertex.uv0 = new Vector2(vertex1.uv0.x - uvx * ratio, vertex1.uv0.y - uvy * ratio);
                 splitVertex.color = Color.white;
                 return splitVertex;
             }
         }
 
-        Color BlendColor(Color colorA, Color colorB)
+        private Color BlendColor(Color colorA, Color colorB)
         {
             switch (BlendMode)
             {

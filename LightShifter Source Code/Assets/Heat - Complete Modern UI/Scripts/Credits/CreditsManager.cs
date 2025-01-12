@@ -29,45 +29,56 @@ namespace Michsky.UI.Heat
         [SerializeField] private InputAction boostHotkey;
 
         // Events
-        public UnityEvent onOpen = new UnityEvent();
-        public UnityEvent onClose = new UnityEvent();
-        public UnityEvent onCreditsEnd = new UnityEvent();
+        public UnityEvent onOpen = new();
+        public UnityEvent onClose = new();
+        public UnityEvent onCreditsEnd = new();
+        private bool enableScrolling;
+        private bool invokedEndEvents;
 
-        bool isOpen = false;
-        bool enableScrolling;
-        bool invokedEndEvents;
+        private bool isOpen;
 
-        void Awake()
+        private void Awake()
         {
             InitCredits();
             boostHotkey.Enable();
-            if (closeAutomatically == true) { onCreditsEnd.AddListener(() => ClosePanel()); }
+            if (closeAutomatically) onCreditsEnd.AddListener(() => ClosePanel());
         }
 
-        void OnEnable()
+        private void Update()
+        {
+            if (enableScrolling == false)
+                return;
+
+            if (boostHotkey.IsInProgress())
+                scrollHelper.value -= scrollSpeed * boostValue * Time.deltaTime;
+            else
+                scrollHelper.value -= scrollSpeed * Time.deltaTime;
+
+            if (scrollHelper.value <= 0.005f && invokedEndEvents == false)
+            {
+                onCreditsEnd.Invoke();
+                invokedEndEvents = true;
+            }
+
+            if (scrollHelper.value <= 0)
+            {
+                enableScrolling = false;
+                onCreditsEnd.Invoke();
+            }
+        }
+
+        private void OnEnable()
         {
             StartScrolling();
         }
 
-        void OnDisable()
+        private void OnDisable()
         {
             invokedEndEvents = false;
             enableScrolling = false;
         }
 
-        void Update()
-        {
-            if (enableScrolling == false)
-                return;
-
-            if (boostHotkey.IsInProgress()) { scrollHelper.value -= (scrollSpeed * boostValue) * Time.deltaTime; }
-            else { scrollHelper.value -= scrollSpeed * Time.deltaTime; }
-
-            if (scrollHelper.value <= 0.005f && invokedEndEvents == false) { onCreditsEnd.Invoke(); invokedEndEvents = true; }
-            if (scrollHelper.value <= 0) { enableScrolling = false; onCreditsEnd.Invoke(); }
-        }
-
-        void InitCredits()
+        private void InitCredits()
         {
             if (creditsPreset == null)
             {
@@ -78,49 +89,50 @@ namespace Michsky.UI.Heat
             backgroundImage.sprite = creditsPreset.backgroundSprite;
 
             foreach (Transform child in creditsListParent.transform)
-            {
-                if (child.GetComponent<CreditsSectionItem>() != null || child.GetComponent<CreditsMentionItem>() != null)
+                if (child.GetComponent<CreditsSectionItem>() != null ||
+                    child.GetComponent<CreditsMentionItem>() != null)
                     Destroy(child.gameObject);
-            }
 
-            for (int i = 0; i < creditsPreset.credits.Count; ++i)
+            for (var i = 0; i < creditsPreset.credits.Count; ++i)
             {
-                GameObject go = Instantiate(creditsSectionPreset, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                var go = Instantiate(creditsSectionPreset, new Vector3(0, 0, 0), Quaternion.identity);
                 go.transform.SetParent(creditsListParent.transform, false);
                 go.name = creditsPreset.credits[i].headerTitle;
 
-                CreditsSectionItem csi = go.GetComponent<CreditsSectionItem>();
+                var csi = go.GetComponent<CreditsSectionItem>();
                 csi.preset = creditsPreset;
                 csi.SetHeader(creditsPreset.credits[i].headerTitle);
-                if (creditsPreset.credits[i].items.Count < 2) { csi.headerLayout.padding.bottom = 0; }
-                if (!string.IsNullOrEmpty(creditsPreset.credits[i].headerTitleKey)) { csi.CheckForLocalization(creditsPreset.credits[i].headerTitleKey); }
-                foreach (string txt in creditsPreset.credits[i].items) { csi.AddNameToList(txt); }
+                if (creditsPreset.credits[i].items.Count < 2) csi.headerLayout.padding.bottom = 0;
+                if (!string.IsNullOrEmpty(creditsPreset.credits[i].headerTitleKey))
+                    csi.CheckForLocalization(creditsPreset.credits[i].headerTitleKey);
+                foreach (var txt in creditsPreset.credits[i].items) csi.AddNameToList(txt);
                 Destroy(csi.namePreset);
                 csi.UpdateLayout();
             }
 
-            for (int i = 0; i < creditsPreset.mentions.Count; ++i)
+            for (var i = 0; i < creditsPreset.mentions.Count; ++i)
             {
-                GameObject go = Instantiate(creditsMentionPreset, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                var go = Instantiate(creditsMentionPreset, new Vector3(0, 0, 0), Quaternion.identity);
                 go.transform.SetParent(creditsListParent.transform, false);
                 go.name = creditsPreset.mentions[i].ID;
 
-                CreditsMentionItem cmi = go.GetComponent<CreditsMentionItem>();
+                var cmi = go.GetComponent<CreditsMentionItem>();
                 cmi.preset = creditsPreset;
                 cmi.UpdateLayout(creditsPreset.mentions[i].layoutSpacing, creditsPreset.mentions[i].descriptionSpacing);
-                if (i == 0) { cmi.listLayout.padding.top = cmi.listLayout.padding.top * 2; }
+                if (i == 0) cmi.listLayout.padding.top = cmi.listLayout.padding.top * 2;
                 cmi.SetIcon(creditsPreset.mentions[i].icon);
                 cmi.SetDescription(creditsPreset.mentions[i].description);
-                if (!string.IsNullOrEmpty(creditsPreset.mentions[i].descriptionKey)) { cmi.CheckForLocalization(creditsPreset.mentions[i].descriptionKey); }
+                if (!string.IsNullOrEmpty(creditsPreset.mentions[i].descriptionKey))
+                    cmi.CheckForLocalization(creditsPreset.mentions[i].descriptionKey);
             }
 
             creditsListParent.padding.bottom = (int)(Screen.currentResolution.height / 1.26f);
             StartCoroutine("FixListLayout");
         }
 
-        void StartScrolling()
+        private void StartScrolling()
         {
-            if (enableScrolling == true)
+            if (enableScrolling)
                 return;
 
             StopCoroutine("StartTimer");
@@ -128,13 +140,15 @@ namespace Michsky.UI.Heat
             enableScrolling = false;
             scrollHelper.value = 1;
 
-            if (scrollDelay != 0) { StartCoroutine("StartTimer"); }
-            else { enableScrolling = true; }
+            if (scrollDelay != 0)
+                StartCoroutine("StartTimer");
+            else
+                enableScrolling = true;
         }
 
-        public void OpenPanel() 
+        public void OpenPanel()
         {
-            if (isOpen == true)
+            if (isOpen)
                 return;
 
             canvasGroup.alpha = 0;
@@ -146,7 +160,7 @@ namespace Michsky.UI.Heat
             StartCoroutine("SetVisible");
         }
 
-        public void ClosePanel() 
+        public void ClosePanel()
         {
             if (isOpen == false)
                 return;
@@ -160,23 +174,25 @@ namespace Michsky.UI.Heat
 
         public void EnableScrolling(bool state)
         {
-            if (state == false) { enableScrolling = false; }
-            else { enableScrolling = true; }
+            if (state == false)
+                enableScrolling = false;
+            else
+                enableScrolling = true;
         }
 
-        IEnumerator StartTimer()
+        private IEnumerator StartTimer()
         {
             yield return new WaitForSeconds(scrollDelay);
             enableScrolling = true;
         }
 
-        IEnumerator FixListLayout()
+        private IEnumerator FixListLayout()
         {
             yield return new WaitForSecondsRealtime(0.025f);
             LayoutRebuilder.ForceRebuildLayoutImmediate(creditsListParent.GetComponent<RectTransform>());
         }
 
-        IEnumerator SetVisible()
+        private IEnumerator SetVisible()
         {
             StopCoroutine("SetInvisible");
 
@@ -189,7 +205,7 @@ namespace Michsky.UI.Heat
             canvasGroup.alpha = 1;
         }
 
-        IEnumerator SetInvisible()
+        private IEnumerator SetInvisible()
         {
             StopCoroutine("SetVisible");
 

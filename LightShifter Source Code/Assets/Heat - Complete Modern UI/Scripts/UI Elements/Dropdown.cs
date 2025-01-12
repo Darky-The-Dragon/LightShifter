@@ -1,15 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using TMPro;
+using UnityEngine.UI;
 
 namespace Michsky.UI.Heat
 {
-    public class Dropdown : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler, ISubmitHandler
+    public class Dropdown : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler,
+        ISelectHandler, IDeselectHandler, ISubmitHandler
     {
+        public enum PanelDirection
+        {
+            Bottom,
+            Top
+        }
+
         // Resources
         public GameObject triggerObject;
         public TextMeshProUGUI headerText;
@@ -28,12 +36,12 @@ namespace Michsky.UI.Heat
         public bool enableIcon = true;
         public bool enableTrigger = true;
         public bool enableScrollbar = true;
-        [SerializeField] private bool startAtBottom = false;
-        [SerializeField] private bool useGamepadInput = false;
+        [SerializeField] private bool startAtBottom;
+        [SerializeField] private bool useGamepadInput;
         public bool setHighPriority = true;
         public bool updateOnEnable = true;
-        public bool outOnPointerExit = false;
-        public bool invokeOnEnable = false;
+        public bool outOnPointerExit;
+        public bool invokeOnEnable;
         public bool initOnEnable = true;
         public bool useSounds = true;
         [Range(1, 15)] public float fadingMultiplier = 8;
@@ -42,68 +50,51 @@ namespace Michsky.UI.Heat
         [Range(1, 50)] public int itemPaddingLeft = 8;
         [Range(1, 50)] public int itemPaddingRight = 25;
         [Range(1, 50)] public int itemSpacing = 8;
-        public int selectedItemIndex = 0;
+        public int selectedItemIndex;
 
         // UI Navigation
-        public bool useUINavigation = false;
+        public bool useUINavigation;
         public Navigation.Mode navigationMode = Navigation.Mode.Automatic;
         public GameObject selectOnUp;
         public GameObject selectOnDown;
         public GameObject selectOnLeft;
         public GameObject selectOnRight;
-        public bool wrapAround = false;
+        public bool wrapAround;
 
         // Animation
         public PanelDirection panelDirection;
         [Range(25, 1000)] public float panelSize = 200;
         [Range(0.5f, 10)] public float curveSpeed = 2;
-        public AnimationCurve animationCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+        public AnimationCurve animationCurve = new(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
 
         // Saving
-        public bool saveSelected = false;
+        public bool saveSelected;
         public string saveKey = "My Dropdown";
 
         // Item list
-        [SerializeField]
-        public List<Item> items = new List<Item>();
+        [SerializeField] public List<Item> items = new();
 
-        // Events
-        [System.Serializable] public class DropdownEvent : UnityEvent<int> { }
         public DropdownEvent onValueChanged;
 
         // Helpers
         [HideInInspector] public bool isOn;
-        [HideInInspector] public int index = 0;
-        [HideInInspector] public int siblingIndex = 0;
-        EventTrigger triggerEvent;
-        Button targetButton;
+        [HideInInspector] public int index;
+        [HideInInspector] public int siblingIndex;
+        private Button targetButton;
+        private EventTrigger triggerEvent;
 
-        public enum PanelDirection { Bottom, Top }
-
-        [System.Serializable]
-        public class Item
+        private void Awake()
         {
-            public string itemName = "Dropdown Item";
-            public string localizationKey;
-            public Sprite itemIcon;
-            [HideInInspector] public int itemIndex;
-            [HideInInspector] public bool isInvisible = false;
-            [HideInInspector] public ButtonManager itemButton;
-            public UnityEvent onItemSelection = new UnityEvent();
-        }
-
-        void Awake()
-        {
-            if (initOnEnable) { Initialize(); }
-            if (useUINavigation) { AddUINavigation(); }
+            if (initOnEnable) Initialize();
+            if (useUINavigation) AddUINavigation();
 
             if (enableTrigger && triggerObject != null)
             {
                 // triggerButton = gameObject.GetComponent<Button>();
                 triggerEvent = triggerObject.AddComponent<EventTrigger>();
-                EventTrigger.Entry entry = new EventTrigger.Entry();
+                var entry = new EventTrigger.Entry();
                 entry.eventID = EventTriggerType.PointerClick;
-                entry.callback.AddListener((eventData) => { Animate(); });
+                entry.callback.AddListener(eventData => { Animate(); });
                 triggerEvent.GetComponent<EventTrigger>().triggers.Add(entry);
             }
 
@@ -117,30 +108,45 @@ namespace Michsky.UI.Heat
 
             if (gameObject.GetComponent<Image>() == null)
             {
-                Image raycastImg = gameObject.AddComponent<Image>();
+                var raycastImg = gameObject.AddComponent<Image>();
                 raycastImg.color = new Color(0, 0, 0, 0);
                 raycastImg.raycastTarget = true;
             }
 
             if (setHighPriority)
             {
-                if (contentCG == null) { contentCG = transform.Find("Content/Item List").GetComponent<CanvasGroup>(); }
+                if (contentCG == null) contentCG = transform.Find("Content/Item List").GetComponent<CanvasGroup>();
                 contentCG.alpha = 1;
 
-                Canvas tempCanvas = contentCG.gameObject.AddComponent<Canvas>();
+                var tempCanvas = contentCG.gameObject.AddComponent<Canvas>();
                 tempCanvas.overrideSorting = true;
                 tempCanvas.sortingOrder = 30000;
                 contentCG.gameObject.AddComponent<GraphicRaycaster>();
             }
         }
 
-        void OnEnable()
+        private void Update()
         {
-            if (listCG == null) { listCG = gameObject.GetComponentInChildren<CanvasGroup>(); }
-            if (listRect == null) { listRect = listCG.GetComponent<RectTransform>(); }
-            if (updateOnEnable && index < items.Count) { SetDropdownIndex(selectedItemIndex); }
-            if (contentCG != null) { contentCG.alpha = 1; }
-            if (UIManagerAudio.instance == null) { useSounds = false; }
+            if (!useGamepadInput || !isOn)
+                return;
+
+            if (items.Count > 0 && ControllerManager.instance != null &&
+                EventSystem.current.currentSelectedGameObject.transform.parent != itemParent)
+            {
+                if (!startAtBottom)
+                    ControllerManager.instance.SelectUIObject(itemParent.GetChild(0).gameObject);
+                else
+                    ControllerManager.instance.SelectUIObject(itemParent.GetChild(items.Count - 1).gameObject);
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (listCG == null) listCG = gameObject.GetComponentInChildren<CanvasGroup>();
+            if (listRect == null) listRect = listCG.GetComponent<RectTransform>();
+            if (updateOnEnable && index < items.Count) SetDropdownIndex(selectedItemIndex);
+            if (contentCG != null) contentCG.alpha = 1;
+            if (UIManagerAudio.instance == null) useSounds = false;
 
             listCG.alpha = 0;
             listCG.interactable = false;
@@ -149,35 +155,74 @@ namespace Michsky.UI.Heat
             isOn = false;
         }
 
-        void Update()
+        public void OnDeselect(BaseEventData eventData)
         {
-            if (!useGamepadInput || !isOn)
+            if (!isInteractable)
                 return;
 
-            if (items.Count > 0 && ControllerManager.instance != null && EventSystem.current.currentSelectedGameObject.transform.parent != itemParent)
-            {
-                if (!startAtBottom) { ControllerManager.instance.SelectUIObject(itemParent.GetChild(0).gameObject); }
-                else { ControllerManager.instance.SelectUIObject(itemParent.GetChild(items.Count - 1).gameObject); }
-            }
+            StartCoroutine("SetNormal");
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
+
+            Animate();
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
+
+            StartCoroutine("SetHighlight");
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (outOnPointerExit && isOn) Animate();
+
+            StartCoroutine("SetNormal");
+        }
+
+        public void OnSelect(BaseEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound);
+
+            StartCoroutine("SetHighlight");
+        }
+
+        public void OnSubmit(BaseEventData eventData)
+        {
+            if (!isInteractable) return;
+            if (useSounds)
+                UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound);
+            if (EventSystem.current.currentSelectedGameObject != gameObject) StartCoroutine("SetNormal");
         }
 
         public void Initialize()
         {
-            if (items.Count == 0) { return; }
-            if (!enableScrollbar && scrollbar != null) { Destroy(scrollbar); }
-            if (itemList == null) { itemList = itemParent.GetComponent<VerticalLayoutGroup>(); }
+            if (items.Count == 0) return;
+            if (!enableScrollbar && scrollbar != null) Destroy(scrollbar);
+            if (itemList == null) itemList = itemParent.GetComponent<VerticalLayoutGroup>();
 
             UpdateItemLayout();
             index = 0;
 
-            foreach (Transform child in itemParent) { Destroy(child.gameObject); }
-            for (int i = 0; i < items.Count; ++i)
+            foreach (Transform child in itemParent) Destroy(child.gameObject);
+            for (var i = 0; i < items.Count; ++i)
             {
-                GameObject go = Instantiate(itemPreset, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+                var go = Instantiate(itemPreset, new Vector3(0, 0, 0), Quaternion.identity);
                 go.transform.SetParent(itemParent, false);
                 go.name = items[i].itemName;
 
-                ButtonManager goBtn = go.GetComponent<ButtonManager>();
+                var goBtn = go.GetComponent<ButtonManager>();
                 goBtn.buttonText = items[i].itemName;
                 goBtn.bypassUpdateOnEnable = true;
                 items[i].itemButton = goBtn;
@@ -188,8 +233,11 @@ namespace Michsky.UI.Heat
                     continue;
                 }
 
-                LocalizedObject loc = goBtn.GetComponent<LocalizedObject>();
-                if (string.IsNullOrEmpty(items[i].localizationKey) && loc != null) { Destroy(loc); }
+                var loc = goBtn.GetComponent<LocalizedObject>();
+                if (string.IsNullOrEmpty(items[i].localizationKey) && loc != null)
+                {
+                    Destroy(loc);
+                }
                 else if (!string.IsNullOrEmpty(items[i].localizationKey) && loc != null)
                 {
                     loc.localizationKey = items[i].localizationKey;
@@ -202,13 +250,20 @@ namespace Michsky.UI.Heat
                     loc.UpdateItem();
                 }
 
-                if (items[i].itemIcon == null) { goBtn.enableIcon = false; }
-                else { goBtn.enableIcon = true; goBtn.buttonIcon = items[i].itemIcon; }
+                if (items[i].itemIcon == null)
+                {
+                    goBtn.enableIcon = false;
+                }
+                else
+                {
+                    goBtn.enableIcon = true;
+                    goBtn.buttonIcon = items[i].itemIcon;
+                }
 
                 goBtn.UpdateUI();
 
                 items[i].itemIndex = i;
-                Item mainItem = items[i];
+                var mainItem = items[i];
 
                 goBtn.onClick.AddListener(Animate);
                 goBtn.onClick.AddListener(items[index = mainItem.itemIndex].onItemSelection.Invoke);
@@ -216,41 +271,51 @@ namespace Michsky.UI.Heat
                 {
                     SetDropdownIndex(index = mainItem.itemIndex);
                     onValueChanged.Invoke(index = mainItem.itemIndex);
-                    if (saveSelected) { PlayerPrefs.SetInt("Dropdown_" + saveKey, mainItem.itemIndex); }
+                    if (saveSelected) PlayerPrefs.SetInt("Dropdown_" + saveKey, mainItem.itemIndex);
                 });
             }
 
-            if (headerImage != null && !enableIcon) { headerImage.gameObject.SetActive(false); }
-            else if (headerImage != null) { headerImage.sprite = items[selectedItemIndex].itemIcon; }
-            if (headerText != null) { headerText.text = items[selectedItemIndex].itemName; }
+            if (headerImage != null && !enableIcon)
+                headerImage.gameObject.SetActive(false);
+            else if (headerImage != null) headerImage.sprite = items[selectedItemIndex].itemIcon;
+            if (headerText != null) headerText.text = items[selectedItemIndex].itemName;
 
             if (saveSelected)
             {
-                if (invokeOnEnable) { items[PlayerPrefs.GetInt("Dropdown_" + saveKey)].onItemSelection.Invoke(); }
-                else { SetDropdownIndex(PlayerPrefs.GetInt("Dropdown_" + saveKey)); }
+                if (invokeOnEnable)
+                    items[PlayerPrefs.GetInt("Dropdown_" + saveKey)].onItemSelection.Invoke();
+                else
+                    SetDropdownIndex(PlayerPrefs.GetInt("Dropdown_" + saveKey));
             }
-            else if (invokeOnEnable) { items[selectedItemIndex].onItemSelection.Invoke(); }
+            else if (invokeOnEnable)
+            {
+                items[selectedItemIndex].onItemSelection.Invoke();
+            }
         }
 
         public void SetDropdownIndex(int itemIndex)
         {
             selectedItemIndex = itemIndex;
 
-            if (headerText != null) { headerText.text = items[itemIndex].itemButton.buttonText; }
-            if (items[itemIndex].isInvisible) { return; }
+            if (headerText != null) headerText.text = items[itemIndex].itemButton.buttonText;
+            if (items[itemIndex].isInvisible) return;
 
-            if (headerImage != null && enableIcon && items[itemIndex].itemButton.enableIcon) { headerImage.gameObject.SetActive(true); headerImage.sprite = items[itemIndex].itemButton.buttonIcon; }
-            else if (headerImage != null && enableIcon && !items[itemIndex].itemButton.enableIcon) { headerImage.gameObject.SetActive(false); }
+            if (headerImage != null && enableIcon && items[itemIndex].itemButton.enableIcon)
+            {
+                headerImage.gameObject.SetActive(true);
+                headerImage.sprite = items[itemIndex].itemButton.buttonIcon;
+            }
+            else if (headerImage != null && enableIcon && !items[itemIndex].itemButton.enableIcon)
+            {
+                headerImage.gameObject.SetActive(false);
+            }
         }
 
         public void Animate()
         {
             if (!isOn)
             {
-                if (enableScrollbar && scrollbar != null && startAtBottom)
-                {
-                    scrollbar.value = 0;
-                }
+                if (enableScrollbar && scrollbar != null && startAtBottom) scrollbar.value = 0;
 
                 isOn = true;
                 listCG.blocksRaycasts = true;
@@ -273,26 +338,36 @@ namespace Michsky.UI.Heat
                 StartCoroutine("StartMinimize");
             }
 
-            if (enableTrigger && triggerObject != null && !isOn) { triggerObject.SetActive(false); }
-            else if (enableTrigger && triggerObject != null && isOn) { triggerObject.SetActive(true); }
-            if (enableTrigger && outOnPointerExit && triggerObject != null) { triggerObject.SetActive(false); }
+            if (enableTrigger && triggerObject != null && !isOn)
+                triggerObject.SetActive(false);
+            else if (enableTrigger && triggerObject != null && isOn) triggerObject.SetActive(true);
+            if (enableTrigger && outOnPointerExit && triggerObject != null) triggerObject.SetActive(false);
         }
 
         public void AddUINavigation()
         {
             if (targetButton == null)
             {
-                if (gameObject.GetComponent<Button>() == null) { targetButton = gameObject.AddComponent<Button>(); }
-                else { targetButton = GetComponent<Button>(); }
+                if (gameObject.GetComponent<Button>() == null)
+                    targetButton = gameObject.AddComponent<Button>();
+                else
+                    targetButton = GetComponent<Button>();
 
                 targetButton.transition = Selectable.Transition.None;
             }
 
-            Navigation customNav = new Navigation();
+            var customNav = new Navigation();
             customNav.mode = navigationMode;
 
-            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal) { customNav.wrapAround = wrapAround; }
-            else if (navigationMode == Navigation.Mode.Explicit) { StartCoroutine("InitUINavigation", customNav); return; }
+            if (navigationMode == Navigation.Mode.Vertical || navigationMode == Navigation.Mode.Horizontal)
+            {
+                customNav.wrapAround = wrapAround;
+            }
+            else if (navigationMode == Navigation.Mode.Explicit)
+            {
+                StartCoroutine("InitUINavigation", customNav);
+                return;
+            }
 
             targetButton.navigation = customNav;
         }
@@ -301,8 +376,8 @@ namespace Michsky.UI.Heat
         {
             if (targetButton != null)
             {
-                Navigation customNav = new Navigation();
-                Navigation.Mode navMode = Navigation.Mode.None;
+                var customNav = new Navigation();
+                var navMode = Navigation.Mode.None;
                 customNav.mode = navMode;
                 targetButton.navigation = customNav;
             }
@@ -311,30 +386,30 @@ namespace Michsky.UI.Heat
         public void Interactable(bool value)
         {
             isInteractable = value;
-            if (gameObject.activeInHierarchy == false) { return; }
+            if (gameObject.activeInHierarchy == false) return;
             StartCoroutine("SetNormal");
         }
 
         public void CreateNewItem(string title, Sprite icon, bool notify)
         {
-            Item item = new Item();
+            var item = new Item();
             item.itemName = title;
             item.itemIcon = icon;
             items.Add(item);
-            if (notify == true) { Initialize(); }
+            if (notify) Initialize();
         }
 
         public void CreateNewItem(string title, bool notify)
         {
-            Item item = new Item();
+            var item = new Item();
             item.itemName = title;
             items.Add(item);
-            if (notify == true) { Initialize(); }
+            if (notify) Initialize();
         }
 
         public void CreateNewItem(string title)
         {
-            Item item = new Item();
+            var item = new Item();
             item.itemName = title;
             items.Add(item);
             Initialize();
@@ -344,7 +419,7 @@ namespace Michsky.UI.Heat
         {
             var item = items.Find(x => x.itemName == itemTitle);
             items.Remove(item);
-            if (notify == true) { Initialize(); }
+            if (notify) Initialize();
         }
 
         public void RemoveItem(string itemTitle)
@@ -366,59 +441,12 @@ namespace Michsky.UI.Heat
             itemList.padding.right = itemPaddingRight;
         }
 
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
-
-            Animate();
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
-
-            StartCoroutine("SetHighlight");
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (outOnPointerExit && isOn) { Animate(); }
-
-            StartCoroutine("SetNormal");
-        }
-
-        public void OnSelect(BaseEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.hoverSound); }
-
-            StartCoroutine("SetHighlight");
-        }
-
-        public void OnDeselect(BaseEventData eventData)
-        {
-            if (!isInteractable)
-                return;
-
-            StartCoroutine("SetNormal");
-        }
-
-        public void OnSubmit(BaseEventData eventData)
-        {
-            if (!isInteractable) { return; }
-            if (useSounds) { UIManagerAudio.instance.audioSource.PlayOneShot(UIManagerAudio.instance.UIManagerAsset.clickSound); }
-            if (EventSystem.current.currentSelectedGameObject != gameObject) { StartCoroutine("SetNormal"); }
-        }
-
-        IEnumerator StartExpand()
+        private IEnumerator StartExpand()
         {
             float elapsedTime = 0;
 
-            Vector2 startPos = listRect.sizeDelta;
-            Vector2 endPos = new Vector2(listRect.sizeDelta.x, panelSize);
+            var startPos = listRect.sizeDelta;
+            var endPos = new Vector2(listRect.sizeDelta.x, panelSize);
 
             while (listRect.sizeDelta.y <= panelSize - 0.1f)
             {
@@ -433,12 +461,12 @@ namespace Michsky.UI.Heat
             listRect.sizeDelta = endPos;
         }
 
-        IEnumerator StartMinimize()
+        private IEnumerator StartMinimize()
         {
             float elapsedTime = 0;
 
-            Vector2 startPos = listRect.sizeDelta;
-            Vector2 endPos = new Vector2(listRect.sizeDelta.x, 0);
+            var startPos = listRect.sizeDelta;
+            var endPos = new Vector2(listRect.sizeDelta.x, 0);
 
             while (listRect.sizeDelta.y >= 0.1f)
             {
@@ -455,7 +483,7 @@ namespace Michsky.UI.Heat
             listCG.gameObject.SetActive(false);
         }
 
-        IEnumerator SetNormal()
+        private IEnumerator SetNormal()
         {
             StopCoroutine("SetHighlight");
 
@@ -468,7 +496,7 @@ namespace Michsky.UI.Heat
             highlightCG.alpha = 0;
         }
 
-        IEnumerator SetHighlight()
+        private IEnumerator SetHighlight()
         {
             StopCoroutine("SetNormal");
 
@@ -479,6 +507,24 @@ namespace Michsky.UI.Heat
             }
 
             highlightCG.alpha = 1;
+        }
+
+        // Events
+        [Serializable]
+        public class DropdownEvent : UnityEvent<int>
+        {
+        }
+
+        [Serializable]
+        public class Item
+        {
+            public string itemName = "Dropdown Item";
+            public string localizationKey;
+            public Sprite itemIcon;
+            [HideInInspector] public int itemIndex;
+            [HideInInspector] public bool isInvisible;
+            [HideInInspector] public ButtonManager itemButton;
+            public UnityEvent onItemSelection = new();
         }
     }
 }

@@ -1,21 +1,22 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
-    [CreateAssetMenu(fileName = "New Localization Settings", menuName = "Heat UI/Localization/New Localization Settings")]
+    [CreateAssetMenu(fileName = "New Localization Settings",
+        menuName = "Heat UI/Localization/New Localization Settings")]
     public class LocalizationSettings : ScriptableObject
     {
-        public List<Language> languages = new List<Language>();
-        public List<Table> tables = new List<Table>();
-        public string defaultLanguageID;
-        public int defaultLanguageIndex;
-        public bool enableExperimental = false;
-
         // Global Variables
         public static string notInitializedText = "NOT_INITIALIZED";
+        public List<Language> languages = new();
+        public List<Table> tables = new();
+        public string defaultLanguageID;
+        public int defaultLanguageIndex;
+        public bool enableExperimental;
 
-        [System.Serializable]
+        [Serializable]
         public class Language
         {
             public string languageID = "en-US";
@@ -27,7 +28,7 @@ namespace Michsky.UI.Heat
 #endif
         }
 
-        [System.Serializable]
+        [Serializable]
         public class Table
         {
             public string tableID;

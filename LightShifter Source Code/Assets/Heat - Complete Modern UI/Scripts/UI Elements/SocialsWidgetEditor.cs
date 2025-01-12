@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -8,23 +8,25 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(SocialsWidget))]
     public class SocialsWidgetEditor : Editor
     {
-        private SocialsWidget swTarget;
-        private GUISkin customSkin;
         private int currentTab;
+        private GUISkin customSkin;
+        private SocialsWidget swTarget;
 
         private void OnEnable()
         {
             swTarget = (SocialsWidget)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Socials Widget Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -75,8 +77,10 @@ namespace Michsky.UI.Heat
 
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    allowTransition.boolValue = HeatUIEditorHandler.DrawToggle(allowTransition.boolValue, customSkin, "Allow Transition", "Pause or unpause the transition.");
-                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization", "Bypasses localization functions when disabled.");
+                    allowTransition.boolValue = HeatUIEditorHandler.DrawToggle(allowTransition.boolValue, customSkin,
+                        "Allow Transition", "Pause or unpause the transition.");
+                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin,
+                        "Use Localization", "Bypasses localization functions when disabled.");
                     HeatUIEditorHandler.DrawProperty(timer, customSkin, "Timer");
                     HeatUIEditorHandler.DrawProperty(tintSpeed, customSkin, "Tint Speed");
                     HeatUIEditorHandler.DrawProperty(tintCurve, customSkin, "Tint Curve");
@@ -85,7 +89,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

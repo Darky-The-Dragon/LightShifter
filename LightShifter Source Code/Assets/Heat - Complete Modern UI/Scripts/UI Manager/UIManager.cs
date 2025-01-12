@@ -1,12 +1,20 @@
-﻿using UnityEngine;
-using TMPro;
+﻿using TMPro;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CreateAssetMenu(fileName = "New UI Manager", menuName = "Heat UI/New UI Manager")]
     public class UIManager : ScriptableObject
     {
+        public enum PressAnyKeyTextType
+        {
+            Default,
+            Custom
+        }
+
         public static string buildID = "R201-240201";
+        public static string localizationSaveKey = "GameLanguage_";
+        public static bool isLocalizationEnabled = false;
 
         // Settings
         public bool enableDynamicUpdate = true;
@@ -41,9 +49,7 @@ namespace Michsky.UI.Heat
         // Localization
         public bool enableLocalization;
         public LocalizationSettings localizationSettings;
-        public static string localizationSaveKey = "GameLanguage_";
         public LocalizationLanguage currentLanguage;
-        public static bool isLocalizationEnabled = false;
 
         // Logo
         public Sprite brandLogo;
@@ -55,7 +61,5 @@ namespace Michsky.UI.Heat
         public PressAnyKeyTextType pakType;
         public string pakText = "Press {Any Key} To Start";
         public string pakLocalizationText = "PAK_Part1 {PAK_Key} PAK_Part2";
-
-        public enum PressAnyKeyTextType { Default, Custom }
     }
 }

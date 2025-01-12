@@ -1,35 +1,37 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
+using System;
 using UnityEditor;
 using UnityEditor.Presets;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(UIManager))]
-    [System.Serializable]
+    [Serializable]
     public class UIManagerEditor : Editor
     {
-        GUISkin customSkin;
-        private UIManager uimTarget;
-
         protected static float foldoutItemSpace = 2;
         protected static float foldoutTopSpace = 5;
         protected static float foldoutBottomSpace = 2;
 
-        protected static bool showAch = false;
-        protected static bool showAudio = false;
-        protected static bool showColors = false;
-        protected static bool showFonts = false;
-        protected static bool showLocalization = false;
-        protected static bool showLogo = false;
-        protected static bool showSplashScreen = false;
+        protected static bool showAch;
+        protected static bool showAudio;
+        protected static bool showColors;
+        protected static bool showFonts;
+        protected static bool showLocalization;
+        protected static bool showLogo;
+        protected static bool showSplashScreen;
+        private GUISkin customSkin;
+        private UIManager uimTarget;
 
         private void OnEnable()
         {
             uimTarget = (UIManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -37,20 +39,22 @@ namespace Michsky.UI.Heat
             if (customSkin == null)
             {
                 EditorGUILayout.HelpBox("Editor resources are missing. You can manually fix this by deleting " +
-                    "Heat UI > Editor folder and then re-import the package. \n\nIf you're still seeing this " +
-                    "dialog even after the re-import, contact me with this ID: " + UIManager.buildID, MessageType.Error);
+                                        "Heat UI > Editor folder and then re-import the package. \n\nIf you're still seeing this " +
+                                        "dialog even after the re-import, contact me with this ID: " +
+                                        UIManager.buildID, MessageType.Error);
 
-                if (GUILayout.Button("Contact")) { Email(); }
+                if (GUILayout.Button("Contact")) Email();
                 return;
             }
 
             // Foldout style
-            GUIStyle foldoutStyle = customSkin.FindStyle("UIM Foldout");
+            var foldoutStyle = customSkin.FindStyle("UIM Foldout");
 
             // UIM Header
             HeatUIEditorHandler.DrawHeader(customSkin, "UIM Header", 8);
 
             #region Achievements
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(foldoutTopSpace);
             GUILayout.BeginHorizontal();
@@ -67,7 +71,8 @@ namespace Michsky.UI.Heat
                 var legendaryColor = serializedObject.FindProperty("legendaryColor");
 
                 HeatUIEditorHandler.DrawProperty(achievementLibrary, customSkin, "Achievement Library");
-                if (uimTarget.achievementLibrary != null && GUILayout.Button("Show Library", customSkin.button)) { Selection.activeObject = uimTarget.achievementLibrary; }
+                if (uimTarget.achievementLibrary != null && GUILayout.Button("Show Library", customSkin.button))
+                    Selection.activeObject = uimTarget.achievementLibrary;
                 HeatUIEditorHandler.DrawProperty(commonColor, customSkin, "Common Color");
                 HeatUIEditorHandler.DrawProperty(rareColor, customSkin, "Rare Color");
                 HeatUIEditorHandler.DrawProperty(legendaryColor, customSkin, "Legendary Color");
@@ -75,9 +80,11 @@ namespace Michsky.UI.Heat
 
             GUILayout.EndVertical();
             GUILayout.Space(foldoutItemSpace);
+
             #endregion
 
             #region Audio
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(foldoutTopSpace);
             GUILayout.BeginHorizontal();
@@ -99,9 +106,11 @@ namespace Michsky.UI.Heat
 
             GUILayout.EndVertical();
             GUILayout.Space(foldoutItemSpace);
+
             #endregion
 
             #region Colors
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(foldoutTopSpace);
             GUILayout.BeginHorizontal();
@@ -130,9 +139,11 @@ namespace Michsky.UI.Heat
 
             GUILayout.EndVertical();
             GUILayout.Space(foldoutItemSpace);
+
             #endregion
 
             #region Fonts
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(foldoutTopSpace);
             GUILayout.BeginHorizontal();
@@ -160,14 +171,17 @@ namespace Michsky.UI.Heat
 
             GUILayout.EndVertical();
             GUILayout.Space(foldoutItemSpace);
+
             #endregion
 
             #region Localization
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(foldoutTopSpace);
             GUILayout.BeginHorizontal();
             showLocalization = EditorGUILayout.Foldout(showLocalization, "Localization", true, foldoutStyle);
-            showLocalization = GUILayout.Toggle(showLocalization, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
+            showLocalization =
+                GUILayout.Toggle(showLocalization, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
             GUILayout.EndHorizontal();
             GUILayout.Space(foldoutBottomSpace);
 
@@ -176,26 +190,36 @@ namespace Michsky.UI.Heat
                 var enableLocalization = serializedObject.FindProperty("enableLocalization");
                 var localizationSettings = serializedObject.FindProperty("localizationSettings");
 
-                enableLocalization.boolValue = HeatUIEditorHandler.DrawToggle(enableLocalization.boolValue, customSkin, "Enable Localization (Beta)");
+                enableLocalization.boolValue = HeatUIEditorHandler.DrawToggle(enableLocalization.boolValue, customSkin,
+                    "Enable Localization (Beta)");
 
-                if (enableLocalization.boolValue == true)
+                if (enableLocalization.boolValue)
                 {
                     HeatUIEditorHandler.DrawPropertyCW(localizationSettings, customSkin, "Localization Settings", 130);
-                    
+
                     if (uimTarget.localizationSettings != null)
                     {
-                        if (GUILayout.Button("Open Localization Settings", customSkin.button)) { Selection.activeObject = uimTarget.localizationSettings; }
-                        EditorGUILayout.HelpBox("Localization is enabled. You can use the localization settings asset to manage localization.", MessageType.Info);
+                        if (GUILayout.Button("Open Localization Settings", customSkin.button))
+                            Selection.activeObject = uimTarget.localizationSettings;
+                        EditorGUILayout.HelpBox(
+                            "Localization is enabled. You can use the localization settings asset to manage localization.",
+                            MessageType.Info);
                     }
-                    else { EditorGUILayout.HelpBox("Localization is enabled, but 'Localization Settings' is missing.", MessageType.Warning); }
+                    else
+                    {
+                        EditorGUILayout.HelpBox("Localization is enabled, but 'Localization Settings' is missing.",
+                            MessageType.Warning);
+                    }
                 }
             }
 
             GUILayout.EndVertical();
             GUILayout.Space(foldoutItemSpace);
+
             #endregion
 
             #region Logo
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(foldoutTopSpace);
             GUILayout.BeginHorizontal();
@@ -215,14 +239,17 @@ namespace Michsky.UI.Heat
 
             GUILayout.EndVertical();
             GUILayout.Space(foldoutItemSpace);
+
             #endregion
 
             #region Splash Screen
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(foldoutTopSpace);
             GUILayout.BeginHorizontal();
             showSplashScreen = EditorGUILayout.Foldout(showSplashScreen, "Splash Screen", true, foldoutStyle);
-            showSplashScreen = GUILayout.Toggle(showSplashScreen, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
+            showSplashScreen =
+                GUILayout.Toggle(showSplashScreen, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
             GUILayout.EndHorizontal();
             GUILayout.Space(foldoutBottomSpace);
 
@@ -234,25 +261,29 @@ namespace Michsky.UI.Heat
                 var pakText = serializedObject.FindProperty("pakText");
                 var pakLocalizationText = serializedObject.FindProperty("pakLocalizationText");
 
-                enableSplashScreen.boolValue = HeatUIEditorHandler.DrawToggle(enableSplashScreen.boolValue, customSkin, "Enable Splash Screen");
-                if (enableSplashScreen.boolValue == false) { GUI.enabled = false; }
-                showSplashScreenOnce.boolValue = HeatUIEditorHandler.DrawToggle(showSplashScreenOnce.boolValue, customSkin, "Show Only Once", "Only appears in the current session when enabled.");
+                enableSplashScreen.boolValue = HeatUIEditorHandler.DrawToggle(enableSplashScreen.boolValue, customSkin,
+                    "Enable Splash Screen");
+                if (enableSplashScreen.boolValue == false) GUI.enabled = false;
+                showSplashScreenOnce.boolValue = HeatUIEditorHandler.DrawToggle(showSplashScreenOnce.boolValue,
+                    customSkin, "Show Only Once", "Only appears in the current session when enabled.");
 
                 HeatUIEditorHandler.DrawProperty(pakType, customSkin, "Press Any Key Type");
 
                 if (pakType.enumValueIndex == 0)
                 {
-                    if (uimTarget.enableLocalization == true) 
+                    if (uimTarget.enableLocalization)
                     {
                         HeatUIEditorHandler.DrawProperty(pakLocalizationText, customSkin, "Press Any Key Text");
-                        EditorGUILayout.HelpBox("Localization formatting: {StringKey}" + "\nDefault: PAK_Part1 {PAK_Key} PAK_Part3"
-                            + "\nDefault output: Press [Any Key] To Start", MessageType.Info); 
+                        EditorGUILayout.HelpBox("Localization formatting: {StringKey}" +
+                                                "\nDefault: PAK_Part1 {PAK_Key} PAK_Part3"
+                                                + "\nDefault output: Press [Any Key] To Start", MessageType.Info);
                     }
 
                     else
                     {
                         HeatUIEditorHandler.DrawProperty(pakText, customSkin, "Press Any Key Text");
-                        EditorGUILayout.HelpBox("Formatting: {Key Text}" + "\nSample: Press {Any Key} To Start", MessageType.Info);
+                        EditorGUILayout.HelpBox("Formatting: {Key Text}" + "\nSample: Press {Any Key} To Start",
+                            MessageType.Info);
                     }
                 }
             }
@@ -260,53 +291,61 @@ namespace Michsky.UI.Heat
             GUI.enabled = true;
             GUILayout.EndVertical();
             GUILayout.Space(foldoutItemSpace);
+
             #endregion
 
             #region Settings
+
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 14);
 
             var enableDynamicUpdate = serializedObject.FindProperty("enableDynamicUpdate");
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(-2);
             GUILayout.BeginHorizontal();
-            enableDynamicUpdate.boolValue = GUILayout.Toggle(enableDynamicUpdate.boolValue, new GUIContent("Enable Dynamic Update"), customSkin.FindStyle("Toggle"));
-            enableDynamicUpdate.boolValue = GUILayout.Toggle(enableDynamicUpdate.boolValue, new GUIContent(""), customSkin.FindStyle("Toggle Helper"));
+            enableDynamicUpdate.boolValue = GUILayout.Toggle(enableDynamicUpdate.boolValue,
+                new GUIContent("Enable Dynamic Update"), customSkin.FindStyle("Toggle"));
+            enableDynamicUpdate.boolValue = GUILayout.Toggle(enableDynamicUpdate.boolValue, new GUIContent(""),
+                customSkin.FindStyle("Toggle Helper"));
             GUILayout.EndHorizontal();
             GUILayout.Space(4);
 
-            if (enableDynamicUpdate.boolValue == true)
-            {
-                EditorGUILayout.HelpBox("When this option is enabled, all objects connected to this manager will be dynamically updated synchronously. " +
-                    "Basically; consumes more resources, but allows dynamic changes at runtime/editor.", MessageType.Info);
-            }
+            if (enableDynamicUpdate.boolValue)
+                EditorGUILayout.HelpBox(
+                    "When this option is enabled, all objects connected to this manager will be dynamically updated synchronously. " +
+                    "Basically; consumes more resources, but allows dynamic changes at runtime/editor.",
+                    MessageType.Info);
 
             else
-            {
-                EditorGUILayout.HelpBox("When this option is disabled, all objects connected to this manager will be updated only once on awake. " +
+                EditorGUILayout.HelpBox(
+                    "When this option is disabled, all objects connected to this manager will be updated only once on awake. " +
                     "Basically; has better performance, but it's static.", MessageType.Info);
-            }
 
             GUILayout.EndVertical();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Reset to defaults", customSkin.button)) { ResetToDefaults(); }
+            if (GUILayout.Button("Reset to defaults", customSkin.button)) ResetToDefaults();
             GUILayout.EndHorizontal();
+
             #endregion
 
             #region Integrations
+
             HeatUIEditorHandler.DrawHeader(customSkin, "Integrations Header", 16);
-            if (GUILayout.Button("Assembly Definition Patch", customSkin.button)) { Application.OpenURL("https://docs.michsky.com/docs/heat-ui/others/"); }
+            if (GUILayout.Button("Assembly Definition Patch", customSkin.button))
+                Application.OpenURL("https://docs.michsky.com/docs/heat-ui/others/");
+
             #endregion
 
             #region Support
+
             HeatUIEditorHandler.DrawHeader(customSkin, "Support Header", 16);
             GUILayout.BeginVertical();
-         
+
             GUILayout.BeginHorizontal();
             GUILayout.Label("Need help? Contact me via:", customSkin.FindStyle("Text"));
-            GUILayout.EndHorizontal();         
+            GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Documentation", customSkin.button)) { Docs(); }
-            if (GUILayout.Button("Support", customSkin.button)) { Email(); }
+            if (GUILayout.Button("Documentation", customSkin.button)) Docs();
+            if (GUILayout.Button("Support", customSkin.button)) Email();
             GUILayout.EndHorizontal();
             GUILayout.EndVertical();
             GUILayout.Space(6);
@@ -316,32 +355,42 @@ namespace Michsky.UI.Heat
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(6);
+
             #endregion
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
 
-        void Docs() { Application.OpenURL("https://docs.michsky.com/docs/heat-ui/"); }
-        void Email() { Application.OpenURL("https://www.michsky.com/contact/"); }
-
-        void ResetToDefaults()
+        private void Docs()
         {
-            if (EditorUtility.DisplayDialog("Reset to defaults", "Are you sure you want to reset UI Manager values to default?", "Yes", "Cancel"))
-            {
+            Application.OpenURL("https://docs.michsky.com/docs/heat-ui/");
+        }
+
+        private void Email()
+        {
+            Application.OpenURL("https://www.michsky.com/contact/");
+        }
+
+        private void ResetToDefaults()
+        {
+            if (EditorUtility.DisplayDialog("Reset to defaults",
+                    "Are you sure you want to reset UI Manager values to default?", "Yes", "Cancel"))
                 try
                 {
-                    Preset defaultPreset = Resources.Load<Preset>("HUIM Presets/Default");
+                    var defaultPreset = Resources.Load<Preset>("HUIM Presets/Default");
                     defaultPreset.ApplyTo(Resources.Load("Heat UI Manager"));
-                   
+
                     Selection.activeObject = null;
                     Selection.activeObject = Resources.Load("Heat UI Manager");
-                   
+
                     Debug.Log("<b>[UI Manager]</b> Resetting successful.");
                 }
 
-                catch { Debug.LogWarning("<b>[UI Manager]</b> Resetting failed. Default preset seems to be missing."); }
-            }
+                catch
+                {
+                    Debug.LogWarning("<b>[UI Manager]</b> Resetting failed. Default preset seems to be missing.");
+                }
         }
     }
 }

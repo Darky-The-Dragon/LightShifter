@@ -1,13 +1,13 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 namespace Michsky.UI.Heat
 {
     public class CreditsMentionItem : MonoBehaviour
     {
-        [Header("Resources")]
-        [SerializeField] private Image iconImage;
+        [Header("Resources")] [SerializeField] private Image iconImage;
+
         [SerializeField] private TextMeshProUGUI descriptionText;
         public VerticalLayoutGroup listLayout;
 
@@ -15,12 +15,10 @@ namespace Michsky.UI.Heat
         [HideInInspector] public CreditsPreset preset;
         [HideInInspector] public LocalizedObject localizedObject;
 
-        void OnEnable()
+        private void OnEnable()
         {
             if (localizedObject != null && !string.IsNullOrEmpty(localizedObject.localizationKey))
-            {
                 SetDescription(localizedObject.GetKeyOutput(localizedObject.localizationKey));
-            }
         }
 
         public void UpdateLayout(int paddingValue, int spacingValue)
@@ -43,7 +41,7 @@ namespace Michsky.UI.Heat
 
         public void SetDescription(string text)
         {
-            if (string.IsNullOrEmpty(text)) 
+            if (string.IsNullOrEmpty(text))
             {
                 descriptionText.gameObject.SetActive(false);
                 return;
@@ -55,7 +53,11 @@ namespace Michsky.UI.Heat
         public void CheckForLocalization(string key)
         {
             localizedObject = descriptionText.GetComponent<LocalizedObject>();
-            if (localizedObject == null || (LocalizationManager.instance != null && !LocalizationManager.instance.UIManagerAsset.enableLocalization)) { localizedObject = null; }
+            if (localizedObject == null || (LocalizationManager.instance != null &&
+                                            !LocalizationManager.instance.UIManagerAsset.enableLocalization))
+            {
+                localizedObject = null;
+            }
             else if (!string.IsNullOrEmpty(key))
             {
                 localizedObject.localizationKey = key;

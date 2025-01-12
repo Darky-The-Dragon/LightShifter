@@ -1,7 +1,8 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Michsky.UI.Heat
 {
@@ -9,15 +10,17 @@ namespace Michsky.UI.Heat
     [CustomEditor(typeof(PauseMenuManager))]
     public class PauseMenuManagerEditor : Editor
     {
-        private PauseMenuManager pmmTarget;
         private GUISkin customSkin;
+        private PauseMenuManager pmmTarget;
 
         private void OnEnable()
         {
             pmmTarget = (PauseMenuManager)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
@@ -45,20 +48,23 @@ namespace Michsky.UI.Heat
 
                 if (Application.isPlaying == false)
                 {
-                    if (pmmTarget.pauseMenuCanvas.gameObject.activeSelf == false && GUILayout.Button("Show Pause Menu", customSkin.button))
+                    if (pmmTarget.pauseMenuCanvas.gameObject.activeSelf == false &&
+                        GUILayout.Button("Show Pause Menu", customSkin.button))
                     {
                         pmmTarget.pauseMenuCanvas.gameObject.SetActive(true);
-                        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                     }
 
-                    else if (pmmTarget.pauseMenuCanvas.gameObject.activeSelf == true && GUILayout.Button("Hide Pause Menu", customSkin.button))
+                    else if (pmmTarget.pauseMenuCanvas.gameObject.activeSelf &&
+                             GUILayout.Button("Hide Pause Menu", customSkin.button))
                     {
                         pmmTarget.pauseMenuCanvas.gameObject.SetActive(false);
-                        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+                        EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
                     }
                 }
 
-                if (GUILayout.Button("Select Object", customSkin.button)) { Selection.activeObject = pmmTarget.pauseMenuCanvas; }
+                if (GUILayout.Button("Select Object", customSkin.button))
+                    Selection.activeObject = pmmTarget.pauseMenuCanvas;
                 GUILayout.EndHorizontal();
             }
 
@@ -69,8 +75,10 @@ namespace Michsky.UI.Heat
             HeatUIEditorHandler.DrawProperty(background, customSkin, "Background");
 
             HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 10);
-            setTimeScale.boolValue = HeatUIEditorHandler.DrawToggle(setTimeScale.boolValue, customSkin, "Set Time Scale", "Sets the time scale depending on the pause menu state.");
-            HeatUIEditorHandler.DrawPropertyCW(inputBlockDuration, customSkin, "Input Block Duration", "Block input in specific amount of time to provide smooth visuals.", 140);
+            setTimeScale.boolValue = HeatUIEditorHandler.DrawToggle(setTimeScale.boolValue, customSkin,
+                "Set Time Scale", "Sets the time scale depending on the pause menu state.");
+            HeatUIEditorHandler.DrawPropertyCW(inputBlockDuration, customSkin, "Input Block Duration",
+                "Block input in specific amount of time to provide smooth visuals.", 140);
             HeatUIEditorHandler.DrawPropertyCW(menuCursorState, customSkin, "Menu Cursor State", 140);
             HeatUIEditorHandler.DrawPropertyCW(menuCursorVisibility, customSkin, "Menu Cursor Visibility", 140);
             HeatUIEditorHandler.DrawPropertyCW(gameCursorState, customSkin, "Game Cursor State", 140);

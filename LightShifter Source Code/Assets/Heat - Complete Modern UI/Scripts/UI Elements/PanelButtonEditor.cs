@@ -1,6 +1,6 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
@@ -9,22 +9,24 @@ namespace Michsky.UI.Heat
     public class PanelButtonEditor : Editor
     {
         private PanelButton buttonTarget;
-        private GUISkin customSkin;
         private int currentTab;
+        private GUISkin customSkin;
 
         private void OnEnable()
         {
             buttonTarget = (PanelButton)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Panel Button Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -76,8 +78,9 @@ namespace Michsky.UI.Heat
                 case 0:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Content Header", 6);
                     HeatUIEditorHandler.DrawPropertyCW(buttonIcon, customSkin, "Button Icon", 80);
-                    if (useCustomText.boolValue == false) { HeatUIEditorHandler.DrawPropertyCW(buttonText, customSkin, "Button Text", 80); }
-                    if (buttonTarget.buttonIcon != null || useCustomText.boolValue == false) { buttonTarget.UpdateUI(); }
+                    if (useCustomText.boolValue == false)
+                        HeatUIEditorHandler.DrawPropertyCW(buttonText, customSkin, "Button Text", 80);
+                    if (buttonTarget.buttonIcon != null || useCustomText.boolValue == false) buttonTarget.UpdateUI();
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Events Header", 10);
                     EditorGUILayout.PropertyField(onClick, new GUIContent("On Click"), true);
@@ -105,19 +108,27 @@ namespace Michsky.UI.Heat
 
                 case 2:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Options Header", 6);
-                    isInteractable.boolValue = HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
-                    isSelected.boolValue = HeatUIEditorHandler.DrawToggle(isSelected.boolValue, customSkin, "Is Selected");
-                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin, "Use Localization", "Bypasses localization functions when disabled.");
-                    useCustomText.boolValue = HeatUIEditorHandler.DrawToggle(useCustomText.boolValue, customSkin, "Use Custom Text", "Bypasses inspector values and allows manual editing.");
-                    useSeperator.boolValue = HeatUIEditorHandler.DrawToggle(useSeperator.boolValue, customSkin, "Use Seperator");
-                    useUINavigation.boolValue = HeatUIEditorHandler.DrawToggle(useUINavigation.boolValue, customSkin, "Use UI Navigation", "Enables controller navigation.");
-                    useSounds.boolValue = HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Button Sounds");
-                    HeatUIEditorHandler.DrawProperty(fadingMultiplier, customSkin, "Fading Multiplier", "Set the animation fade multiplier.");
+                    isInteractable.boolValue =
+                        HeatUIEditorHandler.DrawToggle(isInteractable.boolValue, customSkin, "Is Interactable");
+                    isSelected.boolValue =
+                        HeatUIEditorHandler.DrawToggle(isSelected.boolValue, customSkin, "Is Selected");
+                    useLocalization.boolValue = HeatUIEditorHandler.DrawToggle(useLocalization.boolValue, customSkin,
+                        "Use Localization", "Bypasses localization functions when disabled.");
+                    useCustomText.boolValue = HeatUIEditorHandler.DrawToggle(useCustomText.boolValue, customSkin,
+                        "Use Custom Text", "Bypasses inspector values and allows manual editing.");
+                    useSeperator.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useSeperator.boolValue, customSkin, "Use Seperator");
+                    useUINavigation.boolValue = HeatUIEditorHandler.DrawToggle(useUINavigation.boolValue, customSkin,
+                        "Use UI Navigation", "Enables controller navigation.");
+                    useSounds.boolValue =
+                        HeatUIEditorHandler.DrawToggle(useSounds.boolValue, customSkin, "Use Button Sounds");
+                    HeatUIEditorHandler.DrawProperty(fadingMultiplier, customSkin, "Fading Multiplier",
+                        "Set the animation fade multiplier.");
                     break;
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

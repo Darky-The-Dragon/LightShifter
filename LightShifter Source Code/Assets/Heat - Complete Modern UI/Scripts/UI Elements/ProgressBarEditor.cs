@@ -1,29 +1,31 @@
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace Michsky.UI.Heat
 {
     [CustomEditor(typeof(ProgressBar))]
     public class ProgressBarEditor : Editor
     {
+        private int currentTab;
         private GUISkin customSkin;
         private ProgressBar pbTarget;
-        private int currentTab;
 
         private void OnEnable()
         {
             pbTarget = (ProgressBar)target;
 
-            if (EditorGUIUtility.isProSkin == true) { customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin); }
-            else { customSkin = HeatUIEditorHandler.GetLightEditor(customSkin); }
+            if (EditorGUIUtility.isProSkin)
+                customSkin = HeatUIEditorHandler.GetDarkEditor(customSkin);
+            else
+                customSkin = HeatUIEditorHandler.GetLightEditor(customSkin);
         }
 
         public override void OnInspectorGUI()
         {
             HeatUIEditorHandler.DrawComponentHeader(customSkin, "Progress Bar Top Header");
 
-            GUIContent[] toolbarTabs = new GUIContent[3];
+            var toolbarTabs = new GUIContent[3];
             toolbarTabs[0] = new GUIContent("Content");
             toolbarTabs[1] = new GUIContent("Resources");
             toolbarTabs[2] = new GUIContent("Settings");
@@ -65,26 +67,33 @@ namespace Michsky.UI.Heat
             {
                 case 0:
                     HeatUIEditorHandler.DrawHeader(customSkin, "Content Header", 6);
-                    if (pbTarget.barImage != null) { HeatUIEditorHandler.DrawPropertyCW(icon, customSkin, "Bar Icon", 99); }
+                    if (pbTarget.barImage != null) HeatUIEditorHandler.DrawPropertyCW(icon, customSkin, "Bar Icon", 99);
 
                     GUILayout.BeginHorizontal(EditorStyles.helpBox);
-                    EditorGUILayout.LabelField(new GUIContent("Current Percent"), customSkin.FindStyle("Text"), GUILayout.Width(100));
-                    currentValue.floatValue = EditorGUILayout.Slider(pbTarget.currentValue, minValue.floatValue, maxValue.floatValue);
+                    EditorGUILayout.LabelField(new GUIContent("Current Percent"), customSkin.FindStyle("Text"),
+                        GUILayout.Width(100));
+                    currentValue.floatValue =
+                        EditorGUILayout.Slider(pbTarget.currentValue, minValue.floatValue, maxValue.floatValue);
                     GUILayout.EndHorizontal();
 
                     pbTarget.UpdateUI();
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
-                    EditorGUILayout.LabelField(new GUIContent("Min / Max Value"), customSkin.FindStyle("Text"), GUILayout.Width(110));
+                    EditorGUILayout.LabelField(new GUIContent("Min / Max Value"), customSkin.FindStyle("Text"),
+                        GUILayout.Width(110));
                     GUILayout.BeginHorizontal();
                     GUILayout.Space(2);
 
-                    minValue.floatValue = EditorGUILayout.Slider(minValue.floatValue, minValueLimit.floatValue, maxValue.floatValue - 1);
-                    maxValue.floatValue = EditorGUILayout.Slider(maxValue.floatValue, minValue.floatValue + 1, maxValueLimit.floatValue);
+                    minValue.floatValue = EditorGUILayout.Slider(minValue.floatValue, minValueLimit.floatValue,
+                        maxValue.floatValue - 1);
+                    maxValue.floatValue = EditorGUILayout.Slider(maxValue.floatValue, minValue.floatValue + 1,
+                        maxValueLimit.floatValue);
 
                     GUILayout.EndHorizontal();
                     GUILayout.Space(2);
-                    EditorGUILayout.HelpBox("You can increase the min/max value limit by changing 'Value Limit' in the settings tab.", MessageType.Info);
+                    EditorGUILayout.HelpBox(
+                        "You can increase the min/max value limit by changing 'Value Limit' in the settings tab.",
+                        MessageType.Info);
                     GUILayout.EndVertical();
 
                     HeatUIEditorHandler.DrawHeader(customSkin, "Events Header", 10);
@@ -105,19 +114,21 @@ namespace Michsky.UI.Heat
 
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    addPrefix.boolValue = HeatUIEditorHandler.DrawTogglePlain(addPrefix.boolValue, customSkin, "Add Prefix");
+                    addPrefix.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(addPrefix.boolValue, customSkin, "Add Prefix");
                     GUILayout.Space(3);
 
-                    if (addPrefix.boolValue == true)
+                    if (addPrefix.boolValue)
                         HeatUIEditorHandler.DrawPropertyPlainCW(prefix, customSkin, "Prefix:", 40);
 
                     GUILayout.EndVertical();
                     GUILayout.BeginVertical(EditorStyles.helpBox);
                     GUILayout.Space(-3);
-                    addSuffix.boolValue = HeatUIEditorHandler.DrawTogglePlain(addSuffix.boolValue, customSkin, "Add Suffix");
+                    addSuffix.boolValue =
+                        HeatUIEditorHandler.DrawTogglePlain(addSuffix.boolValue, customSkin, "Add Suffix");
                     GUILayout.Space(3);
 
-                    if (addSuffix.boolValue == true)
+                    if (addSuffix.boolValue)
                         HeatUIEditorHandler.DrawPropertyPlainCW(suffix, customSkin, "Suffix:", 40);
 
                     GUILayout.EndVertical();
@@ -127,19 +138,23 @@ namespace Michsky.UI.Heat
 
                     GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-                    EditorGUILayout.LabelField(new GUIContent("Min Limit"), customSkin.FindStyle("Text"), GUILayout.Width(80));
+                    EditorGUILayout.LabelField(new GUIContent("Min Limit"), customSkin.FindStyle("Text"),
+                        GUILayout.Width(80));
                     EditorGUILayout.PropertyField(minValueLimit, new GUIContent(""));
 
-                    if (minValueLimit.floatValue >= maxValueLimit.floatValue) { minValueLimit.floatValue = maxValueLimit.floatValue - 1; }
+                    if (minValueLimit.floatValue >= maxValueLimit.floatValue)
+                        minValueLimit.floatValue = maxValueLimit.floatValue - 1;
 
                     GUILayout.EndHorizontal();
 
                     GUILayout.BeginHorizontal(EditorStyles.helpBox);
 
-                    EditorGUILayout.LabelField(new GUIContent("Max Limit"), customSkin.FindStyle("Text"), GUILayout.Width(80));
+                    EditorGUILayout.LabelField(new GUIContent("Max Limit"), customSkin.FindStyle("Text"),
+                        GUILayout.Width(80));
                     EditorGUILayout.PropertyField(maxValueLimit, new GUIContent(""));
 
-                    if (maxValueLimit.floatValue <= minValue.floatValue) { maxValueLimit.floatValue = minValue.floatValue + 1; }
+                    if (maxValueLimit.floatValue <= minValue.floatValue)
+                        maxValueLimit.floatValue = minValue.floatValue + 1;
 
                     GUILayout.EndHorizontal();
 
@@ -148,7 +163,7 @@ namespace Michsky.UI.Heat
             }
 
             serializedObject.ApplyModifiedProperties();
-            if (Application.isPlaying == false) { Repaint(); }
+            if (Application.isPlaying == false) Repaint();
         }
     }
 }

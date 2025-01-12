@@ -1,4 +1,3 @@
-using System;
 using Platforms;
 using UnityEngine;
 
@@ -10,10 +9,7 @@ namespace LevelController
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (collision.CompareTag("Player"))
-            {
-                RespawnPlatform.Instance.UpdateCheckpoint(checkPoint);
-            }
+            if (collision.CompareTag("Player")) RespawnPlatform.Instance.UpdateCheckpoint(checkPoint);
         }
     }
 }

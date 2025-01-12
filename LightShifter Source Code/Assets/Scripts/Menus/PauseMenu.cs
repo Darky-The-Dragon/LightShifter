@@ -8,23 +8,19 @@ namespace Menus
         public GameObject pauseMenu;
         private bool _isPaused;
 
-        void Start()
+        private void Start()
         {
             pauseMenu.SetActive(false);
         }
 
-        void Update()
+        private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (_isPaused)
-                {
                     ResumeGame();
-                }
                 else
-                {
                     PauseGame();
-                }
             }
         }
 

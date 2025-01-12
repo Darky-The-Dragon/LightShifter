@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,15 +7,17 @@ namespace Michsky.UI.Heat
     [CreateAssetMenu(fileName = "New Controller Preset", menuName = "Heat UI/Controller/New Controller Preset")]
     public class ControllerPreset : ScriptableObject
     {
-        [Header("Settings")]
-        public string controllerName = "Controller Name";
+        public enum ItemType
+        {
+            Icon,
+            Text
+        }
 
-        [Space(10)]
-        public List<ControllerItem> items = new List<ControllerItem>();
+        [Header("Settings")] public string controllerName = "Controller Name";
 
-        public enum ItemType { Icon, Text }
+        [Space(10)] public List<ControllerItem> items = new();
 
-        [System.Serializable]
+        [Serializable]
         public class ControllerItem
         {
             public string itemID;
