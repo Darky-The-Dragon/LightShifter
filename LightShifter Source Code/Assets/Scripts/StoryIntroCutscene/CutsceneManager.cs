@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using TarodevController;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace StoryIntroCutscene
 {
@@ -16,10 +17,15 @@ namespace StoryIntroCutscene
         [SerializeField] private LightShifter lightShifter;
         [SerializeField] private TextMeshProUGUI text;
         [SerializeField] private float fadeInOutDuration = 1f;
-        private int _currentStoryTextIndex;
+        [SerializeField] private GameObject lightWorld, darkWorld;
+        [SerializeField, Range(0,5)] private float floorSpeed = 1.5f;
+        [SerializeField] private KeyCode skipKey = KeyCode.Space;
+        [SerializeField] private Animator sceneTransitionAnim;
+
         private FrameInput _cutsceneframeInput;
-        private bool _enableParallax, _freezeMovement;
+        private bool _enableParallax, _freezeMovement, _moveEnvironment;
         private List<StoryText> _storyTexts;
+
 
         private void Start()
         {
@@ -39,46 +45,79 @@ namespace StoryIntroCutscene
             StartCoroutine(StoryTextCouroutine());
         }
 
-        public FrameInput GetFrameInput()
-        {
-            return _cutsceneframeInput;
+        private void Update() {
+            MoveFloor();
         }
 
-        public bool GetEnabledParallax()
+        private void MoveFloor()
         {
-            return _enableParallax;
+            if(_moveEnvironment) {
+                lightWorld.transform.position -= new Vector3(floorSpeed * Time.deltaTime, 0, 0);
+                darkWorld.transform.position -= new Vector3(floorSpeed * Time.deltaTime, 0, 0);
+            }
         }
 
-        public bool GetFreezePlayerMovement()
+        private void GoToChapter1() {
+            StartCoroutine(NextLevel());
+        }
+
+
+
+
+        /* start of CUTSCENE COROUTINES */
+
+        private IEnumerator NextLevel()
         {
-            return _freezeMovement;
+            sceneTransitionAnim.SetTrigger("End");
+            yield return new WaitForSeconds(1f);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            sceneTransitionAnim.SetTrigger("Start");
+        }
+
+        private IEnumerator DisplayStoryTextCoroutine(StoryText x) {
+            text.text = x.Text;
+            text.CrossFadeAlpha(1, fadeInOutDuration, false);
+            yield return new WaitForSeconds(fadeInOutDuration);
+            yield return new WaitForSeconds((float)x.Duration);
+            text.CrossFadeAlpha(0, fadeInOutDuration, false);
+            yield return new WaitForSeconds(fadeInOutDuration);
         }
 
         private IEnumerator StoryTextCouroutine()
         {
-            _currentStoryTextIndex = 0;
             foreach (var x in _storyTexts)
             {
-                text.text = x.Text;
-                text.CrossFadeAlpha(1, fadeInOutDuration, false);
-                yield return new WaitForSeconds(fadeInOutDuration);
-                yield return new WaitForSeconds((float)x.Duration);
-                text.CrossFadeAlpha(0, fadeInOutDuration, false);
-                yield return new WaitForSeconds(fadeInOutDuration);
+                Coroutine activeCoroutine = StartCoroutine(DisplayStoryTextCoroutine(x));
+                float elapsedTime = 0;
+                float timeToWait = x.Duration + 2 * fadeInOutDuration;
+                while(elapsedTime < timeToWait) {
+                    /* skip only if the DisplayStoryTextCoroutine isn't fading out the current text */
+                    if (Input.GetKeyDown(skipKey) && elapsedTime < (timeToWait - fadeInOutDuration)) {
+                        /* stop the current coroutine */
+                        StopCoroutine(activeCoroutine);
+
+                        /* gently skip the current text */
+                        text.CrossFadeAlpha(0, fadeInOutDuration, false);
+                        yield return new WaitForSeconds(fadeInOutDuration);
+
+                        /* go to the next story text */
+                        break;
+                    }
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
             }
 
-            yield return null;
-        }
-
-        private void GoToNextStoryText()
-        {
+            /* once all the story texts have been displayed the cutscene can be considered finished */
+            GoToChapter1();            
         }
 
         private IEnumerator CutsceneCoroutine()
         {
+            _moveEnvironment = false;
             _enableParallax = false;
             _freezeMovement = false;
-            // wait 1.5 seconds
+            
             yield return new WaitForSeconds(1.5f);
             // block the shift after waiting, to ensure the LightShifter component has been loaded previously
             lightShifter.BlockShift();
@@ -98,9 +137,10 @@ namespace StoryIntroCutscene
             _cutsceneframeInput.Move = new Vector2(+0.001f, 0);
             yield return new WaitForSeconds(1f);
 
-            // start running on the spot towards the right
+            // start running towards right, activate the parallax effect and move the floor
             _enableParallax = true;
             _cutsceneframeInput.Move = new Vector2(1, 0);
+            _moveEnvironment = true;
 
             yield return new WaitForSeconds(3f);
             lightShifter.ToggleEnvironment();
@@ -110,6 +150,26 @@ namespace StoryIntroCutscene
 
             yield return null;
         }
+
+        /* end of CUTSCENE COROUTINES */
+
+        /* start of PUBLIC GETTERS */
+        public FrameInput GetFrameInput()
+        {
+            return _cutsceneframeInput;
+        }
+
+        public bool GetEnabledParallax()
+        {
+            return _enableParallax;
+        }
+
+        public bool GetFreezePlayerMovement()
+        {
+            return _freezeMovement;
+        }
+
+        /* end of PUBLIC GETTERS */
     }
 
     [Serializable]
@@ -117,6 +177,6 @@ namespace StoryIntroCutscene
     {
         public double Index { get; set; }
         public string Text { get; set; }
-        public double Duration { get; set; }
+        public float Duration { get; set; }
     }
 }
