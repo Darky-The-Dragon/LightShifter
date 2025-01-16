@@ -10969,7 +10969,7 @@ GameObject:
   - component: {fileID: 76530872}
   - component: {fileID: 76530871}
   - component: {fileID: 76530870}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: LightPlatform3 (1)
   m_TagString: MovingPlatform
   m_Icon: {fileID: 0}
@@ -23567,8 +23567,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Press
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -23592,7 +23592,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -39436,8 +39436,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Hold
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -39461,7 +39461,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -40041,7 +40041,7 @@ GameObject:
   m_Component:
   - component: {fileID: 550836336}
   - component: {fileID: 550836337}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48384,7 +48384,7 @@ GameObject:
   m_Component:
   - component: {fileID: 671502169}
   - component: {fileID: 671502170}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -50472,7 +50472,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 0.6666667
+  orthographic size: 5.625
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -50497,7 +50497,7 @@ Transform:
   m_GameObject: {fileID: 769483066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -45.858566, y: 2.633888, z: -9.98165}
+  m_LocalPosition: {x: -39.73419, y: 5.268653, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51306,7 +51306,7 @@ GameObject:
   m_Component:
   - component: {fileID: 815293618}
   - component: {fileID: 815293619}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -82279,8 +82279,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: to jump higher
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -82304,7 +82304,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -83130,7 +83130,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1131619132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83960,8 +83960,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: to move
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -83985,7 +83985,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -87779,7 +87779,7 @@ GameObject:
   - component: {fileID: 1498005022}
   - component: {fileID: 1498005021}
   - component: {fileID: 1498005020}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Platform1
   m_TagString: MovingPlatform
   m_Icon: {fileID: 0}
@@ -88464,7 +88464,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1531446637}
   - component: {fileID: 1531446638}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103255,7 +103255,7 @@ GameObject:
   - component: {fileID: 1591707676}
   - component: {fileID: 1591707675}
   - component: {fileID: 1591707674}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Movingplatform2
   m_TagString: MovingPlatform
   m_Icon: {fileID: 0}
@@ -103563,8 +103563,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: to jump
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -103588,7 +103588,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -112850,8 +112850,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: +
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -112875,7 +112875,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -131081,8 +131081,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Press
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -131106,7 +131106,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -131272,7 +131272,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1799723369}
   - component: {fileID: 1799723370}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132232,7 +132232,7 @@ GameObject:
   - component: {fileID: 1894468501}
   - component: {fileID: 1894468500}
   - component: {fileID: 1894468499}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: MovingPlatform1
   m_TagString: MovingPlatform
   m_Icon: {fileID: 0}
@@ -132433,8 +132433,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Press
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -132458,7 +132458,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -151579,7 +151579,7 @@ GameObject:
   - component: {fileID: 2047135187}
   - component: {fileID: 2047135186}
   - component: {fileID: 2047135185}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: LightPlatform2
   m_TagString: MovingPlatform
   m_Icon: {fileID: 0}
@@ -153875,8 +153875,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: consecutively to double jump
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
-  m_sharedMaterial: {fileID: 6405730039152844219, guid: a3d08d85e06394de5a9d071fab513502, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -153900,7 +153900,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 0.75
+  m_fontSize: 0.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
