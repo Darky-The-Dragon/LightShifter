@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using LightShift;
+using UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -61,6 +63,8 @@ namespace TarodevController
         private Rigidbody2D _rb;
         private TarodevPlayerInput _playerInput;
         private PlayerInput _unityPlayerInput;
+        private PlayerInputDevice _playerInputDevice;
+        private LightShifter _lightShifter;
 
         #endregion
 
@@ -127,8 +131,11 @@ namespace TarodevController
             if (!TryGetComponent(out _playerInput)) _playerInput = gameObject.AddComponent<TarodevPlayerInput>();
             if (!TryGetComponent(out _constantForce)) _constantForce = gameObject.AddComponent<ConstantForce2D>();
             if (!TryGetComponent(out _unityPlayerInput)) _unityPlayerInput = gameObject.AddComponent<PlayerInput>();
+            if (!TryGetComponent(out _playerInputDevice)) _playerInputDevice = gameObject.AddComponent<PlayerInputDevice>();
+
 
             if (!_unityPlayerInput) Debug.LogWarning("No Unity PlayerInput attached. Device detection won't work.");
+            _lightShifter = FindObjectOfType<LightShifter>(); 
 
             SetupCharacter();
 
@@ -237,6 +244,13 @@ namespace TarodevController
             {
                 _jumpToConsume = true;
                 _timeJumpWasPressed = _time;
+            }
+
+            if (_frameInput.LightShift)
+            {
+                if (_lightShifter != null) {
+                    _lightShifter.ToggleEnvironment();
+                }
             }
 
             //if (_frameInput.DashDown) _dashToConsume = true;

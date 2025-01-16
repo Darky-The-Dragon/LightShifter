@@ -42,15 +42,6 @@ namespace LightShift
             }
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(lightShiftKey) && canChange && isShiftLoaded)
-            {
-                ToggleEnvironment();
-                StartCoroutine(ShiftCooldown());
-            }
-        }
-
         private void OnEnable()
         {
             _start = true;
