@@ -25,6 +25,12 @@ namespace Menus
             Time.timeScale = 1f;
             SceneManager.LoadScene(0);
         }
+        
+        public void GoChapter2()
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(2);
+        }
 
         public void QuitGame()
         {
