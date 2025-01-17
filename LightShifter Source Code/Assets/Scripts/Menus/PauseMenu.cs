@@ -8,6 +8,7 @@ namespace Menus
     {
         public GameObject pauseMenu;
         private bool _isPaused;
+        public Collider2D endLevelCollider;
 
         private void Start()
         {
@@ -48,6 +49,16 @@ namespace Menus
         public void QuitGame()
         {
             Application.Quit();
+        }
+        
+        public void RestartGame()
+        {
+            SceneManager.LoadScene(2);
+        }
+        
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            PauseGame();
         }
     }
 }
