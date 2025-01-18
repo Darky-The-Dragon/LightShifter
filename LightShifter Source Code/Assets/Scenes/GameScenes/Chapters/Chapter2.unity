@@ -12713,15 +12713,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 0
   _doorBehaviours: []
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 0}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!114 &183957846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12734,17 +12736,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 1230951494}
   - {fileID: 1881247681}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &183957847
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -16746,16 +16750,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 818679243}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &344695201
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -17109,16 +17115,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 158884515}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!1 &363143227
 GameObject:
   m_ObjectHideFlags: 0
@@ -19536,7 +19544,7 @@ GameObject:
   - component: {fileID: 566414449}
   m_Layer: 0
   m_Name: Block3
-  m_TagString: Player
+  m_TagString: MovingBlock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -29522,7 +29530,7 @@ GameObject:
   - component: {fileID: 683487638}
   m_Layer: 0
   m_Name: LightPlatform
-  m_TagString: Untagged
+  m_TagString: MovingBlock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -30135,15 +30143,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 0
   _doorBehaviours: []
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 0}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!114 &759187573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30156,15 +30166,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 0
   _doorBehaviours: []
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 0}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!114 &759187574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30177,18 +30189,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 1230951494}
   - {fileID: 382631192}
   - {fileID: 1881247681}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &759187575
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -30340,7 +30354,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7.5625
+  orthographic size: 5.625
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -30365,7 +30379,7 @@ Transform:
   m_GameObject: {fileID: 769483066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 436.09998, y: 7.147271, z: -9.98165}
+  m_LocalPosition: {x: 417.049, y: 5.373888, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -53387,7 +53401,7 @@ Transform:
   m_GameObject: {fileID: 863464107}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 724, y: -1.99, z: 0.0510284}
+  m_LocalPosition: {x: 724, y: -2.5, z: 0.0510284}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -53405,16 +53419,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 605554521}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &863464110
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -53997,16 +54013,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 1992780236}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &893935897
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -54231,7 +54249,7 @@ Transform:
   m_GameObject: {fileID: 902318270}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 737.1, y: 7.8, z: 0}
+  m_LocalPosition: {x: 718.049, y: 1.02, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -59894,7 +59912,7 @@ Transform:
   m_GameObject: {fileID: 979409655}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 714.51, y: -2.88, z: 0.0510284}
+  m_LocalPosition: {x: 714.51, y: -2.5, z: 0.0510284}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -59912,16 +59930,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 0
   _doorBehaviours:
   - {fileID: 4603439}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &979409658
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -65519,16 +65539,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 1982700019}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &1047222247
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -66447,16 +66469,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 1778820966}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &1091678637
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -67950,15 +67974,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 0
   _doorBehaviours: []
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 0}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!114 &1208202756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67971,17 +67997,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 382631192}
   - {fileID: 1881247681}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &1208202757
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -68115,16 +68143,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 692852381}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &1212182267
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -69161,16 +69191,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 678502322}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &1253489689
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -71048,7 +71080,7 @@ Transform:
   m_GameObject: {fileID: 1462890797}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 721.52, y: -2.9, z: 0.0510284}
+  m_LocalPosition: {x: 721.52, y: -2.5, z: 0.0510284}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -71066,16 +71098,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 0
   _doorBehaviours:
   - {fileID: 511552367}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &1462890800
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -90543,16 +90577,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 1077927443}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &1633658948
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -109067,7 +109103,7 @@ Transform:
   m_GameObject: {fileID: 1806820188}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 436.09998, y: 12.153889, z: -9.98165}
+  m_LocalPosition: {x: 417.049, y: 5.373888, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -123949,16 +123985,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 2080355236}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &2008856650
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -129823,7 +129861,7 @@ GameObject:
   - component: {fileID: 2089361879}
   m_Layer: 7
   m_Name: BoundingBox
-  m_TagString: Untagged
+  m_TagString: PlayerBoundingBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -130000,7 +130038,7 @@ GameObject:
   - component: {fileID: 2099800824}
   m_Layer: 0
   m_Name: Block4
-  m_TagString: Player
+  m_TagString: MovingBlock
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -133183,16 +133221,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateWithKey: 1
   _doorBehaviours:
   - {fileID: 910964933}
-  _isDoorOpenSwitch: 1
-  _isDoorClosedSwitch: 0
+  switchKey: 101
+  playerBoundingBox: {fileID: 2089361877}
+  activationRange: 0.5
   audioSource: {fileID: 1213574139}
   leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
   doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchKey: 101
-  playerCenter: {fileID: 2089361877}
-  activationRange: 0.5
+  switchDelay: 0.2
+  switchSpeed: 1
+  switchOffset_Y: 0.3
 --- !u!58 &2137957541
 CircleCollider2D:
   m_ObjectHideFlags: 0

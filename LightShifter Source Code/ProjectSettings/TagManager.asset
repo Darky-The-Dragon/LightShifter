@@ -10,6 +10,8 @@ TagManager:
   - MovingPlatform
   - BlockShift
   - DarkLightTiles
+  - MovingBlock
+  - PlayerBoundingBox
   layers:
   - Default
   - TransparentFX

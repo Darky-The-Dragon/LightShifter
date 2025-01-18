@@ -4,60 +4,56 @@ using UnityEngine;
 
 public class SwitchBehaviour : MonoBehaviour
 {
-    [SerializeField] private List<DoorBehaviour> _doorBehaviours;
-
-    [SerializeField] private bool _isDoorOpenSwitch;
-    [SerializeField] private bool _isDoorClosedSwitch;
-
+    [Header("Interaction Settings")]
+    [SerializeField, Tooltip("Set to true if the interactable is to be activated through the selected key, false if it is to be activated through collision")] private bool activateWithKey;
+    [SerializeField, Tooltip("List of doors to be handled")] private List<DoorBehaviour> _doorBehaviours;
+    [SerializeField] private KeyCode switchKey = KeyCode.E;
+    [SerializeField, Tooltip("The bounding box of the player used to detect custom collisions")] private Transform playerBoundingBox;
+    [SerializeField] private float activationRange = 0.5f;
+    /* commented as weren't used in the script */
+    // [SerializeField] private bool _isDoorOpenSwitch;
+    // [SerializeField] private bool _isDoorClosedSwitch;
+    [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip leverTwistClip;
 
     [SerializeField] private AudioClip doorMovingClip;
-    [SerializeField] private KeyCode switchKey = KeyCode.E;
-    [SerializeField] private Transform playerCenter;
-    [SerializeField] private float activationRange = 0.5f;
+
+
+    [Header("Animation")]
+    [SerializeField, Tooltip("The delay before the switch moves back up after being activated")] private float switchDelay = 0.2f;
+    [SerializeField, Tooltip("Movement speed during the switch animation")] private float switchSpeed = 1f;
+    [SerializeField, Tooltip("Y offset by which the sprite moves down when activated. Setting negative values means to move the switch up, rather than down")] private float switchOffset_Y = 0.3f;
+
     private bool _isSwitchActive;
-
-    private readonly float _switchDelay = 0.2f;
-    private readonly float _switchSpeed = 1f;
-
-    private bool _isPressingSwitch;
+    // private bool _isPressingSwitch;
     private Vector3 _switchDownPos;
 
-    private float _switchSizeY;
+    // private float _switchSizeY;
     private Vector3 _switchUpPos;
 
 
     // Start is called before the first frame update
     private void Awake()
     {
-        _switchSizeY = transform.localScale.y / 2;
+        // _switchSizeY = transform.localScale.y / 2;
         _isSwitchActive = false;
         _switchUpPos = transform.position;
-        _switchDownPos = new Vector3(transform.position.x, transform.position.y - _switchSizeY, transform.position.z);
+        _switchDownPos = new Vector3(transform.position.x, transform.position.y - switchOffset_Y, transform.position.z);
     }
-
-    // Update is called once per frame
-    // private void Update()
-    // {
-    //     if (_isPressingSwitch)
-    //         MoveSwitchDown();
-    //     else if (!_isPressingSwitch) MoveSwitchUp();
-    // }
 
     private void Update()
     {
-        if (Input.GetKeyDown(switchKey))
-            Debug.Log(gameObject.name + " is player in range: " + IsPlayerInRange());
+        if (_isSwitchActive)
+            MoveSwitchDown();
+        else
+            MoveSwitchUp();
 
-        if (Input.GetKeyDown(switchKey) && IsPlayerInRange())
+        /* toggle the switch using the proper key only if the functionality is selected through the inspector */
+        if (activateWithKey && Input.GetKeyDown(switchKey) && IsPlayerInRange())
         {
-            if (!_isSwitchActive)
-                MoveSwitchDown();
-            else
-                MoveSwitchUp();
             ToggleSwitch();
-
+            StartCoroutine(SwitchUpDelay(switchDelay));
         }
     }
 
@@ -75,46 +71,47 @@ public class SwitchBehaviour : MonoBehaviour
 
     private bool IsPlayerInRange()
     {
-        float distance = Vector2.Distance(transform.position, playerCenter.position);
-        Debug.Log(gameObject.name + " distance to the player: " + distance);
+        float distance = Vector2.Distance(transform.position, playerBoundingBox.position);
         return distance <= activationRange;
     }
 
-    // private void OnTriggerEnter2D(Collider2D collision)
-    // {
-    //     if (collision.CompareTag("Player"))
-    //     {
-    //         _isPressingSwitch = !_isPressingSwitch;
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!activateWithKey && (collision.CompareTag("PlayerBoundingBox") || collision.CompareTag("MovingBlock")))
+        {
+            Debug.Log(gameObject.name + " entered switch range");
+            ToggleSwitch();
+        }
+    }
 
-    //         _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
-
-    //         audioSource.PlayOneShot(leverTwistClip);
-
-    //         DoorSound();
-    //     }
-    // }
-
-    // private void OnTriggerExit2D(Collider2D collision)
-    // {
-    //     if (collision.CompareTag("Player")) StartCoroutine(SwitchUpDelay(_switchDelay));
-    // }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (!activateWithKey && (collision.CompareTag("PlayerBoundingBox") || collision.CompareTag("MovingBlock")))
+        {
+            Debug.Log(gameObject.name + " exited switch range");
+            StartCoroutine(SwitchUpDelay(switchDelay));
+        }
+    }
 
     private void MoveSwitchDown()
     {
-        if (transform.position != _switchDownPos)
-            transform.position = Vector3.MoveTowards(transform.position, _switchDownPos, _switchSpeed * Time.deltaTime);
+        // Debug.Log(gameObject.name + " moving switch down");
+        // Debug.Log(gameObject.name + " switchDownPos: " + _switchDownPos);
+        transform.position = Vector3.MoveTowards(transform.position, _switchDownPos, switchSpeed * Time.deltaTime);
     }
 
     private void MoveSwitchUp()
     {
-        if (transform.position != _switchUpPos)
-            transform.position = Vector3.MoveTowards(transform.position, _switchUpPos, _switchSpeed * Time.deltaTime);
+        // Debug.Log(gameObject.name + " moving switch up");
+        // Debug.Log(gameObject.name + " switchUpPos: " + _switchUpPos);
+        transform.position = Vector3.MoveTowards(transform.position, _switchUpPos, switchSpeed * Time.deltaTime);
     }
 
     private IEnumerator SwitchUpDelay(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        _isPressingSwitch = false;
+        // _isPressingSwitch = false;
+        _isSwitchActive = false;
     }
 
     private void DoorSound()
