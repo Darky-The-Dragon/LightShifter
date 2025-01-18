@@ -12,6 +12,11 @@ public class SwitchBehaviour : MonoBehaviour
     [SerializeField] private AudioClip leverTwistClip;
 
     [SerializeField] private AudioClip doorMovingClip;
+    [SerializeField] private KeyCode switchKey = KeyCode.E;
+    [SerializeField] private Transform playerCenter;
+    [SerializeField] private float activationRange = 0.5f;
+    private bool _isSwitchActive;
+
     private readonly float _switchDelay = 0.2f;
     private readonly float _switchSpeed = 1f;
 
@@ -26,37 +31,70 @@ public class SwitchBehaviour : MonoBehaviour
     private void Awake()
     {
         _switchSizeY = transform.localScale.y / 2;
-
+        _isSwitchActive = false;
         _switchUpPos = transform.position;
         _switchDownPos = new Vector3(transform.position.x, transform.position.y - _switchSizeY, transform.position.z);
     }
 
     // Update is called once per frame
+    // private void Update()
+    // {
+    //     if (_isPressingSwitch)
+    //         MoveSwitchDown();
+    //     else if (!_isPressingSwitch) MoveSwitchUp();
+    // }
+
     private void Update()
     {
-        if (_isPressingSwitch)
-            MoveSwitchDown();
-        else if (!_isPressingSwitch) MoveSwitchUp();
-    }
+        if (Input.GetKeyDown(switchKey))
+            Debug.Log(gameObject.name + " is player in range: " + IsPlayerInRange());
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
+        if (Input.GetKeyDown(switchKey) && IsPlayerInRange())
         {
-            _isPressingSwitch = !_isPressingSwitch;
+            if (!_isSwitchActive)
+                MoveSwitchDown();
+            else
+                MoveSwitchUp();
+            ToggleSwitch();
 
-            _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
-
-            audioSource.PlayOneShot(leverTwistClip);
-
-            DoorSound();
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void ToggleSwitch()
     {
-        if (collision.CompareTag("Player")) StartCoroutine(SwitchUpDelay(_switchDelay));
+        // _isPressingSwitch = !_isPressingSwitch;
+        _isSwitchActive = !_isSwitchActive;
+        _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
+
+        audioSource.PlayOneShot(leverTwistClip);
+        DoorSound();
     }
+
+    private bool IsPlayerInRange()
+    {
+        float distance = Vector2.Distance(transform.position, playerCenter.position);
+        Debug.Log(gameObject.name + " distance to the player: " + distance);
+        return distance <= activationRange;
+    }
+
+    // private void OnTriggerEnter2D(Collider2D collision)
+    // {
+    //     if (collision.CompareTag("Player"))
+    //     {
+    //         _isPressingSwitch = !_isPressingSwitch;
+
+    //         _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
+
+    //         audioSource.PlayOneShot(leverTwistClip);
+
+    //         DoorSound();
+    //     }
+    // }
+
+    // private void OnTriggerExit2D(Collider2D collision)
+    // {
+    //     if (collision.CompareTag("Player")) StartCoroutine(SwitchUpDelay(_switchDelay));
+    // }
 
     private void MoveSwitchDown()
     {

@@ -135,7 +135,7 @@ namespace TarodevController
 
 
             if (!_unityPlayerInput) Debug.LogWarning("No Unity PlayerInput attached. Device detection won't work.");
-            _lightShifter = FindObjectOfType<LightShifter>(); 
+            _lightShifter = FindObjectOfType<LightShifter>();
 
             SetupCharacter();
 
@@ -248,7 +248,8 @@ namespace TarodevController
 
             if (_frameInput.LightShift)
             {
-                if (_lightShifter != null) {
+                if (_lightShifter != null && _lightShifter.GetShiftEnabled())
+                {
                     _lightShifter.ToggleEnvironment();
                 }
             }

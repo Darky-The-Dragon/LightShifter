@@ -11,7 +11,6 @@ namespace LightShift
         [SerializeField] private bool startWithLight = true;
 
         [SerializeField] private bool canChange = true, isShiftLoaded = true;
-        [SerializeField] private KeyCode lightShiftKey = KeyCode.LeftShift;
         [SerializeField] private float shiftCooldown = 0.5f;
 
         [SerializeField] private AudioSource audioSource;
@@ -79,6 +78,11 @@ namespace LightShift
             isShiftLoaded = false;
             yield return new WaitForSeconds(shiftCooldown);
             isShiftLoaded = true;
+        }
+
+        public bool GetShiftEnabled()
+        {
+            return canChange && isShiftLoaded;
         }
 
         public void ToggleEnvironment()
