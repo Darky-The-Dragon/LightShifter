@@ -12678,7 +12678,6 @@ GameObject:
   - component: {fileID: 183957848}
   - component: {fileID: 183957847}
   - component: {fileID: 183957846}
-  - component: {fileID: 183957845}
   m_Layer: 0
   m_Name: SwitchDoor_14_16
   m_TagString: Untagged
@@ -12701,29 +12700,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1982746969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &183957845
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 183957843}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activateWithKey: 0
-  _doorBehaviours: []
-  switchKey: 101
-  playerBoundingBox: {fileID: 0}
-  activationRange: 0.5
-  audioSource: {fileID: 1213574139}
-  leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
-  doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchDelay: 0.2
-  switchSpeed: 1
-  switchOffset_Y: 0.3
 --- !u!114 &183957846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30107,8 +30083,6 @@ GameObject:
   - component: {fileID: 759187576}
   - component: {fileID: 759187575}
   - component: {fileID: 759187574}
-  - component: {fileID: 759187573}
-  - component: {fileID: 759187572}
   m_Layer: 0
   m_Name: SwitchDoor_14_15_16
   m_TagString: Untagged
@@ -30131,52 +30105,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1982746969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &759187572
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759187570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activateWithKey: 0
-  _doorBehaviours: []
-  switchKey: 101
-  playerBoundingBox: {fileID: 0}
-  activationRange: 0.5
-  audioSource: {fileID: 1213574139}
-  leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
-  doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchDelay: 0.2
-  switchSpeed: 1
-  switchOffset_Y: 0.3
---- !u!114 &759187573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759187570}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activateWithKey: 0
-  _doorBehaviours: []
-  switchKey: 101
-  playerBoundingBox: {fileID: 0}
-  activationRange: 0.5
-  audioSource: {fileID: 1213574139}
-  leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
-  doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchDelay: 0.2
-  switchSpeed: 1
-  switchOffset_Y: 0.3
 --- !u!114 &759187574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30379,7 +30307,7 @@ Transform:
   m_GameObject: {fileID: 769483066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 417.049, y: 5.373888, z: -9.98165}
+  m_LocalPosition: {x: 15.48999, y: 5.268653, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -54249,7 +54177,7 @@ Transform:
   m_GameObject: {fileID: 902318270}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 718.049, y: 1.02, z: 0}
+  m_LocalPosition: {x: 316.49, y: -2.66, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -67939,7 +67867,6 @@ GameObject:
   - component: {fileID: 1208202758}
   - component: {fileID: 1208202757}
   - component: {fileID: 1208202756}
-  - component: {fileID: 1208202755}
   m_Layer: 0
   m_Name: SwitchDoor_15_16
   m_TagString: Untagged
@@ -67962,29 +67889,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1982746969}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1208202755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1208202753}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  activateWithKey: 0
-  _doorBehaviours: []
-  switchKey: 101
-  playerBoundingBox: {fileID: 0}
-  activationRange: 0.5
-  audioSource: {fileID: 1213574139}
-  leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
-  doorMovingClip: {fileID: 8300000, guid: 6056a660bb0897e4ea25a31889075437, type: 3}
-  switchDelay: 0.2
-  switchSpeed: 1
-  switchOffset_Y: 0.3
 --- !u!114 &1208202756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109103,7 +109007,7 @@ Transform:
   m_GameObject: {fileID: 1806820188}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 417.049, y: 5.373888, z: -9.98165}
+  m_LocalPosition: {x: 15.48999, y: 1.693888, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
