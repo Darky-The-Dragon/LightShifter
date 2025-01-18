@@ -106,7 +106,7 @@ namespace TarodevController
             if (_grounded && !_isCheckpointUpdating && !_update)
             {
                 _isCheckpointUpdating = true;
-                StartCoroutine(CheckpointUpdate(2f));
+                StartCoroutine(CheckpointUpdate(1f));
             }
         }
 
