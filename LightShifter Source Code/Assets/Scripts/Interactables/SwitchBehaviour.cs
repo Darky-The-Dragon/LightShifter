@@ -1,9 +1,10 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SwitchBehaviour : MonoBehaviour
 {
-    [SerializeField] private DoorBehaviour _doorBehaviour;
+    [SerializeField] private List<DoorBehaviour> _doorBehaviours;
 
     [SerializeField] private bool _isDoorOpenSwitch;
     [SerializeField] private bool _isDoorClosedSwitch;
@@ -64,8 +65,10 @@ public class SwitchBehaviour : MonoBehaviour
     {
         // _isPressingSwitch = !_isPressingSwitch;
         _isSwitchActive = !_isSwitchActive;
-        _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
-
+        foreach (DoorBehaviour doorBehaviour in _doorBehaviours)
+        {
+            doorBehaviour._isDoorOpen = !doorBehaviour._isDoorOpen;
+        }
         audioSource.PlayOneShot(leverTwistClip);
         DoorSound();
     }
