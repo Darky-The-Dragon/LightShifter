@@ -18,7 +18,7 @@ namespace StoryIntroCutscene
         [SerializeField] private TextMeshProUGUI text;
         [SerializeField] private float fadeInOutDuration = 1f;
         [SerializeField] private GameObject lightWorld, darkWorld;
-        [SerializeField, Range(0,5)] private float floorSpeed = 1.5f;
+        [SerializeField, Range(0, 5)] private float floorSpeed = 1.5f;
         [SerializeField] private KeyCode skipKey = KeyCode.Space;
         [SerializeField] private Animator sceneTransitionAnim;
 
@@ -45,36 +45,29 @@ namespace StoryIntroCutscene
             StartCoroutine(StoryTextCouroutine());
         }
 
-        private void Update() {
+        private void Update()
+        {
             MoveFloor();
         }
 
         private void MoveFloor()
         {
-            if(_moveEnvironment) {
+            if (_moveEnvironment)
+            {
                 lightWorld.transform.position -= new Vector3(floorSpeed * Time.deltaTime, 0, 0);
                 darkWorld.transform.position -= new Vector3(floorSpeed * Time.deltaTime, 0, 0);
             }
         }
 
-        private void GoToChapter1() {
-            StartCoroutine(NextLevel());
+        private void GoToChapter1()
+        {
+            SceneManager.LoadScene("Assets/Scenes/GameScenes/Chapters/Chapter1.unity");
         }
-
-
-
 
         /* start of CUTSCENE COROUTINES */
 
-        private IEnumerator NextLevel()
+        private IEnumerator DisplayStoryTextCoroutine(StoryText x)
         {
-            sceneTransitionAnim.SetTrigger("End");
-            yield return new WaitForSeconds(1f);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-            sceneTransitionAnim.SetTrigger("Start");
-        }
-
-        private IEnumerator DisplayStoryTextCoroutine(StoryText x) {
             text.text = x.Text;
             text.CrossFadeAlpha(1, fadeInOutDuration, false);
             yield return new WaitForSeconds(fadeInOutDuration);
@@ -90,9 +83,11 @@ namespace StoryIntroCutscene
                 Coroutine activeCoroutine = StartCoroutine(DisplayStoryTextCoroutine(x));
                 float elapsedTime = 0;
                 float timeToWait = x.Duration + 2 * fadeInOutDuration;
-                while(elapsedTime < timeToWait) {
+                while (elapsedTime < timeToWait)
+                {
                     /* skip only if the DisplayStoryTextCoroutine isn't fading out the current text */
-                    if (Input.GetKeyDown(skipKey) && elapsedTime < (timeToWait - fadeInOutDuration)) {
+                    if (Input.GetKeyDown(skipKey) && elapsedTime < (timeToWait - fadeInOutDuration))
+                    {
                         /* stop the current coroutine */
                         StopCoroutine(activeCoroutine);
 
@@ -109,7 +104,7 @@ namespace StoryIntroCutscene
             }
 
             /* once all the story texts have been displayed the cutscene can be considered finished */
-            GoToChapter1();            
+            GoToChapter1();
         }
 
         private IEnumerator CutsceneCoroutine()
@@ -117,7 +112,7 @@ namespace StoryIntroCutscene
             _moveEnvironment = false;
             _enableParallax = false;
             _freezeMovement = false;
-            
+
             yield return new WaitForSeconds(1.5f);
             // block the shift after waiting, to ensure the LightShifter component has been loaded previously
             lightShifter.BlockShift();

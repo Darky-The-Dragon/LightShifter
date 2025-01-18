@@ -2407,7 +2407,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 192960185}
         m_TargetAssemblyTypeName: Menus.MainMenu, Assembly-CSharp
-        m_MethodName: Chapter1
+        m_MethodName: StoryIntro
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

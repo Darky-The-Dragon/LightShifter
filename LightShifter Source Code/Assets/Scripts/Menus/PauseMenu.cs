@@ -43,19 +43,19 @@ namespace Menus
         public void GoToMainMenu()
         {
             Time.timeScale = 1f;
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("Assets/Scenes/MechanicsTest/UItest.unity");
         }
 
         public void QuitGame()
         {
             Application.Quit();
         }
-        
+
         public void RestartGame()
         {
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-        
+
         private void OnTriggerEnter2D(Collider2D collision)
         {
             PauseGame();

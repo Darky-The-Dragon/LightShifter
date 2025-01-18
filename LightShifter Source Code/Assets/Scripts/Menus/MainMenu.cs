@@ -7,17 +7,22 @@ namespace Menus
     {
         public void ToMenu()
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("Assets/Scenes/MechanicsTest/UItest.unity");
+        }
+
+        public void StoryIntro()
+        {
+            SceneManager.LoadScene("Assets/Scenes/GameScenes/Chapters/StoryIntro.unity");
         }
 
         public void Chapter1()
         {
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene("Assets/Scenes/GameScenes/Chapters/Chapter1.unity");
         }
 
         public void Chapter2()
         {
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene("Assets/Scenes/GameScenes/Chapters/Chapter2.unity");
         }
 
         public void QuitGame()

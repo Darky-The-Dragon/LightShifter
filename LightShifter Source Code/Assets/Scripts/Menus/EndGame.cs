@@ -25,18 +25,18 @@ namespace Menus
             Time.timeScale = 1f;
             SceneManager.LoadScene(0);
         }
-        
+
         public void GoChapter2()
         {
             Time.timeScale = 1f;
-            SceneManager.LoadScene(2);
+            SceneManager.LoadScene("Assets/Scenes/GameScenes/Chapters/Chapter2.unity");
         }
 
         public void QuitGame()
         {
             Application.Quit();
         }
-        
+
         private void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.CompareTag("Player")) PauseGame();
