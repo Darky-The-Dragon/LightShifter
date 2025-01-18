@@ -1,10 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SwitchBehaviour : MonoBehaviour
 {
-    [SerializeField] private List<DoorBehaviour> _doorBehaviours;
+    [SerializeField] private DoorBehaviour _doorBehaviour;
 
     [SerializeField] private bool _isDoorOpenSwitch;
     [SerializeField] private bool _isDoorClosedSwitch;
@@ -34,7 +33,7 @@ public class SwitchBehaviour : MonoBehaviour
         _switchSizeY = transform.localScale.y / 2;
         _isSwitchActive = false;
         _switchUpPos = transform.position;
-        _switchDownPos = new Vector3(transform.position.x, transform.position.y - 0.3f, transform.position.z);
+        _switchDownPos = new Vector3(transform.position.x, transform.position.y - _switchSizeY, transform.position.z);
     }
 
     // Update is called once per frame
@@ -47,14 +46,15 @@ public class SwitchBehaviour : MonoBehaviour
 
     private void Update()
     {
-        if (_isSwitchActive)
-            MoveSwitchDown();
-        else
-            MoveSwitchUp();
+        if (Input.GetKeyDown(switchKey))
+            Debug.Log(gameObject.name + " is player in range: " + IsPlayerInRange());
 
         if (Input.GetKeyDown(switchKey) && IsPlayerInRange())
         {
-            Debug.Log(gameObject.name + " isSwitchActive: " + _isSwitchActive);
+            if (!_isSwitchActive)
+                MoveSwitchDown();
+            else
+                MoveSwitchUp();
             ToggleSwitch();
 
         }
@@ -64,10 +64,8 @@ public class SwitchBehaviour : MonoBehaviour
     {
         // _isPressingSwitch = !_isPressingSwitch;
         _isSwitchActive = !_isSwitchActive;
-        foreach (DoorBehaviour doorBehaviour in _doorBehaviours)
-        {
-            doorBehaviour._isDoorOpen = !doorBehaviour._isDoorOpen;
-        }
+        _doorBehaviour._isDoorOpen = !_doorBehaviour._isDoorOpen;
+
         audioSource.PlayOneShot(leverTwistClip);
         DoorSound();
     }
@@ -75,7 +73,7 @@ public class SwitchBehaviour : MonoBehaviour
     private bool IsPlayerInRange()
     {
         float distance = Vector2.Distance(transform.position, playerCenter.position);
-        // Debug.Log(gameObject.name + " distance to the player: " + distance);
+        Debug.Log(gameObject.name + " distance to the player: " + distance);
         return distance <= activationRange;
     }
 
@@ -100,18 +98,14 @@ public class SwitchBehaviour : MonoBehaviour
 
     private void MoveSwitchDown()
     {
-        Debug.Log(gameObject.name + " moving switch down");
-        Debug.Log(gameObject.name + " switchDownPos: " + _switchDownPos);
-        // if (transform.position != _switchDownPos)
-        transform.position = Vector3.MoveTowards(transform.position, _switchDownPos, _switchSpeed * Time.deltaTime);
+        if (transform.position != _switchDownPos)
+            transform.position = Vector3.MoveTowards(transform.position, _switchDownPos, _switchSpeed * Time.deltaTime);
     }
 
     private void MoveSwitchUp()
     {
-        Debug.Log(gameObject.name + " moving switch up");
-        Debug.Log(gameObject.name + " switchUpPos: " + _switchUpPos);
-        // if (transform.position != _switchUpPos)
-        transform.position = Vector3.MoveTowards(transform.position, _switchUpPos, _switchSpeed * Time.deltaTime);
+        if (transform.position != _switchUpPos)
+            transform.position = Vector3.MoveTowards(transform.position, _switchUpPos, _switchSpeed * Time.deltaTime);
     }
 
     private IEnumerator SwitchUpDelay(float waitTime)
