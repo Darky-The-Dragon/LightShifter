@@ -12487,7 +12487,7 @@ GameObject:
   - component: {fileID: 183957846}
   - component: {fileID: 183957845}
   m_Layer: 0
-  m_Name: SwitchDoor14
+  m_Name: SwitchDoor_14_16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12520,7 +12520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1881247681}
+  _doorBehaviours: []
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -12541,7 +12541,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1230951494}
+  _doorBehaviours:
+  - {fileID: 1230951494}
+  - {fileID: 1881247681}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -16469,7 +16471,7 @@ GameObject:
   - component: {fileID: 344695201}
   - component: {fileID: 344695200}
   m_Layer: 0
-  m_Name: SwitchDoor2
+  m_Name: SwitchDoor_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16502,7 +16504,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 818679243}
+  _doorBehaviours:
+  - {fileID: 818679243}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -16744,7 +16747,7 @@ GameObject:
   - component: {fileID: 360971956}
   - component: {fileID: 360971958}
   m_Layer: 0
-  m_Name: SwitchDoor1
+  m_Name: SwitchDoor_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16864,7 +16867,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 158884515}
+  _doorBehaviours:
+  - {fileID: 158884515}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -29380,7 +29384,7 @@ GameObject:
   - component: {fileID: 759187573}
   - component: {fileID: 759187572}
   m_Layer: 0
-  m_Name: SwitchDoor16
+  m_Name: SwitchDoor_14_15_16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29413,7 +29417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1881247681}
+  _doorBehaviours: []
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -29434,7 +29438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 382631192}
+  _doorBehaviours: []
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -29455,7 +29459,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1230951494}
+  _doorBehaviours:
+  - {fileID: 1230951494}
+  - {fileID: 382631192}
+  - {fileID: 1881247681}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -29640,7 +29647,7 @@ Transform:
   m_GameObject: {fileID: 769483066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 362.11, y: 5.268653, z: -9.98165}
+  m_LocalPosition: {x: 313.01007, y: 5.268653, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -52479,7 +52486,7 @@ GameObject:
   - component: {fileID: 863464110}
   - component: {fileID: 863464109}
   m_Layer: 0
-  m_Name: SwitchDoor12
+  m_Name: SwitchDoor_11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52512,7 +52519,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 605554521}
+  _doorBehaviours:
+  - {fileID: 605554521}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -53070,7 +53078,7 @@ GameObject:
   - component: {fileID: 893935897}
   - component: {fileID: 893935896}
   m_Layer: 0
-  m_Name: SwitchDoor8
+  m_Name: SwitchDoor_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53103,7 +53111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1992780236}
+  _doorBehaviours:
+  - {fileID: 1992780236}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -53336,7 +53345,7 @@ Transform:
   m_GameObject: {fileID: 902318270}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 663.11, y: 0.5, z: 0}
+  m_LocalPosition: {x: 614.01, y: -2.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -58876,7 +58885,7 @@ GameObject:
   - component: {fileID: 979409658}
   - component: {fileID: 979409657}
   m_Layer: 0
-  m_Name: SwitchDoor10
+  m_Name: SwitchDoor_10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58909,7 +58918,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 4603439}
+  _doorBehaviours:
+  - {fileID: 4603439}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -64398,7 +64408,7 @@ GameObject:
   - component: {fileID: 1047222247}
   - component: {fileID: 1047222246}
   m_Layer: 0
-  m_Name: SwitchDoor13
+  m_Name: SwitchDoor_13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64431,7 +64441,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1982700019}
+  _doorBehaviours:
+  - {fileID: 1982700019}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -65325,7 +65336,7 @@ GameObject:
   - component: {fileID: 1091678637}
   - component: {fileID: 1091678636}
   m_Layer: 0
-  m_Name: SwitchDoor7
+  m_Name: SwitchDoor_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65358,7 +65369,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1778820966}
+  _doorBehaviours:
+  - {fileID: 1778820966}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -66666,7 +66678,7 @@ GameObject:
   - component: {fileID: 1208202756}
   - component: {fileID: 1208202755}
   m_Layer: 0
-  m_Name: SwitchDoor15
+  m_Name: SwitchDoor_15_16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66699,7 +66711,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1881247681}
+  _doorBehaviours: []
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -66720,7 +66732,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 382631192}
+  _doorBehaviours:
+  - {fileID: 382631192}
+  - {fileID: 1881247681}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -66829,7 +66843,7 @@ GameObject:
   - component: {fileID: 1212182267}
   - component: {fileID: 1212182266}
   m_Layer: 0
-  m_Name: SwitchDoor9
+  m_Name: SwitchDoor_9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66844,7 +66858,7 @@ Transform:
   m_GameObject: {fileID: 1212182264}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 616.3, y: -2.6, z: 0.0510284}
+  m_LocalPosition: {x: 616.3, y: -2.2, z: 0.0510284}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -66862,7 +66876,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 692852381}
+  _doorBehaviours:
+  - {fileID: 692852381}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -67790,7 +67805,7 @@ GameObject:
   - component: {fileID: 1253489689}
   - component: {fileID: 1253489688}
   m_Layer: 0
-  m_Name: SwitchDoor3
+  m_Name: SwitchDoor_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67823,7 +67838,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 678502322}
+  _doorBehaviours:
+  - {fileID: 678502322}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -69416,7 +69432,7 @@ GameObject:
   - component: {fileID: 1462890800}
   - component: {fileID: 1462890799}
   m_Layer: 0
-  m_Name: SwitchDoor11
+  m_Name: SwitchDoor_12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69449,7 +69465,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 511552367}
+  _doorBehaviours:
+  - {fileID: 511552367}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -88811,7 +88828,7 @@ GameObject:
   - component: {fileID: 1633658948}
   - component: {fileID: 1633658947}
   m_Layer: 0
-  m_Name: SwitchDoor6
+  m_Name: SwitchDoor_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -88844,7 +88861,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 1077927443}
+  _doorBehaviours:
+  - {fileID: 1077927443}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -105381,7 +105399,7 @@ Transform:
   m_GameObject: {fileID: 1806820188}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 362.11, y: 4.853888, z: -9.98165}
+  m_LocalPosition: {x: 313.01, y: 1.9538879, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -119870,7 +119888,7 @@ GameObject:
   - component: {fileID: 2008856650}
   - component: {fileID: 2008856649}
   m_Layer: 0
-  m_Name: SwitchDoor5
+  m_Name: SwitchDoor_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -119903,7 +119921,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 2080355236}
+  _doorBehaviours:
+  - {fileID: 2080355236}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
@@ -126347,7 +126366,7 @@ GameObject:
   - component: {fileID: 2137957541}
   - component: {fileID: 2137957540}
   m_Layer: 0
-  m_Name: SwitchDoor4
+  m_Name: SwitchDoor_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -126380,7 +126399,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4978ffd40cd89b249b8ea2bb2b1843f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _doorBehaviour: {fileID: 910964933}
+  _doorBehaviours:
+  - {fileID: 910964933}
   _isDoorOpenSwitch: 1
   _isDoorClosedSwitch: 0
   audioSource: {fileID: 1213574139}
