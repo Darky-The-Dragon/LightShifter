@@ -39,7 +39,18 @@ namespace Menus
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (collision.CompareTag("Player")) PauseGame();
+            if (collision.CompareTag("Player"))
+            {
+                if (SceneManager.GetActiveScene().path == "Assets/Scenes/GameScenes/Chapters/Chapter1.unity")
+                {
+                    Time.timeScale = 1f;
+                    SceneManager.LoadScene("Assets/Scenes/GameScenes/Chapters/Chapter2.unity");
+                }
+                else
+                {
+                    PauseGame();
+                }
+            }
         }
     }
 }
