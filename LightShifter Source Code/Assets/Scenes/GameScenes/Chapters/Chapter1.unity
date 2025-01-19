@@ -5225,8 +5225,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -23493,8 +23493,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -25635,8 +25635,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -40108,8 +40108,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -84739,7 +84739,7 @@ GameObject:
   - component: {fileID: 1037092805}
   m_Layer: 0
   m_Name: TutorialMovingPlatform
-  m_TagString: Untagged
+  m_TagString: MovingPlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -84946,8 +84946,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -86151,8 +86151,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -86530,8 +86530,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -87577,7 +87577,6 @@ GameObject:
   - component: {fileID: 1327218657}
   - component: {fileID: 1327218662}
   - component: {fileID: 1327218661}
-  - component: {fileID: 1327218660}
   - component: {fileID: 1327218659}
   - component: {fileID: 1327218658}
   m_Layer: 8
@@ -87638,194 +87637,9 @@ CompositeCollider2D:
   m_GeometryType: 0
   m_GenerationType: 0
   m_EdgeRadius: 0
-  m_ColliderPaths:
-  - m_Collider: {fileID: 1327218660}
-    m_ColliderPaths:
-    - - X: 2340000256
-        Y: 9999959
-      - X: 2340000256
-        Y: 119166728
-      - X: 2339166720
-        Y: 120000088
-      - X: 2339166720
-        Y: 120000096
-      - X: 2329999872
-        Y: 120000096
-      - X: 2329999872
-        Y: 9999900
-      - X: 2340000000
-        Y: 9999900
-    - - X: 2530000128
-        Y: 9999959
-      - X: 2530000128
-        Y: 119166728
-      - X: 2529166592
-        Y: 120000088
-      - X: 2529166592
-        Y: 120000096
-      - X: 2520000000
-        Y: 120000096
-      - X: 2519999744
-        Y: 120000040
-      - X: 2519999744
-        Y: 9999959
-      - X: 2520000000
-        Y: 9999900
-      - X: 2529999872
-        Y: 9999900
-    - - X: 2190000128
-        Y: 119166728
-      - X: 2189166592
-        Y: 120000088
-      - X: 2189166592
-        Y: 120000096
-      - X: 2180000000
-        Y: 120000096
-      - X: 2179999744
-        Y: 120000040
-      - X: 2179999744
-        Y: 29999960
-      - X: 2180000000
-        Y: 29999900
-      - X: 2190000128
-        Y: 29999900
-    - - X: 2569999872
-        Y: 79166720
-      - X: 2569166848
-        Y: 80000088
-      - X: 2569166592
-        Y: 80000096
-      - X: 2560000000
-        Y: 80000096
-      - X: 2559999744
-        Y: 80000040
-      - X: 2559999744
-        Y: -41
-      - X: 2560000000
-        Y: -100
-      - X: 2569999872
-        Y: -100
-    - - X: 2430000128
-        Y: 79166720
-      - X: 2429166592
-        Y: 80000088
-      - X: 2429166592
-        Y: 80000096
-      - X: 2420000000
-        Y: 80000096
-      - X: 2419999744
-        Y: 80000040
-      - X: 2419999744
-        Y: -50000044
-      - X: 2420000000
-        Y: -50000100
-      - X: 2430000128
-        Y: -50000100
-    - - X: 2860000000
-        Y: 79166720
-      - X: 2859166976
-        Y: 80000088
-      - X: 2859166464
-        Y: 80000096
-      - X: 2849999872
-        Y: 80000096
-      - X: 2849999872
-        Y: -10000100
-      - X: 2860000000
-        Y: -10000100
-    - - X: 2380000256
-        Y: 29999960
-      - X: 2380000256
-        Y: 59166724
-      - X: 2379166720
-        Y: 60000084
-      - X: 2379166720
-        Y: 60000100
-      - X: 2369999872
-        Y: 60000100
-      - X: 2369999872
-        Y: 29999900
-      - X: 2380000000
-        Y: 29999900
-    - - X: 2220000256
-        Y: -41
-      - X: 2220000256
-        Y: 49166724
-      - X: 2219166720
-        Y: 50000084
-      - X: 2219166720
-        Y: 50000100
-      - X: 2209999872
-        Y: 50000100
-      - X: 2209999872
-        Y: -100
-      - X: 2220000000
-        Y: -100
-    - - X: 2280000256
-        Y: -30000040
-      - X: 2280000256
-        Y: 20000040
-      - X: 2280000000
-        Y: 20000100
-      - X: 2270000128
-        Y: 20000100
-      - X: 2269999872
-        Y: 20000040
-      - X: 2269999872
-        Y: -29583390
-      - X: 2270416640
-        Y: -30000086
-      - X: 2270416640
-        Y: -30000100
-      - X: 2280000000
-        Y: -30000100
+  m_ColliderPaths: []
   m_CompositePaths:
-    m_Paths:
-    - - {x: 233.99998, y: 0.99999}
-      - {x: 234.00003, y: 11.91668}
-      - {x: 233.91667, y: 12.00001}
-      - {x: 232.99998, y: 11.99998}
-      - {x: 233.00002, y: 0.99999}
-    - - {x: 218.99998, y: 2.99999}
-      - {x: 219.00002, y: 11.91668}
-      - {x: 218.91666, y: 12.00001}
-      - {x: 217.99997, y: 11.999974}
-      - {x: 218.00003, y: 2.99999}
-    - - {x: 252.99997, y: 0.99999}
-      - {x: 253.00002, y: 11.91668}
-      - {x: 252.91666, y: 12.00001}
-      - {x: 251.99998, y: 11.999974}
-      - {x: 252.00003, y: 0.99999}
-    - - {x: 285.99997, y: -1.00001}
-      - {x: 286, y: 7.91668}
-      - {x: 285.91666, y: 8.00001}
-      - {x: 285, y: 7.99998}
-      - {x: 285.00003, y: -1.00001}
-    - - {x: 242.99998, y: -5.00001}
-      - {x: 243.00002, y: 7.91668}
-      - {x: 242.91666, y: 8.00001}
-      - {x: 241.99998, y: 7.9999747}
-      - {x: 242.00003, y: -5.00001}
-    - - {x: 256.99997, y: -0.00001}
-      - {x: 257, y: 7.91668}
-      - {x: 256.91666, y: 8.00001}
-      - {x: 255.99998, y: 7.9999747}
-      - {x: 256.00003, y: -0.00001}
-    - - {x: 237.99998, y: 2.99999}
-      - {x: 238.00003, y: 5.91668}
-      - {x: 237.91667, y: 6.00001}
-      - {x: 236.99998, y: 5.999981}
-      - {x: 237.00002, y: 2.99999}
-    - - {x: 221.99997, y: -0.00001}
-      - {x: 222.00003, y: 4.91668}
-      - {x: 221.91667, y: 5.00001}
-      - {x: 220.99998, y: 4.999981}
-      - {x: 221.00002, y: -0.00001}
-    - - {x: 227.99997, y: -3.00001}
-      - {x: 227.99997, y: 2.00001}
-      - {x: 226.99998, y: 1.9999748}
-      - {x: 226.99998, y: -2.9583466}
-      - {x: 227.04167, y: -3.00001}
+    m_Paths: []
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
@@ -87857,42 +87671,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!19719996 &1327218660
-TilemapCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1327218656}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 1
-  m_Offset: {x: 0, y: 0}
-  m_MaximumTileChangeCount: 1000
-  m_ExtrusionFactor: 0.00001
-  m_UseDelaunayMesh: 0
 --- !u!483693784 &1327218661
 TilemapRenderer:
   m_ObjectHideFlags: 0
@@ -92288,8 +92066,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -108194,8 +107972,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -117317,8 +117095,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -118162,8 +117940,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -135225,8 +135003,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -136388,8 +136166,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -157773,8 +157551,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
