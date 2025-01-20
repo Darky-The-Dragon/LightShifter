@@ -51627,7 +51627,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5.625
+  orthographic size: 4.09375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -51652,7 +51652,7 @@ Transform:
   m_GameObject: {fileID: 769483066}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -78.831085, y: 5.268652, z: -9.98165}
+  m_LocalPosition: {x: -80.654, y: 3.737403, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73217,7 +73217,7 @@ Transform:
   m_GameObject: {fileID: 902318270}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -104, y: -3, z: 0}
+  m_LocalPosition: {x: -105.23, y: -2.73, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -73342,8 +73342,8 @@ MonoBehaviour:
   patrolPlatforms:
   - {fileID: 1385919815}
   switchOn: 1
-  audioSource: {fileID: 0}
-  leverTwistClip: {fileID: 0}
+  audioSource: {fileID: 1407104125}
+  leverTwistClip: {fileID: 8300000, guid: 181739dfd57744a4d9cd44da560702c4, type: 3}
 --- !u!58 &912616594
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -85714,7 +85714,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1131619132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135227,7 +135227,7 @@ Transform:
   m_GameObject: {fileID: 1806820188}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -86.85857, y: 1.2338879, z: -9.98165}
+  m_LocalPosition: {x: -88.08857, y: 1.5038879, z: -9.98165}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
